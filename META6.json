@@ -3,7 +3,7 @@
   "name": "Gnome::lib",
   "version": "0.13.1",
   "authors": [ "Marcel Timmerman"],
-  "tags": [ "gnome", "glib"],
+  "tags": [ "gnome"],
 
   "perl": "6",
   "license": "Artistic-2.0",
