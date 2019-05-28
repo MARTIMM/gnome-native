@@ -1,6 +1,6 @@
 {
-  "description": "Perl6 Gnome glib api",
-  "name": "Gnome::lib",
+  "description": "Perl6 Gnome native interface support",
+  "name": "Gnome::N",
   "version": "0.13.1",
   "authors": [ "Marcel Timmerman"],
   "tags": [ "gnome"],
