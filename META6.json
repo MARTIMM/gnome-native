@@ -1,7 +1,7 @@
 {
   "description": "Perl6 Gnome native interface support",
   "name": "Gnome::N",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "authors": [ "Marcel Timmerman"],
   "tags": [ "gnome"],
 
@@ -14,7 +14,7 @@
     "Gnome::N::X": "lib/Gnome/N/X.pm6"
   },
 
-  "source-url": "git://github.com/MARTIMM/gnome-glib.git",
+  "source-url": "git://github.com/MARTIMM/perl6-gnome-glib.git",
 
   "depends": [ ],
   "test-depends": [ ],

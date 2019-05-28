@@ -68,11 +68,13 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 sub test-call ( Callable:D $found-routine, $gobject, |c --> Mu ) is export {
 
   my List $sig-params = $found-routine.signature.params;
-#note "TC 0 parameters: ", $found-routine.signature.params;
-#note "TC 1 type 1st arg: ", $sig-params[0].type.^name;
+  note "TC 0 parameters: ", $found-routine.signature.params
+    if $X::Gnome::x-debug;
+  note "TC 1 type 1st arg: ", $sig-params[0].type.^name
+    if $X::Gnome::x-debug;
 
   if +$sig-params and
-     $sig-params[0].type.^name ~~ m/^ ['GTK::V3::G' .*?]? 'N-G' / {
+     $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
     note "\n[0] $found-routine.gist()\( ", $gobject, ', ', |c.perl, ');'
       if $X::Gnome::x-debug;
