@@ -6,7 +6,7 @@
 
 # Description
 
-This package holds the native object description as well as the interface description to connect to the Gnome libraries. This set modules will never act on their own. They will be used by other packages such as Gnome::Gtk and the like.
+This package holds the native object description as well as the interface description to connect to the Gnome libraries. This set of modules will never act on their own. They will be used by other packages such as `Gnome::Gtk3` and the like.
 
 ## Note
 This package is refactored from GTK::V3 at version 0.13.1
@@ -14,9 +14,10 @@ This package is refactored from GTK::V3 at version 0.13.1
 ## Release notes
 * [Release notes][changes]
 
-# Installation of Gnome::N
+# Installation
+Do not install this package on its own. Instead install `Gnome::Gtk3`.
 
-`zef install Gnome::N`
+`zef install Gnome::Gtk3`
 
 
 # Author
@@ -26,7 +27,7 @@ Github account name: **MARTIMM**
 
 # Issues
 
-There are always some problems! If you find one please help by filing an issue at [my github project](https://github.com/MARTIMM/perl6-gnome-native/issues).
+There are always some problems! If you find one please help by filing an issue at [my Gnome::Gtk3 github project][issues].
 
 # Attribution
 
@@ -37,7 +38,7 @@ There are always some problems! If you find one please help by filing an issue a
 [//]: # (---- [refs] ----------------------------------------------------------)
 [changes]: https://github.com/MARTIMM/perl6-gnome-native/blob/master/CHANGES.md
 [logo]: https://github.com/MARTIMM/perl6-gnome-native/blob/master/doc/images/gtk-logo-100.png
-
+[issues]: https://github.com/MARTIMM/perl6-gnome-gtk3/issues
 
 
 
