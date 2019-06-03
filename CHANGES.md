@@ -1,5 +1,8 @@
 ## Release notes
 
+* 2019-05-28 0.13.3
+  * Updating docs
+
 * 2019-05-28 0.13.2
   * Bugfixes
 
