@@ -4,18 +4,37 @@ use Test;
 use Gnome::N::X;
 
 #-------------------------------------------------------------------------------
+subtest 'debugging', {
+
+  is $Gnome::N::x-debug, False, '0 debugging off';
+  Gnome::N::debug(:on);
+  is $Gnome::N::x-debug, True, '1 debugging on';
+  Gnome::N::debug(:off);
+  is $Gnome::N::x-debug, False, '2 debugging off';
+
+  Gnome::N::debug(:!off);
+  is $Gnome::N::x-debug, True, '3 debugging on';
+  Gnome::N::debug(:!on);
+  is $Gnome::N::x-debug, False, '4 debugging off';
+
+  Gnome::N::debug( :on, :off);
+  is $Gnome::N::x-debug, True, '5 debugging on';
+  Gnome::N::debug( :!on, :!off);
+  is $Gnome::N::x-debug, False, '6 debugging off';
+
+  Gnome::N::debug( :on, :off);
+  is $Gnome::N::x-debug, True, '7 debugging on';
+  Gnome::N::debug;
+  is $Gnome::N::x-debug, False, '8 debugging off';
+}
+
+#-------------------------------------------------------------------------------
 subtest 'X exception', {
   throws-like(
     { die X::Gnome.new(:message('die pour rien')) },
     X::Gnome, 'Test exception',
     :message('die pour rien')
   );
-
-  is $X::Gnome::x-debug, False, 'debug flag is false by default';
-  X::Gnome.debug(:on);
-  is $X::Gnome::x-debug, True, 'debug flag is true';
-  X::Gnome.debug(:!on);
-  is $X::Gnome::x-debug, False, 'debug flag is false again';
 }
 
 #-------------------------------------------------------------------------------

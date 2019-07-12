@@ -1,32 +1,60 @@
 use v6;
 
+
 #-------------------------------------------------------------------------------
 class X::Gnome is Exception {
-  our $x-debug = False;
   has $.message;
 
   submethod BUILD ( Str:D :$!message ) { }
+}
 
 #-------------------------------------------------------------------------------
 =begin pod
 =head2 debug
 
-  method debug ( Bool :$on )
+There are many situations when exceptions are retrown within code of a callback method, Perl6 is sometimes not able to display the error properly. In those cases you need another way to display errors and show extra messages leading up to it. For instance turn debugging on.
 
-There are many situations when exceptions are retrown within code of a callback method, Perl6 is not able to display the error properly (yet). In those cases you need another way to display errors and show extra messages leading up to it.
+  sub Gnome::N::debug ( Bool :$on, Bool :$off )
+
+=item :on; turn debugging on
+=item :!on; turn debugging off
+=item :off; turn debugging off
+=item :!off; turn debugging on
+
+When both arguments are used, :on has preverence over :off. When no arguments are provided, the debugging is turned off.
+
+The state is saved in `$Gnome::N::x-debug` and can be accessed directly to get
+its state.
+
 =end pod
 
-  method debug ( Bool :$on ) {
-    $x-debug = $on;
+class Gnome::N {
+  our $Gnome::N::x-debug = False;
+  our &Gnome::N::debug = sub ( Bool :$on, Bool :$off ) {
+
+    # when both are undefined only return debug state
+    if !$on.defined and !$off.defined {
+      $Gnome::N::x-debug = False;
+    }
+
+    # when only $off is defined, set debug to its opposite
+    elsif !$on.defined and $off.defined {
+      $Gnome::N::x-debug = !$off;
+    }
+
+    # all other cases $on is defined and has preverence above $off
+    else {
+      $Gnome::N::x-debug = $on;
+    }
   }
 }
 
 #-------------------------------------------------------------------------------
 sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 
-  note "Error type: ", $e.WHAT if $X::Gnome::x-debug;
-  note "Error message: ", $e.message if $X::Gnome::x-debug;
-  note "\nThrown Exception:\n", $e if $X::Gnome::x-debug;
+  note "\nError type: ", $e.WHAT if $Gnome::N::x-debug;
+  note "Error message: ", $e.message if $Gnome::N::x-debug;
+  note "Thrown Exception:\n", $e if $Gnome::N::x-debug;
 
   given $e {
 
@@ -40,7 +68,7 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
     # X::AdHoc
     when .message ~~ m:s/Native call expected return type/ {
       note "Wrong return type of native sub '$native-sub\(...\)'"
-        if $X::Gnome::x-debug;
+        if $Gnome::N::x-debug;
       die X::Gnome.new(
         :message("Wrong return type of native sub '$native-sub\(...\)'")
       );
@@ -50,13 +78,13 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
     when X::TypeCheck::Argument ||
          .message ~~ m:s/will never work with declared signature/ ||
          .message ~~ m:s/Type check failed in binding/ {
-      note .message if $X::Gnome::x-debug;
+      note .message if $Gnome::N::x-debug;
       die X::Gnome.new(:message(.message));
     }
 
     default {
       note "Could not find native sub '$native-sub\(...\)'"
-        if $X::Gnome::x-debug;
+        if $Gnome::N::x-debug;
       die X::Gnome.new(
         :message("Could not find native sub '$native-sub\(...\)'")
       );
@@ -68,22 +96,22 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 sub test-call ( Callable:D $found-routine, $gobject, |c --> Mu ) is export {
 
   my List $sig-params = $found-routine.signature.params;
-  note "TC 0 parameters: ", $found-routine.signature.params
-    if $X::Gnome::x-debug;
-  note "TC 1 type 1st arg: ", $sig-params[0].type.^name
-    if $X::Gnome::x-debug;
+  note "\nSignature parameters: ", $found-routine.signature.params
+    if $Gnome::N::x-debug;
+  note "Signature type first argument: ", $sig-params[0].type.^name
+    if $Gnome::N::x-debug;
 
   if +$sig-params and
      $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
-    note "\n[0] $found-routine.gist()\( ", $gobject, ', ', |c.perl, ');'
-      if $X::Gnome::x-debug;
+    note "Found sub $found-routine.gist()\( ", $gobject, ', ', |c.perl.join(', '), ');'
+      if $Gnome::N::x-debug;
     $found-routine( $gobject, |c)
   }
 
   else {
-    note "\n[1] $found-routine.gist()\( ", |c.perl, ');'
-      if $X::Gnome::x-debug;
+    note "Found sub $found-routine.gist()\( ", |c.perl.join(', '), ');'
+      if $Gnome::N::x-debug;
     $found-routine(|c)
   }
 }
