@@ -30,6 +30,7 @@ its state.
 
 class Gnome::N {
   our $Gnome::N::x-debug = False;
+
   our &Gnome::N::debug = sub ( Bool :$on, Bool :$off ) {
 
     # when both are undefined only return debug state
@@ -53,7 +54,7 @@ class Gnome::N {
 sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 
   note "\nError type: ", $e.WHAT if $Gnome::N::x-debug;
-  note "Error message: ", $e.message if $Gnome::N::x-debug;
+  #note "Error message: ", $e.message if $Gnome::N::x-debug;
   note "Thrown Exception:\n", $e if $Gnome::N::x-debug;
 
   given $e {
@@ -104,13 +105,13 @@ sub test-call ( Callable:D $found-routine, $gobject, |c --> Mu ) is export {
   if +$sig-params and
      $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
-    note "Found sub $found-routine.gist()\( ", $gobject, ', ', |c.perl.join(', '), ');'
+    note "Found sub $found-routine.gist()\( ", $gobject, ', ', |c, ');'
       if $Gnome::N::x-debug;
     $found-routine( $gobject, |c)
   }
 
   else {
-    note "Found sub $found-routine.gist()\( ", |c.perl.join(', '), ');'
+    note "Found sub $found-routine.gist()\( ", |c, ');'
       if $Gnome::N::x-debug;
     $found-routine(|c)
   }
