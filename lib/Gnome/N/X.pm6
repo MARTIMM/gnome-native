@@ -97,8 +97,7 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 sub test-call ( Callable:D $found-routine, $gobject, |c --> Mu ) is export {
 
   my List $sig-params = $found-routine.signature.params;
-  note "\nSignature parameters: ", $found-routine.signature.params
-    if $Gnome::N::x-debug;
+  note "\nSignature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
   note "Signature type first argument: ", $sig-params[0].type.^name
     if $Gnome::N::x-debug;
 
