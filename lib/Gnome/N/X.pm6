@@ -94,7 +94,39 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 }
 
 #-------------------------------------------------------------------------------
-sub test-call ( Callable:D $found-routine, $gobject, |c --> Mu ) is export {
+sub test-call-without-natobj ( Callable:D $found-routine, |c --> Any ) is export {
+
+#  my List $sig-params = $found-routine.signature.params;
+#  note "\nSignature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
+#  note "Signature type first argument: ", $sig-params[0].type.^name
+#    if $Gnome::N::x-debug;
+
+#  my Any $x;
+#  if +$sig-params and
+#    # test for native object in any of the Gnome packages
+#    $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
+#
+#    note "Found sub $found-routine.gist()\( ",
+#         $gobject, ', ', c>>.perl.join(', '), ');'
+#      if $Gnome::N::x-debug;
+#    $x = $found-routine( $gobject, |c) // Any
+#  }
+
+#  else {
+    note "Found sub $found-routine.gist()\( ", c>>.perl.join(', '), ');'
+      if $Gnome::N::x-debug;
+    $found-routine(|c) // Any
+#  }
+
+#  $x
+}
+
+#-------------------------------------------------------------------------------
+sub test-call ( Callable:D $found-routine, $gobject, |c --> Any ) is export {
+
+#TODO would like to simplify but e.g. gtk_builder_new_from_string() in
+# Gnome::Gtk3::Builder does not need a N-GObject inserted on 1st argument
+# so need another test
 
   my List $sig-params = $found-routine.signature.params;
   note "\nSignature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
@@ -102,16 +134,20 @@ sub test-call ( Callable:D $found-routine, $gobject, |c --> Mu ) is export {
     if $Gnome::N::x-debug;
 
   if +$sig-params and
-     $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
+# vvv like to have this part only
+    # test for native object in any of the Gnome packages
+    $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
-    note "Found sub $found-routine.gist()\( ", $gobject, ', ', |c, ');'
+    note "Found sub $found-routine.gist()\( ",
+         $gobject, ', ', c>>.perl.join(', '), ');'
       if $Gnome::N::x-debug;
-    $found-routine( $gobject, |c)
+    $found-routine( $gobject, |c) // Any
+# ^^^
   }
 
   else {
-    note "Found sub $found-routine.gist()\( ", |c, ');'
+    note "Found sub $found-routine.gist()\( ", c>>.perl.join(', '), ');'
       if $Gnome::N::x-debug;
-    $found-routine(|c)
+    $found-routine(|c) // Any
   }
 }
