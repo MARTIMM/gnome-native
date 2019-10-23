@@ -94,31 +94,13 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 }
 
 #-------------------------------------------------------------------------------
-sub test-call-without-natobj ( Callable:D $found-routine, |c --> Any ) is export {
+sub test-call-without-natobj (
+  Callable:D $found-routine, |c --> Any
+) is export {
 
-#  my List $sig-params = $found-routine.signature.params;
-#  note "\nSignature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
-#  note "Signature type first argument: ", $sig-params[0].type.^name
-#    if $Gnome::N::x-debug;
-
-#  my Any $x;
-#  if +$sig-params and
-#    # test for native object in any of the Gnome packages
-#    $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
-#
-#    note "Found sub $found-routine.gist()\( ",
-#         $gobject, ', ', c>>.perl.join(', '), ');'
-#      if $Gnome::N::x-debug;
-#    $x = $found-routine( $gobject, |c) // Any
-#  }
-
-#  else {
-    note "Found sub $found-routine.gist()\( ", c>>.perl.join(', '), ');'
-      if $Gnome::N::x-debug;
-    $found-routine(|c) // Any
-#  }
-
-#  $x
+  note "Found sub $found-routine.gist()\( ", c>>.perl.join(', '), ');'
+    if $Gnome::N::x-debug;
+  $found-routine(|c) // Any
 }
 
 #-------------------------------------------------------------------------------
@@ -129,24 +111,21 @@ sub test-call ( Callable:D $found-routine, $gobject, |c --> Any ) is export {
 # so need another test
 
   my List $sig-params = $found-routine.signature.params;
-  note "\nSignature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
-  note "Signature type first argument: ", $sig-params[0].type.^name
-    if $Gnome::N::x-debug;
+  note "Signature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
 
   if +$sig-params and
 # vvv like to have this part only
     # test for native object in any of the Gnome packages
     $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
-    note "Found sub $found-routine.gist()\( ",
-         $gobject, ', ', c>>.perl.join(', '), ');'
-      if $Gnome::N::x-debug;
+    note "Found a sub with following arguments: ",
+         $gobject, ', ', c>>.perl.join(', ') if $Gnome::N::x-debug;
     $found-routine( $gobject, |c) // Any
 # ^^^
   }
 
   else {
-    note "Found sub $found-routine.gist()\( ", c>>.perl.join(', '), ');'
+    note "Found a sub with following arguments: ", c>>.perl.join(', ')
       if $Gnome::N::x-debug;
     $found-routine(|c) // Any
   }
