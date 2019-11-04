@@ -1,4 +1,7 @@
 ## Release notes
+* 2019-11-04 0.14.0
+  * Modified NativeLib to export the sub lib-gio and provide link to unix lib
+
 * 2019-10-12 0.13.8
   * Bugfixes, repair 'improvements'
 
