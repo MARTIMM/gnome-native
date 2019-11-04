@@ -95,6 +95,23 @@ sub gobject-lib is export {
     $lib
 }
 
+sub gio-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+          try load-glib-lib;
+          try load-gmodule-lib;
+          try load-gobject-lib;
+          try load-intl-lib;
+          try load-zlib-lib;
+          $lib = find-bundled('libgio-2.0-0.dll');
+        } else {
+            $lib = $*VM.platform-library-name('gio-2.0'.IO).Str;
+        }
+    }
+    $lib
+}
+
 sub find-bundled($lib is copy) {
     # if we can't find one, assume there's a system install
     my $base = "blib/lib/GTK/$lib";
@@ -151,6 +168,7 @@ sub gdk-pixbuf-lib {
     }
     $lib
 }
+#`{{
 sub gio-lib {
     state $lib;
     unless $lib {
@@ -163,6 +181,7 @@ sub gio-lib {
     }
     $lib
 }
+}}
 sub gmodule-lib {
     state $lib;
     unless $lib {
