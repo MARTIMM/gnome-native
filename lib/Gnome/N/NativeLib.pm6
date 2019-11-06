@@ -94,7 +94,7 @@ sub gobject-lib is export {
     }
     $lib
 }
-
+#`{{
 sub gio-lib is export {
     state $lib;
     unless $lib {
@@ -111,6 +111,7 @@ sub gio-lib is export {
     }
     $lib
 }
+}}
 
 sub find-bundled($lib is copy) {
     # if we can't find one, assume there's a system install
@@ -168,7 +169,7 @@ sub gdk-pixbuf-lib {
     }
     $lib
 }
-#`{{
+
 sub gio-lib {
     state $lib;
     unless $lib {
@@ -181,7 +182,7 @@ sub gio-lib {
     }
     $lib
 }
-}}
+
 sub gmodule-lib {
     state $lib;
     unless $lib {
