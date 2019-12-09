@@ -6,7 +6,7 @@
 
 use v6;
 
-unit module Gnome::N::NativeLib;
+unit module Gnome::N::NativeLibGdkPixbuf;
 
 use NativeCall;
 
@@ -22,6 +22,7 @@ use NativeCall;
 # .dll we are trying to load. This call will fail, but it has the side effect
 # of loading the .dll file, which is all we need.
 
+#`{{
 sub gtk-lib is export {
     state $lib;
     unless $lib {
@@ -67,25 +68,26 @@ sub gdk-lib is export {
     }
     $lib
 }
-
+}}
 sub gdk-pixbuf-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            try load-gio-lib;
-            try load-glib-lib;
-            try load-gmodule-lib;
-            try load-gobject-lib;
-            try load-intl-lib;
-            try load-png-lib;
-            $lib = find-bundled('libgdk_pixbuf-2.0-0.dll');
-        } else {
-          $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
-        }
+  state $lib;
+  unless $lib {
+    if $*VM.config<dll> ~~ /dll/ {
+      try load-gdk-pixbuf-lib;
+      try load-gio-lib;
+      try load-glib-lib;
+      try load-gmodule-lib;
+      try load-gobject-lib;
+      try load-intl-lib;
+      try load-png-lib;
+      $lib = find-bundled('libgdk_pixbuf-2.0-0.dll');
+    } else {
+      $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
     }
-    $lib
+  }
+  $lib
 }
-
+#`{{
 sub glib-lib is export {
     state $lib;
     unless $lib {
@@ -112,7 +114,7 @@ sub gobject-lib is export {
     }
     $lib
 }
-
+}}
 #`{{
 sub gio-lib is export {
     state $lib;
@@ -145,7 +147,7 @@ sub find-bundled($lib is copy) {
 }
 
 # windows DLL dependency stuff ...
-
+#`{{
 sub atk-lib {
     state $lib;
     unless $lib {
@@ -175,7 +177,7 @@ sub cairo-lib {
     }
     $lib
 }
-
+}}
 #`{{
 sub gdk-pixbuf-lib {
     state $lib;
@@ -191,7 +193,7 @@ sub gdk-pixbuf-lib {
     $lib
 }
 }}
-
+#`{{
 sub gio-lib {
     state $lib;
     unless $lib {
@@ -323,27 +325,28 @@ sub pangoft2-lib {
     }
     $lib
 }
+}}
 
-sub load-gdk-lib is native(&gdk-lib) { ... }
-sub load-atk-lib is native(&atk-lib) { ... }
-sub load-cairo-gobject-lib is native(&cairo-gobject-lib) { ... }
-sub load-cairo-lib is native(&cairo-lib) { ... }
+#sub load-gdk-lib is native(&gdk-lib) { ... }
+#sub load-atk-lib is native(&atk-lib) { ... }
+#sub load-cairo-gobject-lib is native(&cairo-gobject-lib) { ... }
+#sub load-cairo-lib is native(&cairo-lib) { ... }
 sub load-gdk-pixbuf-lib is native(&gdk-pixbuf-lib) { ... }
 sub load-gio-lib is native(&gio-lib) { ... }
 sub load-glib-lib is native(&glib-lib) { ... }
 sub load-gmodule-lib is native(&gmodule-lib) { ... }
 sub load-gobject-lib is native(&gobject-lib) { ... }
 sub load-intl-lib is native(&intl-lib) { ... }
-sub load-pango-lib is native(&pango-lib) { ... }
-sub load-pangocairo-lib is native(&pangocairo-lib) { ... }
-sub load-pangowin32-lib is native(&pangowin32-lib) { ... }
-sub load-fontconfig-lib is native(&fontconfig-lib) { ... }
-sub load-freetype-lib is native(&freetype-lib) { ... }
-sub load-pixman-lib is native(&pixman-lib) { ... }
+#sub load-pango-lib is native(&pango-lib) { ... }
+#sub load-pangocairo-lib is native(&pangocairo-lib) { ... }
+#sub load-pangowin32-lib is native(&pangowin32-lib) { ... }
+#sub load-fontconfig-lib is native(&fontconfig-lib) { ... }
+#sub load-freetype-lib is native(&freetype-lib) { ... }
+#sub load-pixman-lib is native(&pixman-lib) { ... }
 sub load-png-lib is native(&png-lib) { ... }
-sub load-zlib-lib is native(&zlib-lib) { ... }
-sub load-xml-lib is native(&xml-lib) { ... }
-sub load-iconv-lib is native(&iconv-lib) { ... }
-sub load-lzma-lib is native(&lzma-lib) { ... }
-sub load-ffi-lib is native(&ffi-lib) { ... }
-sub load-pangoft2-lib is native(&pangoft2-lib) { ... }
+#sub load-zlib-lib is native(&zlib-lib) { ... }
+#sub load-xml-lib is native(&xml-lib) { ... }
+#sub load-iconv-lib is native(&iconv-lib) { ... }
+#sub load-lzma-lib is native(&lzma-lib) { ... }
+#sub load-ffi-lib is native(&ffi-lib) { ... }
+#sub load-pangoft2-lib is native(&pangoft2-lib) { ... }
