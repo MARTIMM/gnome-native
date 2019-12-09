@@ -1,4 +1,7 @@
 ## Release notes
+* 2019-12-09 0.15.1
+  * bugfix
+
 * 2019-12-09 0.15.0
   * Modified NativeLib to support the gdk-pixbuf-lib
   * Experiments to split up the NativeLib into separate units to accommodate the several packages and to find out how things must be done on windows.

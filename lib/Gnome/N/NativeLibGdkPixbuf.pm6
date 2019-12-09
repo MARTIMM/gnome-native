@@ -5,10 +5,12 @@
 # 2019-01-11 none
 
 use v6;
+=finish
 
 unit module Gnome::N::NativeLibGdkPixbuf;
 
 use NativeCall;
+
 
 # On any non-windows machine, this just returns the library name
 # for the native calls.
