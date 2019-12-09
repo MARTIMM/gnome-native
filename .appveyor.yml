@@ -5,8 +5,9 @@ platform: x64
 branches:
   # whitelist
   only:
-    - master
+#    - master
     - develop
+    - module
 
 install:
   - cmd: pacman -S mingw-w64-x86_64-gtk3
