@@ -10,5 +10,5 @@ branches:
     - module
 
 install:
-  - cmd: pacman -S mingw-w64-x86_64-gtk3
+  - bash -l -c "pacman -S mingw-w64-x86_64-gtk3"
   - cmd: dir C:\windows\system
