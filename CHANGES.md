@@ -1,4 +1,14 @@
 ## Release notes
+* 2019-12-09 0.15.0
+  * Modified NativeLib to support the gdk-pixbuf-lib
+  * Experiments to split up the NativeLib into separate units to accommodate the several packages and to find out how things must be done on windows.
+
+* 2019-11-04 0.14.1
+  * Decided to not support gio yet and reversed the changes
+
+* 2019-11-04 0.14.0
+  * Modified NativeLib to export the sub lib-gio and provide link to unix lib
+
 * 2019-10-12 0.13.8
   * Bugfixes, repair 'improvements'
 
