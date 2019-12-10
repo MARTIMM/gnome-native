@@ -1,7 +1,7 @@
 {
   "description": "Perl6 Gnome native interface support, Please install Gnome::Gtk3",
   "name": "Gnome::N",
-  "version": "0.15.1",
+  "version": "0.15.1.1",
   "authors": [ "Marcel Timmerman"],
   "tags": [ "gnome"],
 
@@ -11,7 +11,6 @@
   "provides": {
     "Gnome::N::N-GObject": "lib/Gnome/N/N-GObject.pm6",
     "Gnome::N::NativeLib": "lib/Gnome/N/NativeLib.pm6",
-    "Gnome::N::NativeLib": "lib/Gnome/N/NativeLibGdkPixbuf.pm6",
     "Gnome::N::X": "lib/Gnome/N/X.pm6"
   },
 
