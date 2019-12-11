@@ -28,3 +28,14 @@ install:
   - msiexec /i rakudo.msi /quiet /qn /norestart /log install.log
   - SET PATH=C:\rakudo\bin;C:\rakudo\share\perl6\site\bin;%PATH%
   - zef --depsonly install .
+
+build: off
+
+test_script:
+  - prove -v -e "perl6 -Ilib" t/
+
+# fetch repository as zip archive
+shallow_clone: true
+
+# set clone depth
+clone_depth: 4
