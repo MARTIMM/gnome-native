@@ -10,6 +10,8 @@ subtest 'lib tests', {
        [~] 'gobject ', gobject-lib(), ' returned';
   like glib-lib(), /:s ^ libglib /, [~] 'glib ', glib-lib(), ' returned';
   like gdk-lib(), /:s ^ libgdk /, [~] 'gdk ', gdk-lib(), ' returned';
+  like gdk-pixbuf-lib(), /:s ^ 'libgdk_pixbuf' /,
+       [~] 'gdk-pixbuf ', gdk-pixbuf-lib(), ' returned';
   like gtk-lib(), /:s ^ libgtk /, [~] 'gtk ', gtk-lib(), ' returned';
 }
 

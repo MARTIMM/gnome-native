@@ -133,6 +133,7 @@ sub gio-lib is export {
 }}
 
 sub find-bundled($lib is copy) {
+#`{{
     # if we can't find one, assume there's a system install
     my $base = "blib/lib/GTK/$lib";
 
@@ -140,7 +141,7 @@ sub find-bundled($lib is copy) {
             $file.IO.copy($*SPEC.tmpdir ~ '\\' ~ $lib);
             $lib = $*SPEC.tmpdir ~ '\\' ~ $lib;
     }
-
+}}
     $lib;
 }
 
