@@ -11,6 +11,6 @@ branches:
 
 install:
   - set PATH=C:\msys64\usr\bin;%PATH%
-  - bash -lc "pacman -Ql mingw-w64-x86_64-gtk3"
   - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gtk3"
+  - bash -lc "pacman -Ql mingw-w64-x86_64-gtk3"
   - cmd: dir C:\windows\system
