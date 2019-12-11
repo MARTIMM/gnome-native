@@ -18,8 +18,8 @@ install:
 #  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain"
   - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gtk3"
 #  - bash -lc "pacman -S mingw-w64-x86_64-toolchain base-devel"
-  - cmd: dir C:\program files
-  - cmd: dir C:\windows
+#  - cmd: dir C:\program files
+#  - cmd: dir C:\windows
 
   - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64'
   - choco feature enable -n allowEmptyChecksums
