@@ -2,7 +2,7 @@
 #   https://www.gtk.org/download/windows.php
 #   https://blogs.gnome.org/nacho/2014/08/01/how-to-build-your-gtk-application-on-windows/
 
-os: Visual Studio 2017
+os: Visual Studio 2015
 
 platform: x64
 
