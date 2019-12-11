@@ -10,5 +10,6 @@ branches:
     - module
 
 install:
-  - bash -l -c "pacman -S mingw-w64-x86_64-gtk3"
+  - set PATH=C:\msys64\usr\bin;%PATH%
+  - bash -lc "pacman -S mingw-w64-x86_64-gtk3"
   - cmd: dir C:\windows\system
