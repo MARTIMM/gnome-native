@@ -1,0 +1,30 @@
+# See also
+#   https://www.gtk.org/download/windows.php
+#   https://blogs.gnome.org/nacho/2014/08/01/how-to-build-your-gtk-application-on-windows/
+
+os: Visual Studio 2017
+
+platform: x64
+
+branches:
+  # whitelist
+  only:
+#    - master
+    - develop
+    - module
+
+install:
+  - set PATH=C:\msys64\usr\bin;%PATH%
+#  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain"
+  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gtk3"
+#  - bash -lc "pacman -S mingw-w64-x86_64-toolchain base-devel"
+  - cmd: dir C:\program files\mingw64
+
+  - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64'
+  - choco feature enable -n allowEmptyChecksums
+  - choco install strawberryperl
+  - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
+  - appveyor DownloadFile "http://rakudo.org/downloads/star/rakudo-star-latest-x86_64 (JIT).msi" -FileName "%APPVEYOR_BUILD_FOLDER%\rakudo.msi"
+  - msiexec /i rakudo.msi /quiet /qn /norestart /log install.log
+  - SET PATH=C:\rakudo\bin;C:\rakudo\share\perl6\site\bin;%PATH%
+  - zef --depsonly install .
