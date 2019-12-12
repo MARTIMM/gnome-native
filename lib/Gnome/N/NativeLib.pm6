@@ -5,10 +5,73 @@
 # 2019-01-11 none
 
 use v6;
+use NativeCall;
 
 unit module Gnome::N::NativeLib;
 
-use NativeCall;
+#`{{
+sub gobject-lib is export {
+  state $lib;
+  unless $lib {
+    if $*VM.config<dll> ~~ /dll/ {
+      $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
+    } else {
+      $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
+    }
+  }
+  $lib
+}
+
+sub glib-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
+        } else {
+            $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub gtk-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+        } else {
+            $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub gdk-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
+        } else {
+            $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub gdk-pixbuf-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            $lib = $*VM.platform-library-name('gdk_pixbuf-2'.IO).Str;
+        } else {
+          $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
+        }
+    }
+    $lib
+}
+
+=finish
+}}
 
 # On any non-windows machine, this just returns the library name
 # for the native calls.
