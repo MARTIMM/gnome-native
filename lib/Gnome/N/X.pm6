@@ -12,7 +12,7 @@ class X::Gnome is Exception {
 =begin pod
 =head2 debug
 
-There are many situations when exceptions are retrown within code of a callback method, Perl6 is sometimes not able to display the error properly. In those cases you need another way to display errors and show extra messages leading up to it. For instance turn debugging on.
+There are many situations when exceptions are retrown within code of a callback method, Raku is sometimes not able to display the error properly. In those cases you need another way to display errors and show extra messages leading up to it. For instance turn debugging on.
 
   sub Gnome::N::debug ( Bool :$on, Bool :$off )
 

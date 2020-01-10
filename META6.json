@@ -1,7 +1,7 @@
 {
-  "description": "Perl6 Gnome native interface support, Please install Gnome::Gtk3",
+  "description": "Raku - Gnome native interface support, Please install Gnome::Gtk3",
   "name": "Gnome::N",
-  "version": "0.15.1.11",
+  "version": "0.15.1.1",
   "authors": [ "Marcel Timmerman"],
   "tags": [ "gnome"],
 
@@ -14,7 +14,7 @@
     "Gnome::N::X": "lib/Gnome/N/X.pm6"
   },
 
-  "source-url": "git://github.com/MARTIMM/perl6-gnome-glib.git",
+  "source-url": "git://github.com/MARTIMM/gnome-glib.git",
 
   "depends": [ ],
   "test-depends": [ ],
