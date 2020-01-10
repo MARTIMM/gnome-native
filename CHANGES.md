@@ -1,5 +1,5 @@
 ## Release notes
-* 2020-01-10 0.15.0.1:
+* 2020-01-10 0.15.1.1:
   * Repo renaming. Perl6 to Raku.
 
 * 2019-12-09 0.15.1
