@@ -1,0 +1,51 @@
+# See also
+#   https://www.gtk.org/download/windows.php
+#   https://blogs.gnome.org/nacho/2014/08/01/how-to-build-your-gtk-application-on-windows/
+
+os: Visual Studio 2015
+
+platform: x64
+
+branches:
+  # whitelist
+  only:
+#    - master
+    - develop
+    - module
+
+install:
+  - set PATH=C:\msys64\usr\bin;%PATH%
+#  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain"
+  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gtk3"
+#  - bash -lc "pacman -S mingw-w64-x86_64-toolchain base-devel"
+#  - cmd: dir C:\program files
+#  - cmd: dir C:\windows
+
+  - '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64'
+  - choco feature enable -n allowEmptyChecksums
+  - choco install strawberryperl
+  - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
+  - git clone https://github.com/rakudo/rakudo.git %APPVEYOR_BUILD_FOLDER%\..\rakudo
+  - cd %APPVEYOR_BUILD_FOLDER%\..\rakudo
+  - perl Configure.pl --gen-moar=HEAD --gen-nqp
+  - nmake install
+  - SET PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\bin;%PATH%
+  - cd %APPVEYOR_BUILD_FOLDER%
+
+  - perl6 -Ilib bin/zef --verbose install .
+#  - zef --verbose --force install Zef
+
+build: off
+
+test_script:
+  - zef --depsonly install .
+  - prove -v -e "perl6 -Ilib" t/
+
+  - SET PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\share\perl6\site\bin;%PATH%
+  - cd %APPVEYOR_BUILD_FOLDER%\..
+
+# fetch repository as zip archive
+shallow_clone: true
+
+# set clone depth
+#clone_depth: 4
