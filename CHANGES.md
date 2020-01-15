@@ -1,4 +1,8 @@
 ## Release notes
+* 2020-01-15 0.15.2
+  * Pango libs setup in NativeLib
+  * Setup of a deprecation message
+  
 * 2020-01-10 0.15.1.1:
   * Repo renaming. Perl6 to Raku.
 
