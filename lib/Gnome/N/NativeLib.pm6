@@ -176,6 +176,18 @@ sub gobject-lib is export {
     $lib
 }
 
+sub pango-lib is export {
+  state $lib;
+  unless $lib {
+    if $*VM.config<dll> ~~ /dll/ {
+      $lib = find-bundled('libpango-1.0-0.dll');
+    } else {
+      $lib = $*VM.platform-library-name('pango-1.0'.IO).Str;
+    }
+  }
+  $lib
+}
+
 #`{{
 sub gio-lib is export {
     state $lib;
@@ -283,6 +295,7 @@ sub intl-lib {
     }
     $lib
 }
+#`{{
 sub pango-lib {
     state $lib;
     unless $lib {
@@ -290,6 +303,7 @@ sub pango-lib {
     }
     $lib
 }
+}}
 sub pangocairo-lib {
     state $lib;
     unless $lib {
