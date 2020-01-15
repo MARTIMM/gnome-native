@@ -30,7 +30,6 @@ its state.
 
 class Gnome::N {
   our $Gnome::N::x-debug = False;
-
   our &Gnome::N::debug = sub ( Bool :$on, Bool :$off ) {
 
     # when both are undefined only return debug state
@@ -46,6 +45,30 @@ class Gnome::N {
     # all other cases $on is defined and has preverence above $off
     else {
       $Gnome::N::x-debug = $on;
+    }
+  }
+
+  our $Gnome::N::x-deprecated = "";
+  our $Gnome::N::deprecated = sub (
+    Str $old-method, Str $new-method,
+    Str $deprecate-version, Str $remove-version
+  ) {
+
+    note "Called from: ", callframe[1].file;
+
+    my Str $t = Q:to/EOTXT/;
+      Method '$old-method' is deprecated in favor of '$new-method'
+      Deprecated since $deprecate-version and remove at $remove-version
+      ------------------------------------------------------------------------------
+    EOTXT
+
+    $Gnome::N::x-deprecated ~= $t;
+  }
+
+  END {
+    if ?our $Gnome::N::x-deprecated {
+      note 80 x '=', $Gnome::N::x-deprecated;
+      $Gnome::N::x-deprecated = '';
     }
   }
 }
