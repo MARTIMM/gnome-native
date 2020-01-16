@@ -1,16 +1,21 @@
-use v6;
+#TL:1:Gnome::N::X
 
+use v6;
 
 #-------------------------------------------------------------------------------
 class X::Gnome is Exception {
   has $.message;
 
+  #TM:1:new():
   submethod BUILD ( Str:D :$!message ) { }
 }
 
 #-------------------------------------------------------------------------------
+class Gnome::N {
+
+#-------------------------------------------------------------------------------
 =begin pod
-=head2 debug
+=head2 Gnome::N::debug
 
 There are many situations when exceptions are retrown within code of a callback method, Raku is sometimes not able to display the error properly. In those cases you need another way to display errors and show extra messages leading up to it. For instance turn debugging on.
 
@@ -28,9 +33,9 @@ its state.
 
 =end pod
 
-class Gnome::N {
+  #TS:1:x-debug:
+  #TM:1:debug():
   our $Gnome::N::x-debug = False;
-
   our &Gnome::N::debug = sub ( Bool :$on, Bool :$off ) {
 
     # when both are undefined only return debug state
@@ -46,6 +51,69 @@ class Gnome::N {
     # all other cases $on is defined and has preverence above $off
     else {
       $Gnome::N::x-debug = $on;
+    }
+  }
+
+#-------------------------------------------------------------------------------
+=begin pod
+=head2 Gnome::N::deprecate
+
+Set a deprecation message when the trait DEPRECATED on classes and methods is not sufficient enaugh. Like those, a message is generated when the X module ends, i.e. when your application exits (hopefully ;-).
+
+  sub Gnome::N::deprecate (
+    Str $old-method, Str $new-method,
+    Str $since-version, Str $remove-version
+  )
+
+=item $old-method; Method as it was used.
+=item $new-method; New method or way to use.
+=item $since-version; When it was deprecated. Version is from package wherein the module/class and method is defined.
+=item $remove-version; Version of package when the method will be removed.
+
+=end pod
+
+  #TM:1:deprecate():
+  my $x-deprecated = %();
+  our &Gnome::N::deprecate = sub deprecate (
+    Str $old-method, Str $new-method,
+    Str $deprecate-version, Str $remove-version
+  ) {
+
+    my Str $cf-file = callframe(1).file;
+    my $cf-line = callframe(1).line();
+    my $cf-txt = $cf-file ~ $cf-line;
+
+    # found this one before?
+    if !$x-deprecated{$cf-txt} {
+
+      my Str $cf-class = $cf-file;
+      $cf-file ~~ s/ \( <-[)]>+ \) .* //;
+      $cf-file ~~ s/$*HOME/~/;
+      $cf-class ~~ s/^ <-[(]>+ \( (<-[)]>+) \) .* /$0/;
+
+      my Str $t = Q:qq:to/EOTXT/;
+        Deprecation found at
+         file: $cf-file
+         line: $cf-line
+         class: $cf-class
+        Method '$old-method' is deprecated in favor of '$new-method'
+        Deprecated since version $deprecate-version and will be removed at version $remove-version
+      EOTXT
+
+      $x-deprecated{$cf-txt} = $t;
+    }
+  }
+
+  # if this object ends throw out the deprecation messages if any
+  END {
+    if ?$x-deprecated {
+      note '=' x 80;
+      for $x-deprecated.keys.sort {
+        note $x-deprecated{$_}, '-' x 80;
+      }
+
+      # and when it ends more than once, clear it just in case
+      $x-deprecated = %();
     }
   }
 }
