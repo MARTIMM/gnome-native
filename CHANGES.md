@@ -1,8 +1,8 @@
 ## Release notes
 * 2020-01-15 0.15.2
-  * Pango libs setup in NativeLib
-  * Setup of a deprecation message
-  
+  * Pango libs setup in NativeLib.
+  * Add a method `deprecate()` to show a deprecation message at the exit of the application. It has some more argument to display more information than the trait DEPRECATED does.
+
 * 2020-01-10 0.15.1.1:
   * Repo renaming. Perl6 to Raku.
 
