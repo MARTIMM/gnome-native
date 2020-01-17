@@ -92,7 +92,7 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
       $cf-class ~~ s/^ <-[(]>+ \( (<-[)]>+) \) .* /$0/;
 
       my Str $t = Q:qq:to/EOTXT/;
-        Deprecation found at
+
          file: $cf-file
          line: $cf-line
          class: $cf-class
@@ -107,7 +107,7 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
   # if this object ends throw out the deprecation messages if any
   END {
     if ?$x-deprecated {
-      note '=' x 80;
+      note '=' x 80, '  Deprecation messages from';
       for $x-deprecated.keys.sort {
         note $x-deprecated{$_}, '-' x 80;
       }
