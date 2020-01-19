@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-01-18 0.15.3
+  * Bugfix in deprecate; sub should be unanimous
+  
 * 2020-01-15 0.15.2
   * Pango libs setup in NativeLib.
   * Add a method `deprecate()` to show a deprecation message at the exit of the application. It has some more argument to display more information than the trait DEPRECATED does.
