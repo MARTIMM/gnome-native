@@ -74,7 +74,7 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
 
   #TM:1:deprecate():
   my $x-deprecated = %();
-  our &Gnome::N::deprecate = sub deprecate (
+  our &Gnome::N::deprecate = sub (
     Str $old-method, Str $new-method,
     Str $deprecate-version, Str $remove-version
   ) {
