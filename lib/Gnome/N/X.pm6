@@ -79,37 +79,51 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
     Str $deprecate-version, Str $remove-version
   ) {
 
-    my Str $cf-file = callframe(1).file;
-    my $cf-line = callframe(1).line();
-    my $cf-txt = $cf-file ~ $cf-line;
+    my Str $cf-file;
+    my $cf-line;
+    for ^10 -> $cfi {
+      $cf-file = callframe($cfi).file;
+      next if $cf-file ~~ m/ 'Gnome::' || '/Mu.' /;
+
+      $cf-line = callframe($cfi).line();
+      last;
+    }
 
     # found this one before?
-    if !$x-deprecated{$cf-txt} {
-
-      my Str $cf-class = $cf-file;
+    if !$x-deprecated{$cf-file}{"$old-method $new-method"} {
       $cf-file ~~ s/ \( <-[)]>+ \) .* //;
       $cf-file ~~ s/$*HOME/~/;
-      $cf-class ~~ s/^ <-[(]>+ \( (<-[)]>+) \) .* /$0/;
 
-      my Str $t = Q:qq:to/EOTXT/;
+      my %message-data = %(
+        :$cf-file, :$cf-line, :$old-method, :$new-method,
+        :$deprecate-version, :$remove-version
+      );
 
-         file: $cf-file
-         line: $cf-line
-         class: $cf-class
-        Method '$old-method' is deprecated in favor of '$new-method'
-        Deprecated since version $deprecate-version and will be removed at version $remove-version
-      EOTXT
+      $x-deprecated{$cf-file}{"$old-method $new-method"} = %message-data;
+    }
 
-      $x-deprecated{$cf-txt} = $t;
+    else {
+      my %message-data := $x-deprecated{$cf-file}{"$old-method $new-method"};
+      %message-data{'cf-line'} ~= ", $cf-line"
+        unless %message-data{'cf-line'} ~~ m/ <?wb> $cf-line <?wb> /;
     }
   }
 
   # if this object ends throw out the deprecation messages if any
   END {
     if ?$x-deprecated {
-      note '=' x 80, '  Deprecation messages from';
-      for $x-deprecated.keys.sort {
-        note $x-deprecated{$_}, '-' x 80;
+      note '=' x 80; #, '  Deprecations found at';
+      for $x-deprecated.keys.sort -> $file {
+        for $x-deprecated{$file}.keys.sort -> $m {
+          my %message-data := $x-deprecated{$file}{$m};
+          note Q:qq:to/EOTXT/;
+            Method '%message-data{"old-method"}' is deprecated in favor of '%message-data{"new-method"}'
+            Deprecated since version %message-data{"deprecate-version"} and will be removed at version %message-data{"remove-version"}
+            Found in file %message-data{'cf-file'} at lines %message-data{'cf-line'}
+          EOTXT
+
+          note '-' x 80;
+        }
       }
 
       # and when it ends more than once, clear it just in case
