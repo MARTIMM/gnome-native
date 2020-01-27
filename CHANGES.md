@@ -1,7 +1,13 @@
 ## Release notes
+* 2020-01-26 0.15.4
+  * Changed `test-call()` in X to return the returned type from the tested call. It defaulted to **Any** when an undefined value was returned, even when it was typed. E.g. an error was thrown when an undefined value from a failed search was returned in the following statement
+  ```
+  my N-GList $sloc = $list.g_list_find_custom( ... );
+  ```
+
 * 2020-01-18 0.15.3
   * Bugfix in deprecate; sub should be unanimous
-  
+
 * 2020-01-15 0.15.2
   * Pango libs setup in NativeLib.
   * Add a method `deprecate()` to show a deprecation message at the exit of the application. It has some more argument to display more information than the trait DEPRECATED does.
