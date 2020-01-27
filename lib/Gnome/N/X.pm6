@@ -176,17 +176,15 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 }
 
 #-------------------------------------------------------------------------------
-sub test-call-without-natobj (
-  Callable:D $found-routine, |c --> Any
-) is export {
+sub test-call-without-natobj ( Callable:D $found-routine, |c ) is export {
 
   note "Found sub $found-routine.gist()\( ", c>>.perl.join(', '), ');'
     if $Gnome::N::x-debug;
-  $found-routine(|c) // Any
+  $found-routine(|c)
 }
 
 #-------------------------------------------------------------------------------
-sub test-call ( Callable:D $found-routine, $gobject, |c --> Any ) is export {
+sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
 
 #TODO would like to simplify but e.g. gtk_builder_new_from_string() in
 # Gnome::Gtk3::Builder does not need a N-GObject inserted on 1st argument
@@ -202,13 +200,13 @@ sub test-call ( Callable:D $found-routine, $gobject, |c --> Any ) is export {
 
     note "Found a sub with following arguments: ",
          $gobject, ', ', c>>.perl.join(', ') if $Gnome::N::x-debug;
-    $found-routine( $gobject, |c) // Any
+    $found-routine( $gobject, |c)
 # ^^^
   }
 
   else {
     note "Found a sub with following arguments: ", c>>.perl.join(', ')
       if $Gnome::N::x-debug;
-    $found-routine(|c) // Any
+    $found-routine(|c)
   }
 }
