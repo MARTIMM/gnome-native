@@ -83,7 +83,7 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
     my $cf-line;
     for ^10 -> $cfi {
       $cf-file = callframe($cfi).file;
-      next if $cf-file ~~ m/ 'Gnome::' || '/Mu.' /;
+      next if $cf-file ~~ m/ 'Gnome::' || '/Mu.' || '/moar' /;
 
       $cf-line = callframe($cfi).line();
       last;
