@@ -5,7 +5,6 @@ use Test;
 use Gnome::N::NativeLib;
 use Gnome::N::N-GObject;
 
-diag " ";
 #diag (map -> $k, $v { "  $k: $v" }, $*VM.config.kv).join("\n");
 
 #`{{
@@ -25,6 +24,9 @@ subtest 'lib name tests', {
   like gdk-pixbuf-lib(), /:s ^ 'libgdk_pixbuf' /,
        [~] 'gdk-pixbuf ', gdk-pixbuf-lib();
   like gtk-lib(), /:s ^ libgtk /, [~] 'gtk        ', gtk-lib();
+
+  like gio-lib(), /:s ^ libgio /, [~] 'gio        ', gio-lib();
+  like pango-lib(), /:s ^ libpango /, [~] 'pango      ', pango-lib();
 }
 
 #`{{

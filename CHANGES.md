@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-02-22 0.15.5
+  * Gio libs setup in NativeLib.
+
 * 2020-01-26 0.15.4
   * Changed `test-call()` in X to return the returned type from the tested call. It defaulted to **Any** when an undefined value was returned, even when it was typed. E.g. an error was thrown when an undefined value from a failed search was returned in the following statement
   ```
