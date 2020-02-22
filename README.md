@@ -1,8 +1,8 @@
-![gtk logo][logo]
+![Gtk+ Raku logo][logo]
+[![Build Status](https://travis-ci.org/MARTIMM/gnome-native.svg?branch=master)](https://travis-ci.org/MARTIMM/gnome-native) [![License](http://martimm.github.io/label/License-label.svg)](http://www.perlfoundation.org/artistic_license_2_0)
 
 # Gnome::N - Native Object and Raku - Gnome Interfacing
 
-[![License](http://martimm.github.io/label/License-label.svg)](http://www.perlfoundation.org/artistic_license_2_0)
 
 # Description
 
@@ -37,7 +37,7 @@ There are always some problems! If you find one please help by filing an issue a
 
 [//]: # (---- [refs] ----------------------------------------------------------)
 [changes]: https://github.com/MARTIMM/gnome-native/blob/master/CHANGES.md
-[logo]: https://github.com/MARTIMM/gnome-native/blob/master/doc/images/gtk-logo-100.png
+[logo]: https://github.com/MARTIMM/gnome-gtk3/blob/master/docs/content-docs/images/gtk-raku.png
 [issues]: https://github.com/MARTIMM/gnome-gtk3/issues
 
 

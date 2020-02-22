@@ -1,6 +1,7 @@
 branches:
   only:
-    - master
+#    - master
+    - module
 
 language: perl6
 
