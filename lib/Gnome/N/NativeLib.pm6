@@ -1,9 +1,6 @@
 # This file is copied from the Gtk::Simple package. The reason to copy the file
 # is to remove dependency on that package because only this file is used
 
-# CHANGES:
-# 2019-01-11 none
-
 use v6;
 use NativeCall;
 
@@ -188,24 +185,22 @@ sub pango-lib is export {
   $lib
 }
 
-#`{{
 sub gio-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-          try load-glib-lib;
-          try load-gmodule-lib;
-          try load-gobject-lib;
-          try load-intl-lib;
-          try load-zlib-lib;
-          $lib = find-bundled('libgio-2.0-0.dll');
-        } else {
-            $lib = $*VM.platform-library-name('gio-2.0'.IO).Str;
-        }
+  state $lib;
+  unless $lib {
+    if $*VM.config<dll> ~~ /dll/ {
+#      try load-glib-lib;
+#      try load-gmodule-lib;
+#      try load-gobject-lib;
+#      try load-intl-lib;
+#      try load-zlib-lib;
+      $lib = find-bundled('libgio-2.0-0.dll');
+    } else {
+      $lib = $*VM.platform-library-name('gio-2.0'.IO).Str;
     }
-    $lib
+  }
+  $lib
 }
-}}
 
 sub find-bundled($lib is copy) {
 #`{{
@@ -267,7 +262,7 @@ sub gdk-pixbuf-lib {
     $lib
 }
 }}
-
+#`{{
 sub gio-lib {
     state $lib;
     unless $lib {
@@ -280,6 +275,7 @@ sub gio-lib {
     }
     $lib
 }
+}}
 
 sub gmodule-lib {
     state $lib;
