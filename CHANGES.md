@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-02-29 0.15.6
+  * Always show crash errors, not only when debug is turned on.
+  
 * 2020-02-22 0.15.5
   * Gio libs setup in NativeLib.
 
