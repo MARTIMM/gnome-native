@@ -135,9 +135,9 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
 #-------------------------------------------------------------------------------
 sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 
-  note "\nError type: ", $e.WHAT if $Gnome::N::x-debug;
+  note "\nError type: ", $e.WHAT; # if $Gnome::N::x-debug;
   #note "Error message: ", $e.message if $Gnome::N::x-debug;
-  note "Thrown Exception:\n", $e if $Gnome::N::x-debug;
+  note "Thrown Exception:\n", $e; # if $Gnome::N::x-debug;
 
   given $e {
 
@@ -150,8 +150,7 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 
     # X::AdHoc
     when .message ~~ m:s/Native call expected return type/ {
-      note "Wrong return type of native sub '$native-sub\(...\)'"
-        if $Gnome::N::x-debug;
+      note "Wrong return type of native sub '$native-sub\(...\)'"; # if $Gnome::N::x-debug;
       die X::Gnome.new(
         :message("Wrong return type of native sub '$native-sub\(...\)'")
       );
@@ -161,13 +160,12 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
     when X::TypeCheck::Argument ||
          .message ~~ m:s/will never work with declared signature/ ||
          .message ~~ m:s/Type check failed in binding/ {
-      note .message if $Gnome::N::x-debug;
+      note .message; # if $Gnome::N::x-debug;
       die X::Gnome.new(:message(.message));
     }
 
     default {
-      note "Could not find native sub '$native-sub\(...\)'"
-        if $Gnome::N::x-debug;
+      note "Could not find native sub '$native-sub\(...\)'"; #if $Gnome::N::x-debug;
       die X::Gnome.new(
         :message("Could not find native sub '$native-sub\(...\)'")
       );
