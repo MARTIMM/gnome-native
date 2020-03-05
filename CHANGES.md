@@ -1,7 +1,11 @@
 ## Release notes
+* 2020-03-05 0.15.7
+  * Move code from FALLBACK in Gnome::GObject::Object to X
+  * Add N-GVariant module to provide access to several modules like N-GObject
+  
 * 2020-02-29 0.15.6
   * Always show crash errors, not only when debug is turned on.
-  
+
 * 2020-02-22 0.15.5
   * Gio libs setup in NativeLib.
 
