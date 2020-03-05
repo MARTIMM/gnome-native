@@ -197,7 +197,7 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
     $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
     note "Found a sub with following arguments: ",
-         $gobject, ', ', c>>.perl.join(', ') if $Gnome::N::x-debug;
+         $gobject.^name, ', ', c>>.perl.join(', ') if $Gnome::N::x-debug;
     $found-routine( $gobject, |c)
 # ^^^
   }
@@ -206,5 +206,31 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
     note "Found a sub with following arguments: ", c>>.perl.join(', ')
       if $Gnome::N::x-debug;
     $found-routine(|c)
+  }
+}
+
+#-------------------------------------------------------------------------------
+# Called from FALLBACK methods in toplevel classes. The array @params is
+# modified in place when a higher class object is converted to a native object
+# User convenience substitutions to get a native object instead of
+# a GtkSomeThing or other *SomeThing object.
+sub convert-to-natives ( @params ) is export {
+
+  loop ( my Int $i = 0; $i < @params.elems; $i++ ) {
+    $*ERR.printf( "Substitution of parameter \[%d]: %s", $i, @params[$i].^name)
+      if $Gnome::N::x-debug;
+
+    if @params[$i].^name ~~
+          m/^ 'Gnome::' [
+                 Gtk3 || Gdk3 || Glib || Gio || GObject || Pango
+               ] '::' / {
+
+      @params[$i] = @params[$i].get-native-object;
+      $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
+    }
+
+    else {
+      $*ERR.printf(": No conversion\n") if $Gnome::N::x-debug;
+    }
   }
 }

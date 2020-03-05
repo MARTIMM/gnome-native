@@ -6,13 +6,14 @@ use NativeCall;
 # in one of those module it can create circular dependencies
 #
 =begin pod
-=head2 class N-GObject
+=head2 class N-GVariant
 
-Class at the top of many food chains
+N-GVariant is an opaque data structure and can only be accessed using the functions in this class. This native object is stored in this Raku class.
+
 =end pod
 
-#TT:1:N-GObject:
-class N-GObject
+#TT:1:N-GVariant:
+class N-GVariant
   is repr('CPointer')
   is export
   { }
