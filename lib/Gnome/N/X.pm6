@@ -176,8 +176,8 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 #-------------------------------------------------------------------------------
 sub test-call-without-natobj ( Callable:D $found-routine, |c ) is export {
 
-  note "Found sub $found-routine.gist()\( ", c>>.perl.join(', '), ');'
-    if $Gnome::N::x-debug;
+  note "\nCalling sub $found-routine.gist()\(\n  ",
+    c>>.perl.join(",\n  "), "\n);" if $Gnome::N::x-debug;
   $found-routine(|c)
 }
 
@@ -189,22 +189,22 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
 # so need another test
 
   my List $sig-params = $found-routine.signature.params;
-  note "Signature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
+#  note "\nSignature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
 
   if +$sig-params and
 # vvv like to have this part only
     # test for native object in any of the Gnome packages
     $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
-    note "Found a sub with following arguments: ",
-         $gobject.^name, ', ', c>>.perl.join(', ') if $Gnome::N::x-debug;
+    note "\nCalling sub $found-routine.gist()\(\n  ",
+         ( $gobject, |c)>>.perl.join(",\n  "), "\n);" if $Gnome::N::x-debug;
     $found-routine( $gobject, |c)
 # ^^^
   }
 
   else {
-    note "Found a sub with following arguments: ", c>>.perl.join(', ')
-      if $Gnome::N::x-debug;
+    note "Calling sub $found-routine.gist()\(\n  ",
+      c>>.perl.join(",\n  "), "\n);" if $Gnome::N::x-debug;
     $found-routine(|c)
   }
 }
