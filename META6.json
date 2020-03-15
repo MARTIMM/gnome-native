@@ -1,7 +1,7 @@
 {
   "description": "Raku - Gnome native interface support, Please install Gnome::Gtk3",
   "name": "Gnome::N",
-  "version": "0.15.8",
+  "version": "0.16.0",
   "authors": [ "Marcel Timmerman"],
   "tags": [ "gnome"],
 
@@ -12,10 +12,11 @@
     "Gnome::N::N-GVariant": "lib/Gnome/N/N-GVariant.pm6",
     "Gnome::N::N-GObject": "lib/Gnome/N/N-GObject.pm6",
     "Gnome::N::NativeLib": "lib/Gnome/N/NativeLib.pm6",
+    "Gnome::N::TopLevelClassSupport": "lib/Gnome/N/TopLevelClassSupport.pm6",
     "Gnome::N::X": "lib/Gnome/N/X.pm6"
   },
 
-  "source-url": "git://github.com/MARTIMM/gnome-glib.git",
+  "source-url": "git://github.com/MARTIMM/gnome-native.git",
 
   "depends": [ ],
   "test-depends": [ ],

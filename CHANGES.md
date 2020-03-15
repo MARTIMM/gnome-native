@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-03-15 0.16.0
+  * Developed a top level support class to be used by all Gnome classes living at the top of the foodchain. Example classes which will use this class are **Gnome::GObject::Object**, **Gnome::Glib::Error**, etc. These changes should be invisible to the user.
+
 * 2020-03-06 0.15.8
   * Nicer look of debug messages
 
