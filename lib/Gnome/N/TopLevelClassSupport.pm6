@@ -7,14 +7,24 @@ use NativeCall;
 use Gnome::N::X;
 use Gnome::N::NativeLib;
 
+use Gnome::N::N-GError;
+use Gnome::N::N-GObject;
+use Gnome::N::N-GVariant;
+use Gnome::N::N-GVariantBuilder;
+use Gnome::N::N-GVariantType;
+
 #-------------------------------------------------------------------------------
 unit class Gnome::N::TopLevelClassSupport;
+
+subset N-Type is export where * ~~ any(
+  N-GError, N-GObject, N-GVariant, N-GVariantBuilder, N-GVariantType
+);
 
 #-------------------------------------------------------------------------------
 # this native object is used by the toplevel class and its descendent classes.
 # the native type is always the same as set by all classes inheriting from
 # this toplevel class.
-has $!n-native-object;
+has N-Type $!n-native-object;
 
 # this readable variable is checked to see if $!n-native-object is valid.
 has Bool $.is-valid = False;
@@ -28,26 +38,29 @@ has Str $!class-name-of-sub;
 # TopLevelClassSupport classes. the
 my Bool $gui-initialized = False;
 
+
 #-------------------------------------------------------------------------------
 # this new() method is defined to cleanup first in case of an assignement
 # like '$c .= new(...);', the native object, if any must be cleared first.
 multi method new ( |c ) {
 
 #note "\nNew tl: ", self.defined, ', ', c.perl;
-
   self.clear-object if self.defined;
+
   self.bless(|c);
 }
 
+
 #-------------------------------------------------------------------------------
 submethod BUILD ( *%options ) {
+#method init-top-level ( *%options ) {
 
-#note "Build top: ", %options.perl;
+#note "init top level: ", %options.perl;
 
   # check GTK+ init except when GtkApplication / GApplication is used. They have
   # to inject this option in the .new() method of their class. Also the child
   # classes of those application modules should inject it.
-  if not $gui-initialized and !%options<skip-init> {
+  if not $gui-initialized #`{{and !%options<skip-init>}} {
     # must setup gtk otherwise Raku will crash
     my $argc = CArray[int32].new;
     $argc[0] = 1 + @*ARGS.elems;
@@ -85,6 +98,7 @@ submethod BUILD ( *%options ) {
     }
 
 #note 'opts left: ', (%options.perl, %options.keys, %options.elems).join(', ');
+
     if %options.elems > 1 {
       die X::Gnome.new(
         :message('with :native-object, no other named arguments allowed')
@@ -151,28 +165,30 @@ method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
 
   # user convenience substitutions to get a native object instead of
   # a GtkSomeThing or other *SomeThing object.
-  convert-to-natives(@params);
+  self.convert-to-natives(@params);
 
   # cast to other gtk object type if the found subroutine is from another
   # gtk object type than the native object stored at $!n-native-object.
   # This happens e.g. when a Gnome::Gtk::Button object uses gtk-widget-show()
   # which belongs to Gnome::Gtk::Widget.
-  my $g-object-cast;
+  my N-Type $g-object-cast;
 
   #TODO Not all classes have $!gtk-class-* defined so we need to test it
   if ?$!class-gtype and ?$!class-name and ?$!class-name-of-sub and
      $!class-name ne $!class-name-of-sub {
 
-    note "Cast $!class-name to $!class-name-of-sub"
-      if $Gnome::N::x-debug;
+    note "Cast $!class-name to $!class-name-of-sub" if $Gnome::N::x-debug;
 
-    $g-object-cast = Gnome::GObject::Type.new().check-instance-cast(
+    $g-object-cast = tlcs_type_check_instance_cast(
       $!n-native-object, $!class-gtype
     );
   }
 
+  else {
+    $g-object-cast = $!n-native-object; #type-cast($!n-native-object);
+  }
 
-  test-call( $s, $g-object-cast // $!n-native-object, |@params, |%named-params)
+  test-call( $s, $g-object-cast, |@params, |%named-params)
 }
 
 #-------------------------------------------------------------------------------
@@ -216,34 +232,45 @@ method get-class-name ( --> Str ) {
 }
 
 #-------------------------------------------------------------------------------
-method get-native-object ( ) {
+method get-native-object ( ) {    # --> N-Type
 
 #note "get-native-object: ", $!n-native-object // '-';
 
   # increase reference count when object is copied
-  self.native-object-ref($!n-native-object) if ? $!n-native-object;
+  my N-Type $no = self.native-object-ref($!n-native-object);
 
-  $!n-native-object.clone
+  $no # // $!n-native-object
+}
+
+#-------------------------------------------------------------------------------
+# no reference counting, e.g. when object is used for subs in this class tree
+method get-native-object-no-reffing ( ) {
+
+  $!n-native-object
 }
 
 #-------------------------------------------------------------------------------
 method set-native-object ( $native-object ) {
 
-#note "set-native-object: ", $native-object // '-',
-#     ', ', $!n-native-object // '-';
-
   # only change when native object is defined
   if ? $native-object {
 
     # if higher level object then extract native object from it
-    my $no = $native-object;
-    $no .= get-native-object if $no.^can('get-native-object');
+    my N-Type $no;
+    if $native-object ~~ ::N-Type {
+      $no = $native-object;
+    }
+
+    elsif $native-object.^can('get-native-object') {
+      $no = nativecast( Pointer, $native-object.get-native-object);
+    }
 
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
-    self.clear-object if $!is-valid;
+    self.clear-object;
 
-    $!n-native-object = $native-object;
+#note "T: ", $no;
+    $!n-native-object = $no;
     $!is-valid = True;
   }
 
@@ -253,20 +280,10 @@ method set-native-object ( $native-object ) {
 }
 
 #-------------------------------------------------------------------------------
-method get-native-object-no-reffing ( ) {
-
-#note "get-native-object-no-reffing: ", $!n-native-object // '-';
-
-  $!n-native-object
-}
-
-#-------------------------------------------------------------------------------
+# no example case yet to use this method
 method set-native-object-no-reffing ( $native-object ) {
 
-#note "set-native-object-no-reffing: ",
-#     $native-object // '-', ', ', $!n-native-object // '-';
-
-  if $native-object.defined {
+  if ? $native-object {
     self.clear-object;
     $!n-native-object = $native-object;
     $!is-valid = True;
@@ -283,6 +300,28 @@ method native-object-unref ( $n-native-object ) { !!! }
 #method native-clear-object ( $n-native-object ) { !!! }
 
 #-------------------------------------------------------------------------------
+#TM:1:is-valid
+# doc of $!is-valid defined above
+=begin pod
+=head2 is-valid
+
+Returns True if native error object is valid, otherwise C<False>.
+
+  method is-valid ( --> Bool )
+
+=end pod
+
+#-------------------------------------------------------------------------------
+#TM:1:clear-object
+=begin pod
+=head2 clear-object
+
+Clear the error and return data to memory pool. The error object is not valid after this call and C<is-valid()> will return C<False>.
+
+  method clear-object ()
+
+=end pod
+
 method clear-object ( ) {
   if $!is-valid {
 #    self.native-clear-object($!n-native-object);
@@ -300,12 +339,41 @@ method clear-object-no-reffing ( ) {
   }
 }
 
+#-------------------------------------------------------------------------------
+# Called from FALLBACK methods in toplevel classes. The array @params is
+# modified in place when a higher class object is converted to a native object
+# User convenience substitutions to get a native object instead of
+# a GtkSomeThing or other *SomeThing object.
+method convert-to-natives ( @params ) {
+
+  loop ( my Int $i = 0; $i < @params.elems; $i++ ) {
+    $*ERR.printf( "Substitution of parameter \[%d]: %s", $i, @params[$i].^name)
+      if $Gnome::N::x-debug;
+
+    if @params[$i].^name ~~
+          m/^ 'Gnome::' [
+                 Gtk3 || Gdk3 || Glib || Gio || GObject || Pango
+               ] '::' / {
+
+      # no reference counting, object is used for subs in this class tree
+      @params[$i] = @params[$i].get-native-object-no-reffing;
+      $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
+    }
+
+    else {
+      $*ERR.printf(": No conversion\n") if $Gnome::N::x-debug;
+    }
+  }
+}
+
+sub type-cast ( ::N-Type $v ) { $v }
+
 
 #-------------------------------------------------------------------------------
 # some necessary native subroutines
 
-# this sub belongs to Gnome::GObject::Type but is needed here. To avoid
-# circular dependencies, the sub is redeclared here for this purpose
+# These subs belong to Gnome::GObject::Type but is needed here. To avoid
+# circular dependencies, the subs are redeclared here for this purpose
 sub tlcs_type_from_name ( Str $name --> uint64 )
   is native(&gobject-lib)
   is symbol('g_type_from_name')
@@ -314,6 +382,12 @@ sub tlcs_type_from_name ( Str $name --> uint64 )
 sub tlcs_type_name ( uint64 $type --> Str )
   is native(&gobject-lib)
   is symbol('g_type_name')
+  { * }
+
+sub tlcs_type_check_instance_cast (
+  Pointer $instance, uint64 $iface_type --> Pointer
+) is native(&gobject-lib)
+  is symbol('g_type_check_instance_cast')
   { * }
 
 #-------------------------------------------------------------------------------

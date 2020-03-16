@@ -32,8 +32,8 @@ use Gnome::N::NativeLib;
 use Gnome::N::N-GObject;
 use Gnome::N::TopLevelClassSupport;
 
-#use Gnome::N::X;
-#Gnome::N::debug(:on);
+use Gnome::N::X;
+Gnome::N::debug(:on);
 
 #-------------------------------------------------------------------------------
 # make a toplevel class. Label is a GTK class example
@@ -46,7 +46,10 @@ class Label is Gnome::N::TopLevelClassSupport {
   # is tested.
   submethod BUILD ( *%options ) {
 
-#note "\nBuild label: ", %options.perl;
+#    self.init-top-level(|%options);
+
+#note "\nBuild label: ", %options.perl, ', ', self.is-valid;
+
     # we must check if native object is set by other parent class BUILDers
     if self.is-valid { }
 
@@ -95,8 +98,8 @@ class Label is Gnome::N::TopLevelClassSupport {
 
   #-----------------------------------------------------------------------------
   # this must go into direct children of TopLevelClassSupport
-  method native-object-ref ( $no is copy --> N-GObject ) {
-    unless g_object_is_floating($no) {
+  method native-object-ref ( N-GObject $no is copy --> N-GObject ) {
+    if !g_object_is_floating($no) and self.is-valid {
       ok 1, "ref +++ $no";
       $no = g_object_ref($no);
     }
@@ -106,7 +109,7 @@ class Label is Gnome::N::TopLevelClassSupport {
 
   #-----------------------------------------------------------------------------
   # this must go into direct children of TopLevelClassSupport
-  method native-object-unref ( $no ) {
+  method native-object-unref ( N-GObject $no ) {
     unless g_object_is_floating($no) {
       ok 1, "ref --- $no";
       g_object_unref($no);
@@ -226,7 +229,19 @@ class ReversedLabel2 is ReversedLabel {
 #-------------------------------------------------------------------------------
 my Int $label-gtype;
 subtest 'Label tests', {
+
   my Label $l1 .= new(:text<test-text>);
+  my N-GObject $no;
+  try {
+    $no = $l1.get-native-object;
+    CATCH { .note }
+  }
+
+  ok $no.defined, 'Label .get-native-object()';
+  my Label $l1a .= new(:native-object($no));
+  is $l1.get-text, 'test-text', 'Label .new(:native-object) .get-text()';
+
+
   is $l1.get-class-name, 'GtkLabel', 'Label .get-class-name()';
   $label-gtype = $l1.get-class-gtype;
 #note "ic l1: $label-gtype, ref count: ",
@@ -251,7 +266,7 @@ subtest 'Label tests', {
 #note "l2: ", $l2.perl;
   is $l2.get-text, 'test-text', 'Label .new(:native-object) .get-text()';
 
-  my $no = $l1.get-native-object;
+  $no = $l1.get-native-object;
   isa-ok $no, N-GObject, '.get-native-object()';
   $l2 .= new( :native-object($no));
   is $l2.get-text, 'test-text', 'Label .new(:native-object) .get-text()';
@@ -325,7 +340,7 @@ sub g_object_unref ( N-GObject $object )
   is native(&gobject-lib)
   { * }
 
-sub g_object_is_floating ( Pointer $object )
+sub g_object_is_floating ( N-GObject $object )
   returns int32
   is native(&gobject-lib)
   { * }
