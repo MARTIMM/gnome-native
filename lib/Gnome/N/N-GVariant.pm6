@@ -8,7 +8,7 @@ use NativeCall;
 =begin pod
 =head2 class N-GVariant
 
-N-GVariant is an opaque data structure and can only be accessed using the functions in this class. This native object is stored in this Raku class.
+N-GVariant is an opaque data structure. This native object is stored here to prevent circular dependencies and some other reasons.
 
 =end pod
 
