@@ -33,7 +33,7 @@ use Gnome::N::N-GObject;
 use Gnome::N::TopLevelClassSupport;
 
 use Gnome::N::X;
-Gnome::N::debug(:on);
+#Gnome::N::debug(:on);
 
 #-------------------------------------------------------------------------------
 # make a toplevel class. Label is a GTK class example
@@ -46,9 +46,7 @@ class Label is Gnome::N::TopLevelClassSupport {
   # is tested.
   submethod BUILD ( *%options ) {
 
-#    self.init-top-level(|%options);
-
-#note "\nBuild label: ", %options.perl, ', ', self.is-valid;
+    ok 1, [~] 'Label.BUILD(', %options.perl, '), ', self.is-valid;
 
     # we must check if native object is set by other parent class BUILDers
     if self.is-valid { }
@@ -116,24 +114,6 @@ class Label is Gnome::N::TopLevelClassSupport {
     }
   }
 
-#`{{
-  #-----------------------------------------------------------------------------
-  # this must go into direct children of TopLevelClassSupport
-  method native-clear-object ( $no ) {
-    unless g_object_is_floating($no) {
-      ok 1, "clear $no.perl()";
-      my CArray[N-GObject] $p-no .= new;
-      $p-no[0] = $no;
-note "CA: $p-no.perl(), ", $p-no.WHAT;
-#      g_clear_object($p-no);
-#      my CArray[CArray[N-GObject]] $pp-no .= new;
-#      $pp-no[0] = $p-no;
-      g_clear_object(nativecast( Pointer, $p-no));
-note 'clear done';
-    }
-  }
-}}
-
   #-----------------------------------------------------------------------------
   # native subs
   sub gtk_label_new ( Str $str --> N-GObject )
@@ -148,8 +128,6 @@ note 'clear done';
     is native(&gtk-lib)
     { * }
 }
-
-
 
 #-------------------------------------------------------------------------------
 # make a child class. ReversedLabel is a user definable class example
@@ -167,7 +145,7 @@ class ReversedLabel is Label {
   # is tested, then the BUILD from Label where %options<text> is processed.
   submethod BUILD ( *%options ) {
 
-    ok 1, [~] 'ReversedLabel.BUILD(', %options.perl, ')';
+    ok 1, [~] 'ReversedLabel.BUILD(', %options.perl, '), ', self.is-valid;
 #note "Build reversed label: ", %options.perl;
     # native object already defined
     #return if self.is-valid;
@@ -205,7 +183,7 @@ class ReversedLabel2 is ReversedLabel {
   # is tested, then the BUILD from Label where %options<text> is processed.
   submethod BUILD ( *%options ) {
 
-    ok 1, [~] 'ReversedLabel2.BUILD(', %options.perl, ')';
+    ok 1, [~] 'ReversedLabel2.BUILD(', %options.perl, '), ', self.is-valid;
 #note "Build reversed label 2: ", %options.perl;
     # native object already defined
     #return if self.is-valid;
@@ -303,7 +281,7 @@ subtest 'ReversedLabel2 tests', {
 
   $l4 .= new( :rtext<flup>);
   is $l4.get-text, 'flup 2',
-     'ReversedLabel .new(:rtext) .get-text() reversed twice';
+     'ReversedLabel2 .new(:rtext) .get-text() reversed twice';
 }
 
 subtest 'Reference tests', {

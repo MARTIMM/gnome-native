@@ -8,17 +8,26 @@ use Gnome::N::X;
 use Gnome::N::NativeLib;
 
 use Gnome::N::N-GError;
+use Gnome::N::N-GList;
 use Gnome::N::N-GObject;
+use Gnome::N::N-GOptionContext;
+use Gnome::N::N-GSList;
 use Gnome::N::N-GVariant;
 use Gnome::N::N-GVariantBuilder;
+use Gnome::N::N-GVariantIter;
 use Gnome::N::N-GVariantType;
 
 #-------------------------------------------------------------------------------
 unit class Gnome::N::TopLevelClassSupport;
 
-subset N-Type is export where * ~~ any(
-  N-GError, N-GObject, N-GVariant, N-GVariantBuilder, N-GVariantType
-);
+subset N-Type is export where
+  # Structures for Gnome::Glib
+  N-GError | N-GList | N-GOptionContext | N-GSList |
+  N-GVariant | N-GVariantBuilder | N-GVariantIter | N-GVariantType |
+
+  # Structures for Gnome::Gobject
+  N-GObject
+;
 
 #-------------------------------------------------------------------------------
 # this native object is used by the toplevel class and its descendent classes.
@@ -109,7 +118,6 @@ submethod BUILD ( *%options ) {
 
 #-------------------------------------------------------------------------------
 submethod DESTROY ( ) {
-
   self.native-object-unref($!n-native-object) if $!is-valid;
 }
 
@@ -297,9 +305,6 @@ method native-object-ref ( $n-native-object ) { !!! }
 method native-object-unref ( $n-native-object ) { !!! }
 
 #-------------------------------------------------------------------------------
-#method native-clear-object ( $n-native-object ) { !!! }
-
-#-------------------------------------------------------------------------------
 #TM:1:is-valid
 # doc of $!is-valid defined above
 =begin pod
@@ -324,13 +329,13 @@ Clear the error and return data to memory pool. The error object is not valid af
 
 method clear-object ( ) {
   if $!is-valid {
-#    self.native-clear-object($!n-native-object);
     self.native-object-unref($!n-native-object);
     $!is-valid = False;
     $!n-native-object = Nil;
   }
 }
 
+#`{{
 #-------------------------------------------------------------------------------
 method clear-object-no-reffing ( ) {
   if $!is-valid {
@@ -338,24 +343,27 @@ method clear-object-no-reffing ( ) {
     $!n-native-object = Nil;
   }
 }
+}}
 
 #-------------------------------------------------------------------------------
-# Called from FALLBACK methods in toplevel classes. The array @params is
-# modified in place when a higher class object is converted to a native object
-# User convenience substitutions to get a native object instead of
-# a GtkSomeThing or other *SomeThing object.
+# The array @params is modified in place when a higher class object must be
+# converted to a native object held in that object.
 method convert-to-natives ( @params ) {
 
   loop ( my Int $i = 0; $i < @params.elems; $i++ ) {
     $*ERR.printf( "Substitution of parameter \[%d]: %s", $i, @params[$i].^name)
       if $Gnome::N::x-debug;
 
-    if @params[$i].^name ~~
-          m/^ 'Gnome::' [
-                 Gtk3 || Gdk3 || Glib || Gio || GObject || Pango
-               ] '::' / {
+    my Str $pname = @params[$i].^name;
+    if $pname ~~
+          m/^ Gnome '::' [
+                 Gtk3 || Gdk3 || Glib || Gio || GObject || Pango || Cairo
+              ] '::'
+           /
+       and $pname !~~ m/ '::' 'N-' / {
 
-      # no reference counting, object is used for subs in this class tree
+      # no reference counting, object is used as an argument to the native
+      # subs in this class tree
       @params[$i] = @params[$i].get-native-object-no-reffing;
       $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
     }
@@ -365,9 +373,6 @@ method convert-to-natives ( @params ) {
     }
   }
 }
-
-sub type-cast ( ::N-Type $v ) { $v }
-
 
 #-------------------------------------------------------------------------------
 # some necessary native subroutines
