@@ -6,7 +6,7 @@ use NativeCall;
 
 use Gnome::N::X;
 use Gnome::N::NativeLib;
-
+#`{{
 use Gnome::N::N-GError;
 use Gnome::N::N-GList;
 use Gnome::N::N-GObject;
@@ -16,10 +16,11 @@ use Gnome::N::N-GVariant;
 use Gnome::N::N-GVariantBuilder;
 use Gnome::N::N-GVariantIter;
 use Gnome::N::N-GVariantType;
+}}
 
 #-------------------------------------------------------------------------------
 unit class Gnome::N::TopLevelClassSupport;
-
+#`{{
 subset N-Type is export where
   # Structures for Gnome::Glib
   N-GError | N-GList | N-GOptionContext | N-GSList |
@@ -28,12 +29,13 @@ subset N-Type is export where
   # Structures for Gnome::Gobject
   N-GObject
 ;
+}}
 
 #-------------------------------------------------------------------------------
 # this native object is used by the toplevel class and its descendent classes.
 # the native type is always the same as set by all classes inheriting from
 # this toplevel class.
-has N-Type $!n-native-object;
+has Any $!n-native-object;
 
 # this readable variable is checked to see if $!n-native-object is valid.
 has Bool $.is-valid = False;
@@ -179,7 +181,7 @@ method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
   # gtk object type than the native object stored at $!n-native-object.
   # This happens e.g. when a Gnome::Gtk::Button object uses gtk-widget-show()
   # which belongs to Gnome::Gtk::Widget.
-  my N-Type $g-object-cast;
+  my Any $g-object-cast;
 
   #TODO Not all classes have $!gtk-class-* defined so we need to test it
   if ?$!class-gtype and ?$!class-name and ?$!class-name-of-sub and
@@ -245,7 +247,7 @@ method get-native-object ( ) {    # --> N-Type
 #note "get-native-object: ", $!n-native-object // '-';
 
   # increase reference count when object is copied
-  my N-Type $no = self.native-object-ref($!n-native-object);
+  my Any $no = self.native-object-ref($!n-native-object);
 
   $no # // $!n-native-object
 }
@@ -264,26 +266,23 @@ method set-native-object ( $native-object ) {
   if ? $native-object {
 
     # if higher level object then extract native object from it
-    my N-Type $no;
-    if $native-object ~~ ::N-Type {
-      $no = $native-object;
-    }
+    my Any $no = $native-object;
 
-    elsif $native-object.^can('get-native-object') {
-      $no = nativecast( Pointer, $native-object.get-native-object);
+    if $native-object.^can('get-native-object') {
+      #$no = nativecast( Pointer, $native-object.get-native-object);
+      $no = $native-object.get-native-object;
     }
 
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
     self.clear-object;
 
-#note "T: ", $no;
     $!n-native-object = $no;
     $!is-valid = True;
   }
 
   # The list classes may have an undefined structure and still be valid
-  elsif $native-object ~~ any(N-GList | N-GSList) {
+  elsif $native-object.^name ~~ any(<N-GList N-GSList>) {
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
     self.clear-object;
