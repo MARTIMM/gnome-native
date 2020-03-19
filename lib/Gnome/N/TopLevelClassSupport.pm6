@@ -94,27 +94,47 @@ submethod BUILD ( *%options ) {
   # check if a native object must be imported
   if ? %options<native-object> {
 
+    # check if there are other options, they cannot be combined
+    if %options.elems > 1 {
+      die X::Gnome.new(
+        :message('with :native-object, no other named arguments allowed')
+      );
+    }
+
     # check if Raku object was provided instead of native object
     my $no = %options<native-object>;
     $no .= get-native-object if $no.^can('get-native-object');
 
+#`{{
     # when native object is defined, check if object is of the same type
     # as type of the new native object. This prevents storing a N-GError
     # on a N-GObject.
     if ? $!n-native-object and $no.^name eq $!n-native-object.^name or
        ! $!n-native-object {
 
+      self.clear-object;
+
       $!n-native-object = $no;
       $!is-valid = True;
     }
+}}
+
+    self.clear-object if ? $!n-native-object;
+
+    # The list classes may have an undefined structure and still be valid
+    if ? $no or $no.^name ~~ any(
+      <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
+    ) {
+      $!n-native-object = $no;
+      $!is-valid = True;
+
+      my $gtk-class-name = self.^name;
+      $gtk-class-name ~~ s/ Gnome '::' //;
+      $gtk-class-name ~~ s/ [ Glib || Gio || GObject ] '::' /G/;
+      self.set-class-info($gtk-class-name);
+    }
 
 #note 'opts left: ', (%options.perl, %options.keys, %options.elems).join(', ');
-
-    if %options.elems > 1 {
-      die X::Gnome.new(
-        :message('with :native-object, no other named arguments allowed')
-      );
-    }
   }
 }
 
