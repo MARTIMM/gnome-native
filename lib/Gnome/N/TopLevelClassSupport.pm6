@@ -282,6 +282,16 @@ method set-native-object ( $native-object ) {
     $!is-valid = True;
   }
 
+  # The list classes may have an undefined structure and still be valid
+  elsif $native-object ~~ any(N-GList | N-GSList) {
+    # if there was a valid native object, we must clear it first before
+    # overwriting the local native object
+    self.clear-object;
+
+    $!n-native-object = $native-object;
+    $!is-valid = True;
+  }
+
   else {
     $!is-valid = False;
   }
