@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-03-19 0.17.1
+  * TopLevelSupportClass made independend from native classes
+
 * 2020-03-16 0.17.0
   * Added classes to define gnome structures. The class N-GObject was already there for a long time. The modules added are; N-GError, N-GList, GOptionContext, N-GObject, N-GSList, N-GVariant, N-GVariantBuilder, N-GVariantIter, N-GVariantType. Placing the definitions here at the top of the dependencies will make it more easy to prevent circular dependencies. The downside is that sometimes two modules must be included e.g. N-GError from here and Error from Glib.
 
