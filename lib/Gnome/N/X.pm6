@@ -198,6 +198,7 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
 
     note "\nCalling sub $found-routine.gist()\(\n  ",
          ( $gobject, |c)>>.perl.join(",\n  "), "\n);" if $Gnome::N::x-debug;
+
     $found-routine( $gobject, |c)
 # ^^^
   }
@@ -205,9 +206,11 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
   else {
     note "Calling sub $found-routine.gist()\(\n  ",
       c>>.perl.join(",\n  "), "\n);" if $Gnome::N::x-debug;
+
     $found-routine(|c)
   }
 }
+
 
 #-------------------------------------------------------------------------------
 # Called from FALLBACK methods in toplevel classes. The array @params is

@@ -10,10 +10,14 @@
 
   "provides": {
     "Gnome::N::N-GError": "lib/Gnome/N/N-GError.pm6",
+    "Gnome::N::N-GList": "lib/Gnome/N/N-GList.pm6",
     "Gnome::N::N-GObject": "lib/Gnome/N/N-GObject.pm6",
+    "Gnome::N::N-GOptionContext": "lib/Gnome/N/N-GOptionContext.pm6",
+    "Gnome::N::N-GSList": "lib/Gnome/N/N-GSList.pm6",
 
     "Gnome::N::N-GVariant": "lib/Gnome/N/N-GVariant.pm6",
     "Gnome::N::N-GVariantBuilder": "lib/Gnome/N/N-GVariantBuilder.pm6",
+    "Gnome::N::N-GVariantIter": "lib/Gnome/N/N-GVariantIter.pm6",
     "Gnome::N::N-GVariantType": "lib/Gnome/N/N-GVariantType.pm6",
 
     "Gnome::N::NativeLib": "lib/Gnome/N/NativeLib.pm6",
