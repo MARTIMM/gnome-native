@@ -282,7 +282,9 @@ method set-native-object ( $native-object ) {
   }
 
   # The list classes may have an undefined structure and still be valid
-  elsif $native-object.^name ~~ any(<N-GList N-GSList>) {
+  elsif $native-object.^name ~~ any(
+    <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
+  ) {
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
     self.clear-object;
