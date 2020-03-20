@@ -55,18 +55,13 @@ my Bool $gui-initialized = False;
 # like '$c .= new(...);', the native object, if any must be cleared first.
 multi method new ( |c ) {
 
-#note "\nNew tl: ", self.defined, ', ', c.perl;
   self.clear-object if self.defined;
-
   self.bless(|c);
 }
 
 
 #-------------------------------------------------------------------------------
 submethod BUILD ( *%options ) {
-#method init-top-level ( *%options ) {
-
-#note "init top level: ", %options.perl;
 
   # check GTK+ init except when GtkApplication / GApplication is used. They have
   # to inject this option in the .new() method of their class. Also the child
@@ -105,18 +100,19 @@ submethod BUILD ( *%options ) {
     my $no = %options<native-object>;
     $no .= get-native-object if $no.^can('get-native-object');
 
-#`{{
-    # when native object is defined, check if object is of the same type
-    # as type of the new native object. This prevents storing a N-GError
-    # on a N-GObject.
-    if ? $!n-native-object and $no.^name eq $!n-native-object.^name or
-       ! $!n-native-object {
+#`{{TODO check on proper type of native object
 
-      self.clear-object;
+... What about user class inheriting from gtk classes?
+my Str $name = $no.^name;
+$name ~~ s/ Gnome '::' //;
+$name ~~ s/ [ Glib || GObject || Gio ] '::' /G/;
+my Int $type = tlcs_type_from_name($name);
 
-      $!n-native-object = $no;
-      $!is-valid = True;
-    }
+my Int $no-type = ...
+if $no-type != $type {
+
+}
+
 }}
 
     self.clear-object if ? $!n-native-object;
@@ -127,14 +123,7 @@ submethod BUILD ( *%options ) {
     ) {
       $!n-native-object = $no;
       $!is-valid = True;
-
-      my $gtk-class-name = self.^name;
-      $gtk-class-name ~~ s/ Gnome '::' //;
-      $gtk-class-name ~~ s/ [ Glib || Gio || GObject ] '::' /G/;
-      self.set-class-info($gtk-class-name);
     }
-
-#note 'opts left: ', (%options.perl, %options.keys, %options.elems).join(', ');
   }
 }
 
@@ -264,12 +253,11 @@ method get-class-name ( --> Str ) {
 #-------------------------------------------------------------------------------
 method get-native-object ( ) {    # --> N-Type
 
-#note "get-native-object: ", $!n-native-object // '-';
-
   # increase reference count when object is copied
-  my Any $no = self.native-object-ref($!n-native-object);
+#  my Any $no = self.native-object-ref($!n-native-object);
+#  $no # // $!n-native-object
 
-  $no # // $!n-native-object
+  self.native-object-ref($!n-native-object)
 }
 
 #-------------------------------------------------------------------------------
