@@ -50,6 +50,7 @@ has Str $!class-name-of-sub;
 my Bool $gui-initialized = False;
 
 
+#`{{
 #-------------------------------------------------------------------------------
 # this new() method is defined to cleanup first in case of an assignement
 # like '$c .= new(...);', the native object, if any must be cleared first.
@@ -58,7 +59,7 @@ multi method new ( |c ) {
   self.clear-object if self.defined;
   self.bless(|c);
 }
-
+}}
 
 #-------------------------------------------------------------------------------
 submethod BUILD ( *%options ) {
@@ -115,7 +116,7 @@ if $no-type != $type {
 
 }}
 
-    self.clear-object if ? $!n-native-object;
+#    self.clear-object if ? $!n-native-object;
 
     # The list classes may have an undefined structure and still be valid
     if ? $no or $no.^name ~~ any(
@@ -124,6 +125,8 @@ if $no-type != $type {
       $!n-native-object = $no;
       $!is-valid = True;
     }
+#note "\ntl \$no = ", $no.perl;
+#note "\ntl :native-object = ", $!n-native-object.perl;
   }
 }
 
@@ -273,17 +276,15 @@ method set-native-object ( $native-object ) {
   # only change when native object is defined
   if ? $native-object {
 
-    # if higher level object then extract native object from it
-    my Any $no = $native-object;
-
-    if $native-object.^can('get-native-object') {
-      #$no = nativecast( Pointer, $native-object.get-native-object);
-      $no = $native-object.get-native-object;
-    }
-
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
     self.clear-object;
+
+    # if higher level object then extract native object from it
+    my Any $no = $native-object;
+    #$no = nativecast( Pointer, $native-object.get-native-object)
+    $no = $native-object.get-native-object
+      if $native-object.^can('get-native-object');
 
     $!n-native-object = $no;
     $!is-valid = True;
