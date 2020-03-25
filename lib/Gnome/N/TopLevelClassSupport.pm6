@@ -88,7 +88,7 @@ submethod BUILD ( *%options ) {
   }
 
   # check if a native object must be imported
-  if ? %options<native-object> {
+  if ? %options<native-object> or ? %options<widget> {
 
     # check if there are other options, they cannot be combined
     if %options.elems > 1 {
@@ -98,8 +98,17 @@ submethod BUILD ( *%options ) {
     }
 
     # check if Raku object was provided instead of native object
-    my $no = %options<native-object>;
-    $no .= get-native-object if $no.^can('get-native-object');
+    my $no = %options<native-object> // %options<widget>;
+    if $no.^can('get-native-object') {
+      $no .= get-native-object;
+      note "native object extracted from raku object" if $Gnome::N::x-debug;
+    }
+
+    elsif $no ~~ NativeCall::Types::Pointer {
+      $no = nativecast( N-GObject, $no);
+      note "native pointer cast to N-GObject" if $Gnome::N::x-debug;
+    }
+
 
 #`{{TODO check on proper type of native object
 
