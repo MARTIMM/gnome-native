@@ -207,7 +207,8 @@ method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
   my Any $g-object-cast;
 
   #TODO Not all classes have $!gtk-class-* defined so we need to test it
-  if ?$!class-gtype and ?$!class-name and ?$!class-name-of-sub and
+  if $!n-native-object ~~ N-GObject and
+     ? $!class-gtype and ?$!class-name and ?$!class-name-of-sub and
      $!class-name ne $!class-name-of-sub {
 
     note "Cast $!class-name to $!class-name-of-sub" if $Gnome::N::x-debug;
@@ -423,7 +424,7 @@ sub tlcs_type_name ( uint64 $type --> Str )
   { * }
 
 sub tlcs_type_check_instance_cast (
-  Pointer $instance, uint64 $iface_type --> Pointer
+  N-GObject $instance, uint64 $iface_type --> N-GObject
 ) is native(&gobject-lib)
   is symbol('g_type_check_instance_cast')
   { * }
