@@ -374,6 +374,7 @@ method convert-to-natives ( @params ) {
     $*ERR.printf( "Substitution of parameter \[%d]: %s", $i, @params[$i].^name)
       if $Gnome::N::x-debug;
 
+#`{{
     my Str $pname = @params[$i].^name;
     if $pname ~~
           m/^ Gnome '::' [
@@ -381,7 +382,8 @@ method convert-to-natives ( @params ) {
               ] '::'
            /
        and $pname !~~ m/ '::' 'N-' / {
-
+}}
+    if @params[$i].can('get-native-object-no-reffing') {
       # no reference counting, object is used as an argument to the native
       # subs in this class tree
       @params[$i] = @params[$i].get-native-object-no-reffing;
