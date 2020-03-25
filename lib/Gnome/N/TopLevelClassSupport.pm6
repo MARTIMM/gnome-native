@@ -63,6 +63,7 @@ multi method new ( |c ) {
 }}
 
 #-------------------------------------------------------------------------------
+#TM:2:new(:native-object):*
 submethod BUILD ( *%options ) {
 
   # check GTK+ init except when GtkApplication / GApplication is used. They have
