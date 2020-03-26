@@ -2,6 +2,8 @@
 * 2020-03-19 0.17.1
   * TopLevelSupportClass made independend from native classes
   * Can remove many native classes again because of independency of TopLevelSupportClass. The Variant types stay until they might be moved to Glib.
+  * Moved some deprecated code from Gnome::GObject::Object to TopLevelClassSupport.
+  * Test if self was defined before initializing. Run cleanup before continuing.
 
 * 2020-03-16 0.17.0
   * Added classes to define gnome structures. The class N-GObject was already there for a long time. The modules added are; N-GError, N-GList, GOptionContext, N-GObject, N-GSList, N-GVariant, N-GVariantBuilder, N-GVariantIter, N-GVariantType. Placing the definitions here at the top of the dependencies will make it more easy to prevent circular dependencies. The downside is that sometimes two modules must be included e.g. N-GError from here and Error from Glib.
