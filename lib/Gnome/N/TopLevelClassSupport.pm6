@@ -6,6 +6,7 @@ use NativeCall;
 
 use Gnome::N::X;
 use Gnome::N::NativeLib;
+use Gnome::N::N-GObject;
 #`{{
 use Gnome::N::N-GError;
 use Gnome::N::N-GList;
@@ -35,7 +36,7 @@ subset N-Type is export where
 # this native object is used by the toplevel class and its descendent classes.
 # the native type is always the same as set by all classes inheriting from
 # this toplevel class.
-has Any $!n-native-object;
+has $!n-native-object;
 
 # this readable variable is checked to see if $!n-native-object is valid.
 has Bool $.is-valid = False;
@@ -62,6 +63,48 @@ multi method new ( |c ) {
 }}
 
 #-------------------------------------------------------------------------------
+=begin pod
+=head1 Methods
+=head2 new
+
+Please note that this class is mostly not instantiated directly but is used indirectly when child classes are instantiated.
+
+=begin comment
+=head3 multi method new ( )
+
+Create an empty object
+
+=end comment
+
+=head3 multi method new ( :$native-object! )
+
+Create a Raku object using a native object from elsewhere. $native-object can be a N-GObject or a Raku object like C< Gnome::Gtk3::Button>.
+
+  # Some set of radio buttons grouped together
+  my Gnome::Gtk3::RadioButton $rb1 .= new(:label('Download everything'));
+  my Gnome::Gtk3::RadioButton $rb2 .= new(
+    :group-from($rb1), :label('Download core only')
+  );
+
+  # Get all radio buttons in the group of button $rb2
+  my Gnome::GObject::SList $rb-list .= new(:native-object($rb2.get-group));
+  loop ( Int $i = 0; $i < $rb-list.g_slist_length; $i++ ) {
+    # Get button from the list
+    my Gnome::Gtk3::RadioButton $rb .= new(
+      :native-object($rb-list.nth-data-gobject($i))
+    );
+
+    # If radio button is selected (=active) ...
+    if $rb.get-active == 1 {
+      ...
+
+      last;
+    }
+  }
+
+=end pod
+
+#TM:2:new(:native-object):*
 submethod BUILD ( *%options ) {
 
   # check GTK+ init except when GtkApplication / GApplication is used. They have
@@ -87,8 +130,20 @@ submethod BUILD ( *%options ) {
     $gui-initialized = True;
   }
 
+  # this class is always the first to initialize, therefore when
+  # 'my Xyz $xyz .= new(...);' is used, the original native object
+  # must be cleaned up before we can continue.
+  $!is-valid //= False;
+  self.clear-object;
+
+#note "Opts: ", %options.keys, ', ', "is-valid: $!is-valid";
+
   # check if a native object must be imported
-  if ? %options<native-object> {
+  if ? %options<native-object> or ? %options<widget> {
+
+    Gnome::N::deprecate(
+      '.new(:widget)', '.new(:native-object)', '0.17.0', '0.18.0'
+    ) if ?%options<widget>;
 
     # check if there are other options, they cannot be combined
     if %options.elems > 1 {
@@ -98,8 +153,17 @@ submethod BUILD ( *%options ) {
     }
 
     # check if Raku object was provided instead of native object
-    my $no = %options<native-object>;
-    $no .= get-native-object if $no.^can('get-native-object');
+    my $no = %options<native-object> // %options<widget>;
+    if $no.^can('get-native-object') {
+      $no .= get-native-object;
+      note "native object extracted from raku object" if $Gnome::N::x-debug;
+    }
+
+    elsif $no ~~ NativeCall::Types::Pointer {
+      $no = nativecast( N-GObject, $no);
+      note "native pointer cast to N-GObject" if $Gnome::N::x-debug;
+    }
+
 
 #`{{TODO check on proper type of native object
 
@@ -122,17 +186,18 @@ if $no-type != $type {
     if ? $no or $no.^name ~~ any(
       <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
     ) {
+      note "native object $no stored" if $Gnome::N::x-debug;
       $!n-native-object = $no;
       $!is-valid = True;
     }
 #note "\ntl \$no = ", $no.perl;
-#note "\ntl :native-object = ", $!n-native-object.perl;
+#note "tl :native-object = ", $!n-native-object.perl;
   }
 }
 
 #-------------------------------------------------------------------------------
 submethod DESTROY ( ) {
-  self.native-object-unref($!n-native-object) if $!is-valid;
+  self.native-object-unref($!n-native-object) if $!n-native-object.defined;
 }
 
 #-------------------------------------------------------------------------------
@@ -186,7 +251,7 @@ method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
   }
 
   # user convenience substitutions to get a native object instead of
-  # a GtkSomeThing or other *SomeThing object.
+  # a Gtk3::SomeThing or other *::SomeThing object.
   self.convert-to-natives(@params);
 
   # cast to other gtk object type if the found subroutine is from another
@@ -196,7 +261,8 @@ method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
   my Any $g-object-cast;
 
   #TODO Not all classes have $!gtk-class-* defined so we need to test it
-  if ?$!class-gtype and ?$!class-name and ?$!class-name-of-sub and
+  if $!n-native-object ~~ N-GObject and
+     ? $!class-gtype and ?$!class-name and ?$!class-name-of-sub and
      $!class-name ne $!class-name-of-sub {
 
     note "Cast $!class-name to $!class-name-of-sub" if $Gnome::N::x-debug;
@@ -349,7 +415,7 @@ Clear the error and return data to memory pool. The error object is not valid af
 
 method clear-object ( ) {
   if $!is-valid {
-    self.native-object-unref($!n-native-object);
+    self.native-object-unref($!n-native-object) if $!n-native-object.defined;
     $!is-valid = False;
     $!n-native-object = Nil;
   }
@@ -374,6 +440,7 @@ method convert-to-natives ( @params ) {
     $*ERR.printf( "Substitution of parameter \[%d]: %s", $i, @params[$i].^name)
       if $Gnome::N::x-debug;
 
+#`{{
     my Str $pname = @params[$i].^name;
     if $pname ~~
           m/^ Gnome '::' [
@@ -381,7 +448,8 @@ method convert-to-natives ( @params ) {
               ] '::'
            /
        and $pname !~~ m/ '::' 'N-' / {
-
+}}
+    if @params[$i].can('get-native-object-no-reffing') {
       # no reference counting, object is used as an argument to the native
       # subs in this class tree
       @params[$i] = @params[$i].get-native-object-no-reffing;
@@ -410,7 +478,7 @@ sub tlcs_type_name ( uint64 $type --> Str )
   { * }
 
 sub tlcs_type_check_instance_cast (
-  Pointer $instance, uint64 $iface_type --> Pointer
+  N-GObject $instance, uint64 $iface_type --> N-GObject
 ) is native(&gobject-lib)
   is symbol('g_type_check_instance_cast')
   { * }

@@ -28,6 +28,7 @@ subtest 'debugging', {
   is $Gnome::N::x-debug, False, '8 debugging off';
 }
 
+#`{{
 #-------------------------------------------------------------------------------
 subtest 'X exception', {
   throws-like(
@@ -47,6 +48,7 @@ subtest 'test catch', {
     :message("Could not find native sub 'some-native-sub-name(...)'")
   );
 }
+}}
 
 #-------------------------------------------------------------------------------
 done-testing;
