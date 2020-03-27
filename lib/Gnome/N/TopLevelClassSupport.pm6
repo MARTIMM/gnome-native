@@ -197,7 +197,7 @@ if $no-type != $type {
 
 #-------------------------------------------------------------------------------
 submethod DESTROY ( ) {
-  self.native-object-unref($!n-native-object) if $!is-valid;
+  self.native-object-unref($!n-native-object) if $!n-native-object.defined;
 }
 
 #-------------------------------------------------------------------------------
@@ -415,7 +415,7 @@ Clear the error and return data to memory pool. The error object is not valid af
 
 method clear-object ( ) {
   if $!is-valid {
-    self.native-object-unref($!n-native-object);
+    self.native-object-unref($!n-native-object) if $!n-native-object.defined;
     $!is-valid = False;
     $!n-native-object = Nil;
   }
