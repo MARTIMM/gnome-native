@@ -133,8 +133,8 @@ submethod BUILD ( *%options ) {
   # this class is always the first to initialize, therefore when
   # 'my Xyz $xyz .= new(...);' is used, the original native object
   # must be cleaned up before we can continue.
-  $!is-valid //= False;
-  self.clear-object;
+  #$!is-valid //= False;
+  #self.clear-object;
 
 #note "Opts: ", %options.keys, ', ', "is-valid: $!is-valid";
 
