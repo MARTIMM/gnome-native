@@ -346,7 +346,7 @@ method set-native-object ( $native-object ) {
 
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
-    self.clear-object;
+    #self.clear-object;
 
     # if higher level object then extract native object from it
     my Any $no = $native-object;
