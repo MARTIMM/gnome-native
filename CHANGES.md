@@ -1,8 +1,11 @@
 ## Release notes
+* 2020-04-02 0.17.2
+  * **TopLevelSupportClass** had bugs; In several places, the idea to cleanup the native object stored in the class, was wrong. It is perfectly possible that the native object is still in use while the Raku object is garbage collected. So it follows that the user must clean the native object when it is safe to do it. Examples are that a widget can be destroyed, a native Value object can be disposed of when done with it etcetera.
+
 * 2020-03-19 0.17.1
-  * TopLevelSupportClass made independend from native classes
-  * Can remove many native classes again because of independency of TopLevelSupportClass. The Variant types stay until they might be moved to Glib.
-  * Moved some deprecated code from Gnome::GObject::Object to TopLevelClassSupport.
+  * **TopLevelSupportClass** made independend from native classes
+  * Can remove many native classes again because of independency of **TopLevelSupportClass**. The Variant types stay until they might be moved to Glib.
+  * Moved some deprecated code from **Gnome::GObject::Object** to **TopLevelClassSupport**.
   * Test if self was defined before initializing. Run cleanup before continuing.
 
 * 2020-03-16 0.17.0
