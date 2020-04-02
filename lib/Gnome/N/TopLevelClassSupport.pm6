@@ -133,8 +133,8 @@ submethod BUILD ( *%options ) {
   # this class is always the first to initialize, therefore when
   # 'my Xyz $xyz .= new(...);' is used, the original native object
   # must be cleaned up before we can continue.
-  $!is-valid //= False;
-  self.clear-object;
+  #$!is-valid //= False;
+  #self.clear-object;
 
 #note "Opts: ", %options.keys, ', ', "is-valid: $!is-valid";
 
@@ -191,14 +191,16 @@ if $no-type != $type {
       $!is-valid = True;
     }
 #note "\ntl \$no = ", $no.perl;
-#note "tl :native-object = ", $!n-native-object.perl;
+#note "tl :native-object = ", $!n-native-object.perl, ', ', self.^name;
   }
 }
 
 #-------------------------------------------------------------------------------
-submethod DESTROY ( ) {
-  self.native-object-unref($!n-native-object) if $!n-native-object.defined;
-}
+#submethod DESTROY ( ) {
+#  note "Destroy native object $!class-gtype $!class-name $!class-name-of-sub, ",
+#    self.^name if $Gnome::N::x-debug;
+#  self.native-object-unref($!n-native-object) if $!n-native-object.defined;
+#}
 
 #-------------------------------------------------------------------------------
 # no pod. user does not have to know about it.
@@ -344,7 +346,7 @@ method set-native-object ( $native-object ) {
 
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
-    self.clear-object;
+    #self.clear-object;
 
     # if higher level object then extract native object from it
     my Any $no = $native-object;
@@ -455,6 +457,17 @@ method convert-to-natives ( @params ) {
       @params[$i] = @params[$i].get-native-object-no-reffing;
       $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
     }
+
+    elsif @params[$i].can('enums') {
+      @params[$i] = @params[$i].value;
+      $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
+    }
+#`{{
+    elsif @params[$i] ~~ Str {
+      @params[$i] = explicitly-manage(@params[$i]);
+      $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
+    }
+}}
 
     else {
       $*ERR.printf(": No conversion\n") if $Gnome::N::x-debug;
