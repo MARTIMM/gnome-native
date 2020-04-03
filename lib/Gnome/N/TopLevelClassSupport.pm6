@@ -196,13 +196,6 @@ if $no-type != $type {
 }
 
 #-------------------------------------------------------------------------------
-#submethod DESTROY ( ) {
-#  note "Destroy native object $!class-gtype $!class-name $!class-name-of-sub, ",
-#    self.^name if $Gnome::N::x-debug;
-#  self.native-object-unref($!n-native-object) if $!n-native-object.defined;
-#}
-
-#-------------------------------------------------------------------------------
 # no pod. user does not have to know about it.
 #
 # Fallback method to find the native subs which then can be called as if they
