@@ -132,6 +132,7 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
   }
 }
 
+#`{{
 #-------------------------------------------------------------------------------
 sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 
@@ -172,6 +173,7 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
     }
   }
 }
+}}
 
 #-------------------------------------------------------------------------------
 sub test-call-without-natobj ( Callable:D $found-routine, |c ) is export {

@@ -196,13 +196,6 @@ if $no-type != $type {
 }
 
 #-------------------------------------------------------------------------------
-#submethod DESTROY ( ) {
-#  note "Destroy native object $!class-gtype $!class-name $!class-name-of-sub, ",
-#    self.^name if $Gnome::N::x-debug;
-#  self.native-object-unref($!n-native-object) if $!n-native-object.defined;
-#}
-
-#-------------------------------------------------------------------------------
 # no pod. user does not have to know about it.
 #
 # Fallback method to find the native subs which then can be called as if they
@@ -221,7 +214,8 @@ method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
   note "\nSearch for .$native-sub\() in $!class-name following ", self.^mro
     if $Gnome::N::x-debug;
 
-  CATCH { test-catch-exception( $_, $native-sub); }
+#  CATCH { test-catch-exception( $_, $native-sub); }
+  CATCH { .note; die; }
 
   # convert all dashes to underscores if there are any.
   $native-sub ~~ s:g/ '-' /_/ if $native-sub.index('-').defined;
