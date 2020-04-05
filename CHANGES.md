@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-04-05 0.17.3
+  * Removed a level of exception catching.
+
 * 2020-04-02 0.17.2
   * **TopLevelSupportClass** had bugs; In several places, the idea to cleanup the native object stored in the class, was wrong. It is perfectly possible that the native object is still in use while the Raku object is garbage collected. So it follows that the user must clean the native object when it is safe to do it. Examples are that a widget can be destroyed, a native Value object can be disposed of when done with it etcetera.
 
