@@ -358,7 +358,7 @@ method set-native-object ( $native-object ) {
   ) {
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
-    self.clear-object;
+    #self.clear-object;
 
     $!n-native-object = $native-object;
     $!is-valid = True;
@@ -374,7 +374,7 @@ method set-native-object ( $native-object ) {
 method set-native-object-no-reffing ( $native-object ) {
 
   if ? $native-object {
-    self.clear-object;
+    #self.clear-object;
     $!n-native-object = $native-object;
     $!is-valid = True;
   }

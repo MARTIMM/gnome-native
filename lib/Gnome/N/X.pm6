@@ -200,7 +200,7 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
     $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
     note "\nCalling sub $found-routine.gist()\(\n  ",
-         ( $gobject, |c)>>.perl.join(",\n  "), "\n);" if $Gnome::N::x-debug;
+         ( $gobject.Str, |c)>>.Str.join(",\n  "), "\n);" if $Gnome::N::x-debug;
 
     $result = $found-routine( $gobject, |c)
 # ^^^
