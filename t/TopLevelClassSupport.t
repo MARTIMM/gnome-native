@@ -209,12 +209,7 @@ my Int $label-gtype;
 subtest 'Label tests', {
 
   my Label $l1 .= new(:text<test-text>);
-  my N-GObject $no;
-  try {
-    $no = $l1.get-native-object;
-    CATCH { .note }
-  }
-
+  my N-GObject $no = $l1.get-native-object;
   ok $no.defined, 'Label .get-native-object()';
   my Label $l1a .= new(:native-object($no));
   is $l1.get-text, 'test-text', 'Label .new(:native-object) .get-text()';

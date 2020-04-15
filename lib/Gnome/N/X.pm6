@@ -179,7 +179,8 @@ sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
 sub test-call-without-natobj ( Callable:D $found-routine, |c ) is export {
 
   note "\nCalling sub $found-routine.gist()\(\n  ",
-    c>>.perl.join(",\n  "), "\n);" if $Gnome::N::x-debug;
+#    c>>.perl.join(",\n  "), "\n);"
+    stringify( |c, "\n);", :join-str(",\n  ")) if $Gnome::N::x-debug;
   $found-routine(|c)
 }
 
@@ -200,7 +201,8 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
     $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
     note "\nCalling sub $found-routine.gist()\(\n  ",
-         ( $gobject.Str, |c)>>.Str.join(",\n  "), "\n);" if $Gnome::N::x-debug;
+      stringify( $gobject, |c, "\n);", :join-str(",\n  ")),
+      if $Gnome::N::x-debug;
 
     $result = $found-routine( $gobject, |c)
 # ^^^
@@ -208,13 +210,19 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
 
   else {
     note "Calling sub $found-routine.gist()\(\n  ",
-      c>>.perl.join(",\n  "), "\n);" if $Gnome::N::x-debug;
+      stringify( |c, "\n);", :join-str(",\n  "))
+      if $Gnome::N::x-debug;
 
     $result = $found-routine(|c)
   }
 
 #note "test-call R: {$result//'-'}";
   $result
+}
+
+#-------------------------------------------------------------------------------
+sub stringify ( *@list, Str :$join-str = ', ' --> Str ) {
+  map( { $_ // 'undefined' }, @list )>>.Str.join($join-str)
 }
 
 #`{{
