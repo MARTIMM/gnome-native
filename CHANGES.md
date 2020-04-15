@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-04-15 0.17.4
+  * Bugfixes
+
 * 2020-04-05 0.17.3
   * Removed a level of exception catching.
 
