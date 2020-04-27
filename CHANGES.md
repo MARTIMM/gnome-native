@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-04-27 0.17.5
+  * Bugfixes and some improved debug output
+
 * 2020-04-15 0.17.4
   * Bugfixes
 
