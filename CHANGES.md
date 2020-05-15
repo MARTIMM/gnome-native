@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-05-15 0.17.6
+  * Improve debug output from `test-call()` and `stringify()` in **X**.
+
 * 2020-04-27 0.17.5
   * Bugfixes and some improved debug output
 
