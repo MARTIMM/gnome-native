@@ -132,49 +132,6 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
   }
 }
 
-#`{{
-#-------------------------------------------------------------------------------
-sub test-catch-exception ( Exception $e, Str $native-sub ) is export {
-
-  note "\nError type: ", $e.WHAT; # if $Gnome::N::x-debug;
-  #note "Error message: ", $e.message if $Gnome::N::x-debug;
-  note "Thrown Exception:\n", $e; # if $Gnome::N::x-debug;
-
-  given $e {
-
-#TODO X::Method::NotFound
-#     No such method 'message' for invocant of type 'Any'
-#TODO Argument
-#     Calling gtk_button_get_label(N-GObject, Str) will never work with declared signature (N-GObject $widget --> Str)
-#TODO Return
-#     Type check failed for return value
-
-    # X::AdHoc
-    when .message ~~ m:s/Native call expected return type/ {
-      note "Wrong return type of native sub '$native-sub\(...\)'"; # if $Gnome::N::x-debug;
-      die X::Gnome.new(
-        :message("Wrong return type of native sub '$native-sub\(...\)'")
-      );
-    }
-
-    # X::AdHoc, X::TypeCheck::Argument or some messages
-    when X::TypeCheck::Argument ||
-         .message ~~ m:s/will never work with declared signature/ ||
-         .message ~~ m:s/Type check failed in binding/ {
-      note .message; # if $Gnome::N::x-debug;
-      die X::Gnome.new(:message(.message));
-    }
-
-    default {
-      note "Could not find native sub '$native-sub\(...\)'"; #if $Gnome::N::x-debug;
-      die X::Gnome.new(
-        :message("Could not find native sub '$native-sub\(...\)'")
-      );
-    }
-  }
-}
-}}
-
 #-------------------------------------------------------------------------------
 sub test-call-without-natobj ( Callable:D $found-routine, |c ) is export {
 
@@ -196,7 +153,7 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
 
   my $result;
   if +$sig-params and
-# vvv like to have this part only
+
     # test for native object in any of the Gnome packages
     $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
 
@@ -205,7 +162,6 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
       if $Gnome::N::x-debug;
 
     $result = $found-routine( $gobject, |c)
-# ^^^
   }
 
   else {
@@ -221,50 +177,27 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
 }
 
 #-------------------------------------------------------------------------------
-sub stringify ( *@list, Str :$join-str = ', ' --> Str ) {
-  map( { $_ // 'undefined' }, @list )>>.Str.join($join-str)
-}
+sub stringify ( *@list, Str :$join-str = ', ', *%options --> Str ) {
+  map( {
+      if ! $_ {
+        $_.WHAT;
+      }
 
+      elsif $_ ~~ Pair {
+        if $_.value.WHAT ~~ Bool {
+          [~] ':', $_.value ?? '' !! '!', $_.key;
+        }
+        else {
+          [~] ':', $_.key, '(...)';
 #`{{
-#-------------------------------------------------------------------------------
-# Called from FALLBACK methods in toplevel classes. The array @params is
-# modified in place when a higher class object is converted to a native object
-# User convenience substitutions to get a native object instead of
-# a GtkSomeThing or other *SomeThing object.
-sub convert-to-natives ( @params ) is export {
-
-  loop ( my Int $i = 0; $i < @params.elems; $i++ ) {
-    $*ERR.printf( "Substitution of parameter \[%d]: %s", $i, @params[$i].^name)
-      if $Gnome::N::x-debug;
-
-#`{{
-    if @params[$i].^name ~~
-          m/^ 'Gnome::' [
-                 Gtk3 || Gdk3 || Glib || Gio || GObject || Pango
-               ] '::' / {
-
-      @params[$i] = @params[$i].get-native-object;
-      $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
-    }
+          [~] ':', $_.key, '(', ?$_.value ?? $_.value !! 'undefined', ')';
 }}
+        }
+      }
 
-#    if @params[$i].can('get-native-object-no-reffing') {
-    if @params[$i].can('get-native-object') {
-      # no reference counting, object is used as an argument to the native
-      # subs in this class tree
-#      @params[$i] = @params[$i].get-native-object-no-reffing;
-      @params[$i] = @params[$i].get-native-object;
-      $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
-    }
-
-    elsif @params[$i].can('enums') {
-      @params[$i] = @params[$i].value;
-      $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
-    }
-
-    else {
-      $*ERR.printf(": No conversion\n") if $Gnome::N::x-debug;
-    }
-  }
+      else {
+        $_;
+      }
+    }, (|@list, |%options)
+  )>>.Str.join($join-str)
 }
-}}
