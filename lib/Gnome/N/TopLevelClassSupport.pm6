@@ -145,12 +145,16 @@ submethod BUILD ( *%options ) {
       '.new(:widget)', '.new(:native-object)', '0.17.0', '0.18.0'
     ) if ?%options<widget>;
 
+#`{{
+This is not true anymore. Example: User inherits a class, must use a new() with a named argument to say that its parent can handle options to create a native object. This test goes bad when such a class wants to import a native object.
+
     # check if there are other options, they cannot be combined
     if %options.elems > 1 {
       die X::Gnome.new(
         :message('with :native-object, no other named arguments allowed')
       );
     }
+}}
 
     # check if Raku object was provided instead of native object
     my $no = %options<native-object> // %options<widget>;
