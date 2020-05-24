@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-05-24 0.17.7
+  * Removed a test from TopLevelClassSupport which prevented other options to be used when `:$native-object` option was found. This test is not good anymore and it had to be relaxed a bit. Example: User inherits a class, must define a `new()` with an extra named argument to `bless()` to say that its parent can handle options to create a native object. This test goes bad when such a class wants to import a native object using the `:native-object` option.
+
 * 2020-05-15 0.17.6
   * Improve debug output from `test-call()` and `stringify()` in **X**.
 
