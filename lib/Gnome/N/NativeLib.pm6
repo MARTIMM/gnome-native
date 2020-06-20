@@ -6,6 +6,49 @@ use NativeCall;
 
 unit module Gnome::N::NativeLib;
 
+
+#`{{
+Libraries on Linux for GObject
+
+./libgobject-2.0.so.0.6200.6
+>> ./libgobject-2.0.so
+./libgobject-2.0.so.0
+}}
+
+#`{{
+Libraries on Linux for Glib
+
+./libglib-1.2.so.0.0.10
+./libglib-2.0.so.0.6200.6
+./libglibmm_generate_extra_defs-2.4.so.1
+>> ./libglib-2.0.so
+./libglibmm-2.4.so.1
+./libglib-2.0.so.0
+./libglib-1.2.so.0
+./libglibmm-2.4.so.1.3.0
+./libglibmm_generate_extra_defs-2.4.so.1.3.0
+}}
+
+#`{{
+Libraries on Linux for Cairo
+
+./libpangocairo-1.0.so.0.4400.7
+./libcairo-gobject.so.2
+./libcairo-gobject.so.2.11600.0
+./libcairo-script-interpreter.so
+./libpangocairo-1.0.so.0
+./libcairo-script-interpreter.so.2
+./libpangocairo-1.0.so
+>> ./libcairo-gobject.so
+./libcairo-script-interpreter.so.2.11600.0
+./libcairo.so.2.11600.0
+./gstreamer-1.0/libgstcairo.so
+./libcairomm-1.0.so.1
+./libcairomm-1.0.so.1.4.0
+>> ./libcairo.so
+./libcairo.so.2
+}}
+
 #`{{
 sub gobject-lib is export {
   state $lib;
@@ -224,6 +267,7 @@ sub atk-lib {
     }
     $lib
 }
+
 sub cairo-gobject-lib {
     state $lib;
     unless $lib {
@@ -234,15 +278,21 @@ sub cairo-gobject-lib {
     }
     $lib
 }
-sub cairo-lib {
+
+sub cairo-lib is export {
     state $lib;
     unless $lib {
-        try load-fontconfig-lib;
-        try load-freetype-lib;
-        try load-pixman-lib;
-        try load-png-lib;
-        try load-zlib-lib;
-        $lib = find-bundled('libcairo-2.dll');
+        if $*VM.config<dll> ~~ /dll/ {
+#          try load-fontconfig-lib;
+#          try load-freetype-lib;
+#          try load-pixman-lib;
+#          try load-png-lib;
+#          try load-zlib-lib;
+#          $lib = find-bundled('libcairo-2.dll');
+          $lib = $*VM.platform-library-name('cairo-2'.IO).Str;
+        } else {
+          $lib = $*VM.platform-library-name('cairo'.IO).Str;
+        }
     }
     $lib
 }
