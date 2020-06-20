@@ -252,7 +252,7 @@ method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
 
   # user convenience substitutions to get a native object instead of
   # a Gtk3::SomeThing or other *::SomeThing object.
-  self.convert-to-natives(@params);
+  self.convert-to-natives( $s, @params);
 
   # cast to other gtk object type if the found subroutine is from another
   # gtk object type than the native object stored at $!n-native-object.
@@ -276,6 +276,7 @@ method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
     $g-object-cast = $!n-native-object; #type-cast($!n-native-object);
   }
 
+#note "test-call: $s, $g-object-cast";
   test-call( $s, $g-object-cast, |@params, |%named-params)
 }
 
@@ -434,11 +435,18 @@ method clear-object-no-reffing ( ) {
 #-------------------------------------------------------------------------------
 # The array @params is modified in place when a higher class object must be
 # converted to a native object held in that object.
-method convert-to-natives ( @params ) {
+method convert-to-natives ( Callable $s, @params ) {
+
+  # get the parameter list of subroutine $s
+  my Signature $s-sig = $s.signature;
+#note "P: $s-sig.perl()";
+  my Parameter @s-params = $s-sig.params;
+#note "P: @s-params.perl()";
 
   loop ( my Int $i = 0; $i < @params.elems; $i++ ) {
-    $*ERR.printf( "Substitution of parameter \[%d]: %s", $i, @params[$i].^name)
-      if $Gnome::N::x-debug;
+    $*ERR.printf( "Substitution of parameter \[%d]: (%s), %s",
+      $i, @s-params[$i + 1].type.^name, @params[$i].^name
+    ) if $Gnome::N::x-debug;
 
 #`{{
     my Str $pname = @params[$i].^name;
@@ -449,6 +457,8 @@ method convert-to-natives ( @params ) {
            /
        and $pname !~~ m/ '::' 'N-' / {
 }}
+
+    # check if this is a Gnome Rakue object. if so, get native object
     if @params[$i].can('get-native-object-no-reffing') {
       # no reference counting, object is used as an argument to the native
       # subs in this class tree
@@ -456,8 +466,15 @@ method convert-to-natives ( @params ) {
       $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
     }
 
+    # check if enum. if so, get value, mostly an integer
     elsif @params[$i].can('enums') {
       @params[$i] = @params[$i].value;
+      $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
+    }
+
+    # check if argument should be a real/double. if so, coerce input to Num
+    elsif @s-params[$i + 1].type.^name ~~ m/^ num / {
+      @params[$i] .= Num;
       $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
     }
 #`{{

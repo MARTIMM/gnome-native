@@ -32,8 +32,22 @@ use Gnome::N::NativeLib;
 use Gnome::N::N-GObject;
 use Gnome::N::TopLevelClassSupport;
 
-use Gnome::N::X;
+#use Gnome::N::X;
 #Gnome::N::debug(:on);
+
+#-----------------------------------------------------------------------------
+# native subs
+sub gtk_label_new ( Str $str --> N-GObject )
+  is native(&gtk-lib)
+  { * }
+
+sub gtk_label_set_text ( N-GObject $label, Str $str )
+  is native(&gtk-lib)
+  { * }
+
+sub gtk_label_get_text ( N-GObject $label --> Str )
+  is native(&gtk-lib)
+  { * }
 
 #-------------------------------------------------------------------------------
 # make a toplevel class. Label is a GTK class example
@@ -113,20 +127,6 @@ class Label is Gnome::N::TopLevelClassSupport {
       g_object_unref($no);
     }
   }
-
-  #-----------------------------------------------------------------------------
-  # native subs
-  sub gtk_label_new ( Str $str --> N-GObject )
-    is native(&gtk-lib)
-    { * }
-
-  sub gtk_label_set_text ( N-GObject $label, Str $str )
-    is native(&gtk-lib)
-    { * }
-
-  sub gtk_label_get_text ( N-GObject $label --> Str )
-    is native(&gtk-lib)
-    { * }
 }
 
 #-------------------------------------------------------------------------------
@@ -159,7 +159,7 @@ class ReversedLabel is Label {
     elsif self.^name eq 'ReversedLabel' or %options<ReversedLabel> {
       if ? %options<rtext> {
         my Str $t = %options<rtext>.split('').reverse.join;
-        self.set-native-object(self.gtk-label-new($t));
+        self.set-native-object(gtk_label_new($t));
       }
     }
   }
@@ -197,7 +197,7 @@ class ReversedLabel2 is ReversedLabel {
     elsif self.^name eq 'ReversedLabel2' or %options<ReversedLabel2> {
       if ? %options<rtext2> {
         my Str $t = %options<rtext2>.split('').reverse.join ~ ' 2';
-        self.set-native-object(self.gtk-label-new($t));
+        self.set-native-object(gtk_label_new($t));
       }
     }
   }
