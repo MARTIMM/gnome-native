@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-06-20 0.17.8
+  * Modified convert-to-natives() in TopLevelClassSupport that it checks for destination argument type. When it detects num32 or num64 all source values are coerced using .Num(). This means that next examples are now valid: 10, 10.2, 0e2, '2.3' (these are Int, Rat, Num and Str resp).
+
 * 2020-05-24 0.17.7
   * Removed a test from TopLevelClassSupport which prevented other options to be used when `:$native-object` option was found. This test is not good anymore and it had to be relaxed a bit. Example: User inherits a class, must define a `new()` with an extra named argument to `bless()` to say that its parent can handle options to create a native object. This test goes bad when such a class wants to import a native object using the `:native-object` option.
 
