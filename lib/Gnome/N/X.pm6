@@ -155,7 +155,7 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
   if +$sig-params and
 
     # test for native object in any of the Gnome packages
-    $sig-params[0].type.^name ~~ m/^ ['Gnome::G' .*?]? 'N-G' / {
+    $sig-params[0].type.^name ~~ m/^ ['Gnome::' .*?]? [ 'N-G' || cairo ] / {
 
     note "\nCalling sub $found-routine.gist()\(\n  ",
       stringify( $gobject, |c, :join-str(",\n  ")), "\n);"
@@ -179,7 +179,7 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
 #-------------------------------------------------------------------------------
 sub stringify ( *@list, Str :$join-str = ', ', *%options --> Str ) {
   map( {
-      if ! $_ {
+      if ! $_.defined {
         $_.WHAT;
       }
 
@@ -196,8 +196,8 @@ sub stringify ( *@list, Str :$join-str = ', ', *%options --> Str ) {
       }
 
       else {
-        $_;
+        $_.perl;
       }
-    }, (|@list, |%options)
+    }, ( |@list, |%options)
   )>>.Str.join($join-str)
 }
