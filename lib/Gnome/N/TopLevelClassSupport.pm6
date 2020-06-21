@@ -445,8 +445,11 @@ method convert-to-natives ( Callable $s, @params ) {
 #note "P: @s-params.perl()";
 
   loop ( my Int $i = 0; $i < @params.elems; $i++ ) {
+    my Str $s-param-type-name = @s-params[$i + 1].defined
+                                ?? @s-params[$i + 1].type.^name
+                                !! 'Unknown type';
     $*ERR.printf( "Substitution of parameter \[%d]: (%s), %s",
-      $i, @s-params[$i + 1].type.^name, @params[$i].^name
+      $i, $s-param-type-name, @params[$i].^name
     ) if $Gnome::N::x-debug;
 
 #`{{
@@ -474,7 +477,7 @@ method convert-to-natives ( Callable $s, @params ) {
     }
 
     # check if argument should be a real/double. if so, coerce input to Num
-    elsif @s-params[$i + 1].type.^name ~~ m/^ num / {
+    elsif $s-param-type-name ~~ m/^ num / {
       @params[$i] .= Num;
       $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
     }
