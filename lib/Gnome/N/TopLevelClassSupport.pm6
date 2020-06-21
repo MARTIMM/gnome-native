@@ -211,7 +211,7 @@ if $no-type != $type {
 # like '$label.gtk_label_get_text()' or '$label.get_text()'. As an extra
 # feature dashes can be used instead of underscores, so '$label.get-text()'
 # works too.
-method FALLBACK ( $native-sub is copy, *@params is copy, *%named-params ) {
+method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 
   state Hash $cache = %();
 
@@ -441,6 +441,7 @@ method convert-to-natives ( Callable $s, @params ) {
   my Signature $s-sig = $s.signature;
 #note "P: $s-sig.perl()";
   my Parameter @s-params = $s-sig.params;
+#note "\@p: @params.perl()";
 #note "P: @s-params.perl()";
 
   loop ( my Int $i = 0; $i < @params.elems; $i++ ) {
