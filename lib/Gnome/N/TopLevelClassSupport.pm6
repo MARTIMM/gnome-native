@@ -159,13 +159,23 @@ This is not true anymore. Example: User inherits a class, must use a new() with 
     # check if Raku object was provided instead of native object
     my $no = %options<native-object> // %options<widget>;
     if $no.^can('get-native-object') {
+      # reference counting done automatically
       $no .= get-native-object;
       note "native object extracted from raku object" if $Gnome::N::x-debug;
     }
 
+    # ?? still in use ??
     elsif $no ~~ NativeCall::Types::Pointer {
       $no = nativecast( N-GObject, $no);
       note "native pointer cast to N-GObject" if $Gnome::N::x-debug;
+
+      # reference counting done explicitly
+      $no = self.native-object-ref($no);
+    }
+
+    else {
+      # reference counting done explicitly
+      $no = self.native-object-ref($no);
     }
 
 

@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-06-21 0.17.10
+  * Bugfixed; imported native objects where not reference incremented. Only the Raku objects were.
+
 * 2020-06-21 0.17.9
   * Bugfixed; when arrays are used, arguments get flatten in method`convert-to-natives()`. Use the unflatten slurpy positional argument `**@params`.
 
