@@ -1,4 +1,8 @@
 ## Release notes
+* 2020-08-04 0.17.11
+  * Better test on (deprecated) widget option in TopLevelSupportClass
+  * Bugfixed in stringify in X.
+
 * 2020-06-21 0.17.10
   * Bugfixed; imported native objects where not reference incremented. Only the Raku objects were.
 
