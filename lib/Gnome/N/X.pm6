@@ -136,8 +136,7 @@ Set a deprecation message when the trait DEPRECATED on classes and methods is no
 sub test-call-without-natobj ( Callable:D $found-routine, |c ) is export {
 
   note "\nCalling sub $found-routine.gist()\(\n  ",
-#    c>>.perl.join(",\n  "), "\n);"
-    stringify( |c, "\n);", :join-str(",\n  ")), "\n);" if $Gnome::N::x-debug;
+    stringify( |c, :join-str(",\n  ")), "\n);" if $Gnome::N::x-debug;
   $found-routine(|c)
 }
 
@@ -178,9 +177,18 @@ sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
 
 #-------------------------------------------------------------------------------
 sub stringify ( *@list, Str :$join-str = ', ', *%options --> Str ) {
+
   map( {
       if ! $_.defined {
-        $_.WHAT;
+        $_.WHAT.gist;
+      }
+
+      elsif $_ ~~ Str {
+        "'$_'";
+      }
+
+      elsif $_ ~~ any(Num|Int|Rat) {
+        $_;
       }
 
       elsif $_ ~~ Pair {

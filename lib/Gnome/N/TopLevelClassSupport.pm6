@@ -143,7 +143,7 @@ submethod BUILD ( *%options ) {
 
     Gnome::N::deprecate(
       '.new(:widget)', '.new(:native-object)', '0.17.0', '0.18.0'
-    ) if ?%options<widget>;
+    ) if %options<widget>:exists;
 
 #`{{
 This is not true anymore. Example: User inherits a class, must use a new() with a named argument to say that its parent can handle options to create a native object. This test goes bad when such a class wants to import a native object.
@@ -195,6 +195,7 @@ if $no-type != $type {
 }}
 
 #    self.clear-object if ? $!n-native-object;
+
 
     # The list classes may have an undefined structure and still be valid
     if ? $no or $no.^name ~~ any(
