@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-09-23 0.17.12
+  * After Gtk init, Argument list in `@*ARGS` are rebuild because Gtk could have taken some out, E.g. --display etc.
+
 * 2020-08-04 0.17.11
   * Better test on (deprecated) widget option in TopLevelSupportClass
   * Bugfixed in stringify in X.

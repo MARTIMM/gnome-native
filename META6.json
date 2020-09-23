@@ -1,7 +1,7 @@
 {
   "description": "Raku - Gnome native interface support, Please install Gnome::Gtk3",
   "name": "Gnome::N",
-  "version": "0.17.11",
+  "version": "0.17.12",
   "authors": [ "Marcel Timmerman"],
   "tags": [ "gnome"],
 
