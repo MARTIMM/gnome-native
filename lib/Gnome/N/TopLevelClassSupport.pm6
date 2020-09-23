@@ -107,6 +107,8 @@ Create a Raku object using a native object from elsewhere. $native-object can be
 #TM:2:new(:native-object):*
 submethod BUILD ( *%options ) {
 
+#TODO is this the proper place, shouldn't it be in Object? or maybe in Widget
+
   # check GTK+ init except when GtkApplication / GApplication is used. They have
   # to inject this option in the .new() method of their class. Also the child
   # classes of those application modules should inject it.
@@ -128,6 +130,14 @@ submethod BUILD ( *%options ) {
     # call gtk_init_check
     tlcs_init_check( $argc, $argv);
     $gui-initialized = True;
+
+    # now refill the ARGS list with left over commandline arguments
+    @*ARGS = ();
+    for ^$argc[0] -> $i {
+      # skip first argument == programname
+      next unless $i;
+      @*ARGS.push: $argv[0][$i];
+    }
   }
 
   # this class is always the first to initialize, therefore when
