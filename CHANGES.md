@@ -1,4 +1,7 @@
 ## Release notes
+* 2020-10-14 0.17.13
+  * Moved Gtk initialization higher up in hierargy. It is moved into **Gnome::GObject::Object**.
+
 * 2020-09-23 0.17.12
   * After Gtk init, Argument list in `@*ARGS` are rebuild because Gtk could have taken some out, E.g. --display etc.
 
