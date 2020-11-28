@@ -1,5 +1,8 @@
 ## Release notes
 
+* 2020-11-28 0.18.1
+  * Add gpointer type to GlibToRakuTypes.
+
 * 2020-11-28 0.18.0
   * A module called **Gnome::N::GlibToRakuTypes**, is generated during installation of the package. It is a module to be able to use the glib types in the native subs.
 
