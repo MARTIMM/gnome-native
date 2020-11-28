@@ -2,6 +2,7 @@
 
 * 2020-11-28 0.18.1
   * Add gpointer type to GlibToRakuTypes.
+  * Add GEnum type to GlibToRakuTypes. Enum types in C are always integers and a literal integer in C is always an `int`. When a type like e.g. GtkDirectionType is used in the focus handler of the **Gnome::Gtk3::Widget** class, this type `GEnum` can be used.
 
 * 2020-11-28 0.18.0
   * A module called **Gnome::N::GlibToRakuTypes**, is generated during installation of the package. It is a module to be able to use the glib types in the native subs.
