@@ -7,6 +7,8 @@ use NativeCall;
 use Gnome::N::X;
 use Gnome::N::NativeLib;
 use Gnome::N::N-GObject;
+use Gnome::N::GlibToRakuTypes;
+
 #`{{
 use Gnome::N::N-GError;
 use Gnome::N::N-GList;
@@ -42,7 +44,7 @@ has $!n-native-object;
 has Bool $.is-valid = False;
 
 # keep track of native class types and names
-has Int $!class-gtype;
+has UInt $!class-gtype;
 has Str $!class-name;
 has Str $!class-name-of-sub;
 
@@ -285,10 +287,10 @@ method get-class-name-of-sub ( --> Str ) { $!class-name-of-sub }
 
 Return class's type code after registration. this is like calling Gnome::GObject::Type.new().g_type_from_name(GTK+ class type name).
 
-  method get-class-gtype ( --> Int )
+  method get-class-gtype ( --> UInt )
 =end pod
 
-method get-class-gtype ( --> Int ) {
+method get-class-gtype ( --> UInt ) {
   $!class-gtype
 }
 
@@ -484,18 +486,18 @@ method convert-to-natives ( Callable $s, @params ) {
 
 # These subs belong to Gnome::GObject::Type but is needed here. To avoid
 # circular dependencies, the subs are redeclared here for this purpose
-sub tlcs_type_from_name ( Str $name --> uint64 )
+sub tlcs_type_from_name ( Str $name --> GType )
   is native(&gobject-lib)
   is symbol('g_type_from_name')
   { * }
 
-sub tlcs_type_name ( uint64 $type --> Str )
+sub tlcs_type_name ( GType $type --> Str )
   is native(&gobject-lib)
   is symbol('g_type_name')
   { * }
 
 sub tlcs_type_check_instance_cast (
-  N-GObject $instance, uint64 $iface_type --> N-GObject
+  N-GObject $instance, GType $iface_type --> N-GObject
 ) is native(&gobject-lib)
   is symbol('g_type_check_instance_cast')
   { * }
