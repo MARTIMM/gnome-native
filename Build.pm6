@@ -89,12 +89,6 @@ method !build-types-conversion-module ( ) {
 
   $c-types<gchar-ptr> = 'Str';
   $c-types<void-ptr> = 'Pointer[void]';
-  $c-types<int-ptr> = "CArray[$c-types<gint>]";
-  $c-types<gint-ptr> = "CArray[$c-types<gint>]";
-  $c-types<char-pptr> = "CArray[$c-types<gchar-ptr>]";
-  $c-types<gchar-pptr> = "CArray[$c-types<gchar-ptr>]";
-  $c-types<char-ppptr> = "CArray[CArray[$c-types<gchar-ptr>]]";
-  $c-types<gchar-ppptr> = "CArray[CArray[$c-types<gchar-ptr>]]";
 
   # and some types which are defined already
   $c-types<gboolean> = $c-types<gint>;
@@ -104,6 +98,13 @@ method !build-types-conversion-module ( ) {
   $c-types<gtype> = $c-types<gulong>;
   $c-types<GQuark> = $c-types<guint32>;
   $c-types<gquark> = $c-types<guint32>;
+
+  $c-types<int-ptr> = "CArray[$c-types<gint>]";
+  $c-types<gint-ptr> = "CArray[$c-types<gint>]";
+  $c-types<char-pptr> = "CArray[$c-types<gchar-ptr>]";
+  $c-types<gchar-pptr> = "CArray[$c-types<gchar-ptr>]";
+  $c-types<char-ppptr> = "CArray[CArray[$c-types<gchar-ptr>]]";
+  $c-types<gchar-ppptr> = "CArray[CArray[$c-types<gchar-ptr>]]";
 
 
   # generate the module text
