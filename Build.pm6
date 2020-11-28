@@ -96,9 +96,10 @@ method !build-types-conversion-module ( ) {
   $c-types<gsize> = $c-types<gulong>;
   $c-types<gssize> = $c-types<glong>;
   $c-types<GType> = $c-types<gulong>;
-  $c-types<gtype> = $c-types<gulong>;
   $c-types<GQuark> = $c-types<guint32>;
-  $c-types<gquark> = $c-types<guint32>;
+  $c-types<GEnum> = $c-types<gint>;
+#  $c-types<gtype> = $c-types<gulong>;
+#  $c-types<gquark> = $c-types<guint32>;
 
   $c-types<int-ptr> = "CArray[$c-types<gint>]";
   $c-types<gint-ptr> = "CArray[$c-types<gint>]";

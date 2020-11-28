@@ -10,6 +10,7 @@ use NativeCall;
 unit package Gnome::N::GlibToRakuTypes;
 
 #-------------------------------------------------------------------------------
+constant \GEnum           is export = int32;
 constant \GQuark          is export = uint32;
 constant \GType           is export = uint64;
 constant \char-ppptr      is export = CArray[CArray[Str]];
@@ -28,11 +29,10 @@ constant \gint32          is export = int32;
 constant \gint64          is export = int64;
 constant \gint8           is export = int8;
 constant \glong           is export = int64;
-constant \gquark          is export = uint32;
+constant \gpointer        is export = Pointer;
 constant \gshort          is export = int16;
 constant \gsize           is export = uint64;
 constant \gssize          is export = int64;
-constant \gtype           is export = uint64;
 constant \guchar          is export = uint8;
 constant \guint           is export = uint32;
 constant \guint16         is export = uint16;
