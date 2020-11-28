@@ -1,4 +1,25 @@
 ## Release notes
+
+* 2020-11-28 0.18.0
+  * A module called **Gnome::N::GlibToRakuTypes**, is generated during installation of the package. It is a module to be able to use the glib types in the native subs.
+
+    In a definition of a native subroutine, the types can then be left as is, for example a routine from the gobject library;
+    ```
+    guint g_type_depth (GType type);
+    ```
+    Can then be defined like
+
+    ```
+    use Gnome::N::GlibToRakuTypes;
+
+    sub g_type_depth ( GType $type --> guint )
+      is native(&gobject-lib)
+      { * }
+    ```
+    It's a bit late in the development of the Gnome packages but is still necessary to implement. The benefits are quite huge;
+    * One location where definitions are set. When there is a misinterpretation of a type it is easy to repair.
+    * The module is generated using a C program which prints the MAX_\* and MIN_\* sizes from the `limits.h` file. This is important because the int sizes may vary from one machine to the other and maybe also the float and double may vary, who knows. The Build.pm6 module is called by zef to generate the GlibToRakuTypes.pm6 file using the printed values from the C program.
+
 * 2020-10-14 0.17.13
   * Moved Gtk initialization higher up in hierargy. It is moved into **Gnome::GObject::Object**.
 
