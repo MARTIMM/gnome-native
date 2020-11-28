@@ -88,6 +88,7 @@ method !build-types-conversion-module ( ) {
   $c-types<gdouble> = 'num64';
 
   $c-types<gchar-ptr> = 'Str';
+  $c-types<gpointer> = 'Pointer';
   $c-types<void-ptr> = 'Pointer[void]';
 
   # and some types which are defined already
