@@ -11,6 +11,7 @@ unit package Gnome::N::GlibToRakuTypes;
 
 #-------------------------------------------------------------------------------
 constant \GEnum           is export = int32;
+constant \GFlag           is export = uint32;
 constant \GQuark          is export = uint32;
 constant \GType           is export = uint64;
 constant \char-ppptr      is export = CArray[CArray[Str]];

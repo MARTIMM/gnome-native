@@ -98,6 +98,7 @@ method !build-types-conversion-module ( ) {
   $c-types<GType> = $c-types<gulong>;
   $c-types<GQuark> = $c-types<guint32>;
   $c-types<GEnum> = $c-types<gint>;
+  $c-types<GFlag> = $c-types<guint>;
 #  $c-types<gtype> = $c-types<gulong>;
 #  $c-types<gquark> = $c-types<guint32>;
 
