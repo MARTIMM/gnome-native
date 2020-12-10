@@ -2,8 +2,9 @@
 #   https://www.gtk.org/download/windows.php
 #   https://blogs.gnome.org/nacho/2014/08/01/how-to-build-your-gtk-application-on-windows/
 
-os: Visual Studio 2015
-
+#os: Visual Studio 2019
+image:
+  - Visual Studio 2019
 platform: x64
 
 branches:
@@ -13,7 +14,7 @@ branches:
     - develop
     - module
 
-install:
+Xinstall:
   - set PATH=C:\msys64\usr\bin;%PATH%
 #  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain"
   - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gtk3"
@@ -35,11 +36,23 @@ install:
   - perl6 -Ilib bin/zef --verbose install .
 #  - zef --verbose --force install Zef
 
+install:
+  - set PATH=C:\msys64\usr\bin;%PATH%
+  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gtk3"
+#  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain base-devel"
+
+  - choco feature enable -n allowEmptyChecksums
+  - choco install rakudostar
+
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - zef --/test --deps-only install .
+#  - prove -l -v -e 'raku' t
+
 build: off
 
 test_script:
-  - zef --depsonly install .
-  - prove -v -e "perl6 -Ilib" t/
+  - zef install .
+#  - prove -v -e "raku -Ilib" t/
 
   - SET PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\share\perl6\site\bin;%PATH%
   - cd %APPVEYOR_BUILD_FOLDER%\..
