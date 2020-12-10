@@ -268,9 +268,57 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 }
 
 #-------------------------------------------------------------------------------
+### test for substite FALLBACK without search
+#-------------------------------------------------------------------------------
+# no pod. user does not have to know about it.
+#
+# Fallback method to find the native subs which then can be called as if they
+# were methods. Each class must provide their own '_fallback()' method which,
+# when nothing found, must call the parents _fallback with 'callsame()'.
+# The subs in some class all start with some prefix which can be left out too
+# provided that the _fallback functions must also test with an added prefix.
+# So e.g. a sub 'gtk_label_get_text' defined in class GtlLabel can be called
+# like '$label.gtk_label_get_text()' or '$label.get_text()'. As an extra
+# feature dashes can be used instead of underscores, so '$label.get-text()'
+# works too.
+#
+# Do not cast when the class is a leaf. Do not convert when no parameters or
+# easy to coerse by Raku like Int, Enum and Str. When both False, make call
+# directly
+method __f__ (
+  Callable $s, **@params is copy, *%named-params, Bool :$convert = True,
+  Bool :$cast = True
+) {
+
+  # user convenience substitutions to get a native object instead of
+  # a Gtk3::SomeThing or other *::SomeThing object.
+  self.convert-to-natives( $s, @params) if $convert;
+
+  # cast to other gtk object type if the found subroutine is from another
+  # gtk object type than the native object stored at $!n-native-object.
+  # This happens e.g. when a Gnome::Gtk::Button object uses gtk-widget-show()
+  # which belongs to Gnome::Gtk::Widget.
+  #
+  # Call the method only from classes where all variables are defined!
+  my Any $g-object-cast;
+  if $cast and $!class-name ne $!class-name-of-sub {
+    $g-object-cast = tlcs_type_check_instance_cast(
+      $!n-native-object, $!class-gtype
+    );
+  }
+
+  else {
+    $g-object-cast = $!n-native-object;
+  }
+
+#note "test-call: $s.gist(), $g-object-cast.gist()";
+  test-call( $s, $g-object-cast, |@params, |%named-params)
+}
+
+#-------------------------------------------------------------------------------
 # no pod. user does not have to know about it.
 method set-class-info ( Str:D $!class-name ) {
-  $!class-gtype = tlcs_type_from_name($!class-name);
+  $!class-gtype = tlcs_type_from_name($!class-name)
 }
 
 #-------------------------------------------------------------------------------
