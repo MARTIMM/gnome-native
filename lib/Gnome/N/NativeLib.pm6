@@ -116,11 +116,6 @@ sub gdk-pixbuf-lib is export {
 # On any non-windows machine, this just returns the library name
 # for the native calls.
 #
-# However, on a windows machine, we search @*INC to see if our bundled
-# copy of the GTK .dll files are installed. Since they will then no longer
-# be in the system $PATH, we need to load each .dll file individually, in
-# dependency order. Thus explaining all the 'try load-*' calls below.
-#
 # Each load-* function just attempts to call a non-existing symbol in the
 # .dll we are trying to load. This call will fail, but it has the side effect
 # of loading the .dll file, which is all we need.
