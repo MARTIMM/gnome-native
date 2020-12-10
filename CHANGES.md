@@ -1,5 +1,8 @@
 ## Release notes
 
+* 2020-12-09 0.18.2
+  * Add a method to do parameter type coersion and native object casting. This method is to be used to investigate direct methods of calling opposed to native sub searching done with FALLBACK().
+
 * 2020-11-28 0.18.1
   * Add gpointer type to GlibToRakuTypes.
   * Add GEnum type to GlibToRakuTypes. Enum types in C are always integers and a literal integer in C is always an `int`. When a type like e.g. GtkDirectionType is used in the focus handler of the **Gnome::Gtk3::Widget** class, this type `GEnum` can be used.
