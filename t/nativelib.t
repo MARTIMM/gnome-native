@@ -18,15 +18,15 @@ sub gtk_button_get_label ( N-GObject $button --> Str )
 
 #-------------------------------------------------------------------------------
 subtest 'lib name tests', {
-  like gobject-lib(), /:s ^ libgobject /, [~] 'gobject    ', gobject-lib();
-  like glib-lib(), /:s ^ libglib /, [~] 'glib       ', glib-lib();
-  like gdk-lib(), /:s ^ libgdk /, [~] 'gdk        ', gdk-lib();
-  like gdk-pixbuf-lib(), /:s ^ 'libgdk_pixbuf' /,
+  like gobject-lib(), /:s gobject /, [~] 'gobject    ', gobject-lib();
+  like glib-lib(), /:s glib /, [~] 'glib       ', glib-lib();
+  like gdk-lib(), /:s gdk /, [~] 'gdk        ', gdk-lib();
+  like gdk-pixbuf-lib(), /:s 'gdk_pixbuf' /,
        [~] 'gdk-pixbuf ', gdk-pixbuf-lib();
-  like gtk-lib(), /:s ^ libgtk /, [~] 'gtk        ', gtk-lib();
+  like gtk-lib(), /:s gtk /, [~] 'gtk        ', gtk-lib();
 
-  like gio-lib(), /:s ^ libgio /, [~] 'gio        ', gio-lib();
-  like pango-lib(), /:s ^ libpango /, [~] 'pango      ', pango-lib();
+  like gio-lib(), /:s gio /, [~] 'gio        ', gio-lib();
+  like pango-lib(), /:s pango /, [~] 'pango      ', pango-lib();
 }
 
 #`{{
