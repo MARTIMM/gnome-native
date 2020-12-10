@@ -120,6 +120,7 @@ sub gdk-pixbuf-lib is export {
 # .dll we are trying to load. This call will fail, but it has the side effect
 # of loading the .dll file, which is all we need.
 
+#`{{
 sub gtk-lib is export {
     state $lib;
     unless $lib {
@@ -143,6 +144,11 @@ sub gtk-lib is export {
         }
     }
     $lib
+}
+}}
+sub gtk-lib is export {
+  state $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+  $lib
 }
 
 sub gdk-lib is export {
@@ -184,6 +190,7 @@ sub gdk-pixbuf-lib is export {
     $lib
 }
 
+#`{{
 sub glib-lib is export {
     state $lib;
     unless $lib {
@@ -195,6 +202,11 @@ sub glib-lib is export {
         }
     }
     $lib
+}
+}}
+sub glib-lib is export {
+  state $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
+  $lib
 }
 
 sub gobject-lib is export {

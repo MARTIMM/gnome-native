@@ -285,7 +285,7 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 # Do not cast when the class is a leaf. Do not convert when no parameters or
 # easy to coerse by Raku like Int, Enum and Str. When both False, make call
 # directly
-method __f__ (
+method _f (
   Callable $s, **@params is copy, *%named-params, Bool :$convert = True,
   Bool :$cast = True
 ) {
