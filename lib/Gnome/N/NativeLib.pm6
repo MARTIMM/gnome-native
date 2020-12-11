@@ -6,266 +6,142 @@ use NativeCall;
 
 unit module Gnome::N::NativeLib;
 
+# There is more defined than is needed for the Gnome packages so most of them
+# are inhibited until they are needed.
 
-#`{{
-Libraries on Linux for GObject
-
-./libgobject-2.0.so.0.6200.6
->> ./libgobject-2.0.so
-./libgobject-2.0.so.0
-}}
-
-#`{{
-Libraries on Linux for Glib
-
-./libglib-1.2.so.0.0.10
-./libglib-2.0.so.0.6200.6
-./libglibmm_generate_extra_defs-2.4.so.1
->> ./libglib-2.0.so
-./libglibmm-2.4.so.1
-./libglib-2.0.so.0
-./libglib-1.2.so.0
-./libglibmm-2.4.so.1.3.0
-./libglibmm_generate_extra_defs-2.4.so.1.3.0
-}}
-
-#`{{
-Libraries on Linux for Cairo
-
-./libpangocairo-1.0.so.0.4400.7
-./libcairo-gobject.so.2
-./libcairo-gobject.so.2.11600.0
-./libcairo-script-interpreter.so
-./libpangocairo-1.0.so.0
-./libcairo-script-interpreter.so.2
-./libpangocairo-1.0.so
->> ./libcairo-gobject.so
-./libcairo-script-interpreter.so.2.11600.0
-./libcairo.so.2.11600.0
-./gstreamer-1.0/libgstcairo.so
-./libcairomm-1.0.so.1
-./libcairomm-1.0.so.1.4.0
->> ./libcairo.so
-./libcairo.so.2
-}}
-
-#`{{
-sub gobject-lib is export {
-  state $lib;
-  unless $lib {
-    if $*VM.config<dll> ~~ /dll/ {
-      $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
-    } else {
-      $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
-    }
-  }
+# used for Gnome::At
+sub atk-lib is export {
+  state $lib = $*VM.platform-library-name('atk-1.0'.IO).Str;
   $lib
 }
 
-sub glib-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
-        } else {
-            $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
-        }
-    }
-    $lib
-}
-
-sub gtk-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
-        } else {
-            $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
-        }
-    }
-    $lib
-}
-
-sub gdk-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
-        } else {
-            $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
-        }
-    }
-    $lib
-}
-
-sub gdk-pixbuf-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            $lib = $*VM.platform-library-name('gdk_pixbuf-2'.IO).Str;
-        } else {
-          $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
-        }
-    }
-    $lib
-}
-
-=finish
-}}
-
-# On any non-windows machine, this just returns the library name
-# for the native calls.
-#
-# Each load-* function just attempts to call a non-existing symbol in the
-# .dll we are trying to load. This call will fail, but it has the side effect
-# of loading the .dll file, which is all we need.
-
-#`{{
-sub gtk-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            try load-gdk-lib;
-            try load-atk-lib;
-            try load-cairo-gobject-lib;
-            try load-cairo-lib;
-            try load-gdk-pixbuf-lib;
-            try load-gio-lib;
-            try load-glib-lib;
-            try load-gmodule-lib;
-            try load-gobject-lib;
-            try load-intl-lib;
-            try load-pango-lib;
-            try load-pangocairo-lib;
-            try load-pangowin32-lib;
-            $lib = find-bundled('libgtk-3-0.dll');
-        } else {
-            $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
-        }
-    }
-    $lib
-}
-}}
-sub gtk-lib is export {
-  state $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+sub cairo-gobject-lib {
+  state $lib = $*VM.platform-library-name('cairo-gobject-2'.IO).Str;
   $lib
 }
 
-sub gdk-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            try load-cairo-gobject-lib;
-            try load-cairo-lib;
-            try load-gdk-pixbuf-lib;
-            try load-gio-lib;
-            try load-glib-lib;
-            try load-gobject-lib;
-            try load-intl-lib;
-            try load-pango-lib;
-            try load-pangocairo-lib;
-            $lib = find-bundled('libgdk-3-0.dll');
-        } else {
-            $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
-        }
-    }
-    $lib
-}
-
-sub gdk-pixbuf-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            try load-gio-lib;
-            try load-glib-lib;
-            try load-gmodule-lib;
-            try load-gobject-lib;
-            try load-intl-lib;
-            try load-png-lib;
-            $lib = find-bundled('libgdk_pixbuf-2.0-0.dll');
-        } else {
-          $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
-        }
-    }
-    $lib
+sub cairo-lib is export {
+  state $lib = $*VM.platform-library-name('cairo-2'.IO).Str;
+  $lib
 }
 
 #`{{
-sub glib-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            try load-intl-lib;
-            $lib = find-bundled('libglib-2.0-0.dll');
-        } else {
-            $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
-        }
-    }
-    $lib
+sub ffi-lib {
+  state $lib = $*VM.platform-library-name('ffi-7'.IO).Str;
+  $lib
+}
+
+sub fontconfig-lib {
+  state $lib = $*VM.platform-library-name('fontconfig-1'.IO).Str;
+  $lib
+}
+
+sub freetype-lib {
+  state $lib = $*VM.platform-library-name('freetype-6'.IO).Str;
+  $lib
 }
 }}
+
+sub gdk-lib is export {
+  state $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
+  $lib
+}
+
+sub gdk-pixbuf-lib is export {
+  state $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
+  $lib
+}
+
 sub glib-lib is export {
   state $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
   $lib
 }
 
 sub gobject-lib is export {
-    state $lib;
-    unless $lib {
-        if $*VM.config<dll> ~~ /dll/ {
-            try load-glib-lib;
-            try load-ffi-lib;
-            $lib = find-bundled('libgobject-2.0-0.dll');
-        } else {
-            $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
-        }
-    }
-    $lib
-}
-
-sub pango-lib is export {
-  state $lib;
-  unless $lib {
-    if $*VM.config<dll> ~~ /dll/ {
-      $lib = find-bundled('libpango-1.0-0.dll');
-    } else {
-      $lib = $*VM.platform-library-name('pango-1.0'.IO).Str;
-    }
-  }
+  state $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
   $lib
 }
 
 sub gio-lib is export {
-  state $lib;
-  unless $lib {
-    if $*VM.config<dll> ~~ /dll/ {
-#      try load-glib-lib;
-#      try load-gmodule-lib;
-#      try load-gobject-lib;
-#      try load-intl-lib;
-#      try load-zlib-lib;
-      $lib = find-bundled('libgio-2.0-0.dll');
-    } else {
-      $lib = $*VM.platform-library-name('gio-2.0'.IO).Str;
-    }
-  }
+  state $lib = $*VM.platform-library-name('gio-2.0'.IO).Str;
   $lib
 }
 
-sub find-bundled($lib is copy) {
 #`{{
-    # if we can't find one, assume there's a system install
-    my $base = "blib/lib/GTK/$lib";
-
-    if my $file = %?RESOURCES{$base} {
-            $file.IO.copy($*SPEC.tmpdir ~ '\\' ~ $lib);
-            $lib = $*SPEC.tmpdir ~ '\\' ~ $lib;
-    }
+sub gmodule-lib {
+  state $lib = $*VM.platform-library-name('gmodule-2.0'.IO).Str;
+  $lib
+}
 }}
-    $lib;
+
+sub gtk-lib is export {
+  state $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+  $lib
 }
 
-# windows DLL dependency stuff ...
+#`{{
+sub iconv-lib {
+  state $lib = $*VM.platform-library-name('iconv-2'.IO).Str;
+  $lib
+}
+
+sub intl-lib {
+  state $lib = $*VM.platform-library-name('intl-8'.IO).Str;
+  $lib
+}
+
+sub lzma-lib {
+  state $lib = $*VM.platform-library-name('lzma-5'.IO).Str;
+  $lib
+}
+}}
+
+sub pango-lib is export {
+  state $lib = $*VM.platform-library-name('pango-1.0'.IO).Str;
+  $lib
+}
+
+sub pangocairo-lib {
+  state $lib = $*VM.platform-library-name('pangocairo-1.0'.IO).Str;
+  $lib
+}
+
+#`{{
+sub pangoft2-lib {
+  state $lib = $*VM.platform-library-name('pangoft2-1.0'.IO).Str;
+  $lib
+}
+
+sub pangowin32-lib {
+  state $lib = $*VM.platform-library-name('pangowin32-1.0'.IO).Str;
+  $lib
+}
+
+sub pixman-lib {
+  state $lib = $*VM.platform-library-name('pixman-1'.IO).Str;
+  $lib
+}
+
+sub png-lib {
+  state $lib = $*VM.platform-library-name('libpng16-16'.IO).Str;
+  $lib
+}
+
+sub xml-lib {
+  state $lib = $*VM.platform-library-name('xml2-2'.IO).Str;
+  $lib
+}
+
+sub zlib-lib {
+  state $lib = $*VM.platform-library-name('zlib1'.IO).Str;
+  $lib
+}
+}}
+
+
+
+=finish
+
 
 sub atk-lib {
     state $lib;
@@ -453,6 +329,172 @@ sub pangoft2-lib {
         $lib = find-bundled('libpangoft2-1.0-0.dll');
     }
     $lib
+}
+
+sub gtk-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            try load-gdk-lib;
+            try load-atk-lib;
+            try load-cairo-gobject-lib;
+            try load-cairo-lib;
+            try load-gdk-pixbuf-lib;
+            try load-gio-lib;
+            try load-glib-lib;
+            try load-gmodule-lib;
+            try load-gobject-lib;
+            try load-intl-lib;
+            try load-pango-lib;
+            try load-pangocairo-lib;
+            try load-pangowin32-lib;
+            $lib = find-bundled('libgtk-3-0.dll');
+        } else {
+            $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub gdk-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            try load-cairo-gobject-lib;
+            try load-cairo-lib;
+            try load-gdk-pixbuf-lib;
+            try load-gio-lib;
+            try load-glib-lib;
+            try load-gobject-lib;
+            try load-intl-lib;
+            try load-pango-lib;
+            try load-pangocairo-lib;
+            $lib = find-bundled('libgdk-3-0.dll');
+        } else {
+            $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub gdk-pixbuf-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            try load-gio-lib;
+            try load-glib-lib;
+            try load-gmodule-lib;
+            try load-gobject-lib;
+            try load-intl-lib;
+            try load-png-lib;
+            $lib = find-bundled('libgdk_pixbuf-2.0-0.dll');
+        } else {
+          $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub glib-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            try load-intl-lib;
+            $lib = find-bundled('libglib-2.0-0.dll');
+        } else {
+            $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub gobject-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            try load-glib-lib;
+            try load-ffi-lib;
+            $lib = find-bundled('libgobject-2.0-0.dll');
+        } else {
+            $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
+        }
+    }
+    $lib
+}
+
+
+sub glib-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
+        } else {
+            $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub gtk-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+        } else {
+            $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub pango-lib is export {
+  state $lib;
+  unless $lib {
+    if $*VM.config<dll> ~~ /dll/ {
+      $lib = find-bundled('libpango-1.0-0.dll');
+    } else {
+      $lib = $*VM.platform-library-name('pango-1.0'.IO).Str;
+    }
+  }
+  $lib
+}
+
+sub gdk-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
+        } else {
+            $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
+        }
+    }
+    $lib
+}
+
+sub gdk-pixbuf-lib is export {
+    state $lib;
+    unless $lib {
+        if $*VM.config<dll> ~~ /dll/ {
+            $lib = $*VM.platform-library-name('gdk_pixbuf-2'.IO).Str;
+        } else {
+          $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
+        }
+    }
+    $lib
+}
+
+
+sub find-bundled($lib is copy) {
+#`{{
+    # if we can't find one, assume there's a system install
+    my $base = "blib/lib/GTK/$lib";
+
+    if my $file = %?RESOURCES{$base} {
+            $file.IO.copy($*SPEC.tmpdir ~ '\\' ~ $lib);
+            $lib = $*SPEC.tmpdir ~ '\\' ~ $lib;
+    }
+}}
+    $lib;
 }
 
 sub load-gdk-lib is native(&gdk-lib) { ... }
