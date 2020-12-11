@@ -4,7 +4,7 @@
 #  https://www.archlinux.org/pacman/pacman.8.html
 
 os: Visual Studio 2019
-version: 0.18.2.8
+version: 0.18.2.9
 image:
   - Visual Studio 2019
 
@@ -30,7 +30,7 @@ install:
   - choco feature enable -n allowEmptyChecksums
   - choco install rakudostar
   - refreshenv
-  - cmd: dir C:\
+  - cmd: dir C:\rakudo\install\share\site\bin
 
   - git clone https://github.com/ugexe/zef.git
   - cd zef
@@ -43,7 +43,7 @@ build: off
 
 test_script:
   # set path to use Raku and GTK libraries
-  - set PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\share\perl6\site\bin;C:\msys64\mingw64\bin;%PATH%
+  - SET PATH=C:\rakudo\install\share\perl6\site\bin;C:\msys64\mingw64\bin;%PATH%
   - zef --verbose install .
   - cd %APPVEYOR_BUILD_FOLDER%\..
 

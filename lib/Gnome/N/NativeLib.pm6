@@ -11,7 +11,10 @@ unit module Gnome::N::NativeLib;
 
 # used for Gnome::At
 sub atk-lib is export {
-  state $lib = $*VM.platform-library-name('atk-1.0'.IO).Str;
+  state $lib = $*VM.platform-library-name(
+    ('atk-1.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
+
   $lib
 }
 
@@ -43,27 +46,42 @@ sub freetype-lib {
 }}
 
 sub gdk-lib is export {
-  state $lib = $*VM.platform-library-name('gdk-3'.IO).Str;
+  state $lib = $*VM.platform-library-name(
+    ('gdk-3' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
+
   $lib
 }
 
 sub gdk-pixbuf-lib is export {
-  state $lib = $*VM.platform-library-name('gdk_pixbuf-2.0'.IO).Str;
-  $lib
-}
+  state $lib = $*VM.platform-library-name(
+    ('gdk_pixbuf-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
 
-sub glib-lib is export {
-  state $lib = $*VM.platform-library-name('glib-2.0'.IO).Str;
-  $lib
-}
-
-sub gobject-lib is export {
-  state $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
   $lib
 }
 
 sub gio-lib is export {
-  state $lib = $*VM.platform-library-name('gio-2.0'.IO).Str;
+  state $lib = $*VM.platform-library-name(
+    ('gio-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
+
+  $lib
+}
+
+sub glib-lib is export {
+  state $lib = $*VM.platform-library-name(
+    ('glib-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
+
+  $lib
+}
+
+sub gobject-lib is export {
+  state $lib = $*VM.platform-library-name(
+    ('gobject-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
+
   $lib
 }
 
@@ -75,7 +93,10 @@ sub gmodule-lib {
 }}
 
 sub gtk-lib is export {
-  state $lib = $*VM.platform-library-name('gtk-3'.IO).Str;
+  state $lib = $*VM.platform-library-name(
+    ('gtk-3' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
+
   $lib
 }
 
@@ -97,12 +118,18 @@ sub lzma-lib {
 }}
 
 sub pango-lib is export {
-  state $lib = $*VM.platform-library-name('pango-1.0'.IO).Str;
+  state $lib = $*VM.platform-library-name(
+    ('pango-1.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
+
   $lib
 }
 
 sub pangocairo-lib {
-  state $lib = $*VM.platform-library-name('pangocairo-1.0'.IO).Str;
+  state $lib = $*VM.platform-library-name(
+    ('pangocairo-1.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
+  ).Str;
+
   $lib
 }
 
