@@ -77,11 +77,27 @@ sub glib-lib is export {
   $lib
 }
 
+#`{{
 sub gobject-lib is export {
   state $lib = $*VM.platform-library-name(
     ('gobject-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
   ).Str;
 
+  $lib
+}
+}}
+
+sub gobject-lib is export {
+  state $lib;
+  unless $lib {
+    if $*VM.config<dll> ~~ /dll/ {
+#      try load-glib-lib;
+#      try load-ffi-lib;
+      $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str; #find-bundled('libgobject-2.0-0.dll');
+    } else {
+      $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
+    }
+  }
   $lib
 }
 
