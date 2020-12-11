@@ -4,7 +4,7 @@
 #  https://www.archlinux.org/pacman/pacman.8.html
 
 os: Visual Studio 2019
-version: 0.18.2.7
+version: 0.18.2.8
 image:
   - Visual Studio 2019
 
@@ -14,21 +14,23 @@ branches:
   # whitelist
   only:
     - master
-    - module
+#    - module
 #    - develop
 
 environment:
   raku_test_all: 1
 
 install:
-  - set PATH=C:\msys64\usr\bin;C:\msys64\usr\lib;%PATH%
+  # set path to use pacman
+  - set PATH=C:\msys64\usr\bin;%PATH%
   - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gtk3"
 #  - bash -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain base-devel"
-  - cmd: dir C:\msys64\usr
+  - cmd: dir C:\msys64\mingw64\bin\*.dll
 
   - choco feature enable -n allowEmptyChecksums
   - choco install rakudostar
   - refreshenv
+  - cmd: dir C:\
 
   - git clone https://github.com/ugexe/zef.git
   - cd zef
@@ -40,7 +42,8 @@ install:
 build: off
 
 test_script:
-  - SET PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\share\perl6\site\bin;%PATH%
+  # set path to use Raku and GTK libraries
+  - set PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\share\perl6\site\bin;C:\msys64\mingw64\bin;%PATH%
   - zef --verbose install .
   - cd %APPVEYOR_BUILD_FOLDER%\..
 
