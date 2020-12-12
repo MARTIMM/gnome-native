@@ -1,5 +1,8 @@
 ## Release notes
 
+* 2020-12-12 0.18.3
+  * Module NativeLib is completely rewritten after some tests on Appveyor. Library names are matching now for windows using MSYS2 and Mingw. Other window environments asume the naming conventions used by Raku. No tests are done yet for MacOS.
+
 * 2020-12-09 0.18.2
   * Add a method to do parameter type coersion and native object casting. This method is to be used to investigate direct methods of calling opposed to native sub searching done with FALLBACK().
 
