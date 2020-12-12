@@ -38,15 +38,15 @@ class N-GValue is repr('CStruct') is export {
 }
 
 sub g_value_init ( N-GValue $value, GType $g_type --> N-GValue )
-  is native(gobject-lib)
+  is native(&gobject-lib)
   { * }
 
 sub g_value_set_string ( N-GValue $value, gchar-ptr $v_string )
-  is native(gobject-lib)
+  is native(&gobject-lib)
   { * }
 
 sub g_value_get_string ( N-GValue $value --> gchar-ptr )
-  is native(gobject-lib)
+  is native(&gobject-lib)
   { * }
 
 
