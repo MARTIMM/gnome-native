@@ -10,13 +10,14 @@ use Gnome::N::GlibToRakuTypes;
 
 #-------------------------------------------------------------------------------
 subtest 'lib name tests', {
-  like gobject-lib(), /:s gobject /, [~] 'gobject    ', gobject-lib();
-  like glib-lib(),    /:s glib /,    [~] 'glib       ', glib-lib();
+  like cairo-lib(),   /:s cairo /,   [~] 'cairo      ', cairo-lib();
   like gdk-lib(),     /:s gdk /,     [~] 'gdk        ', gdk-lib();
   like gdk-pixbuf-lib(), /:s 'gdk_pixbuf' /,
                                      [~] 'gdk-pixbuf ', gdk-pixbuf-lib();
-  like gtk-lib(),     /:s gtk /,     [~] 'gtk        ', gtk-lib();
   like gio-lib(),     /:s gio /,     [~] 'gio        ', gio-lib();
+  like glib-lib(),    /:s glib /,    [~] 'glib       ', glib-lib();
+  like gobject-lib(), /:s gobject /, [~] 'gobject    ', gobject-lib();
+  like gtk-lib(),     /:s gtk /,     [~] 'gtk        ', gtk-lib();
   like pango-lib(),   /:s pango /,   [~] 'pango      ', pango-lib();
 }
 

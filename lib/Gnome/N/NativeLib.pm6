@@ -100,225 +100,163 @@ on Appveyor using MSYS2 environment and
 use v6;
 use NativeCall;
 
+#-------------------------------------------------------------------------------
 unit module Gnome::N::NativeLib;
 
-my Str $path;
-
-# There is more defined than is needed for the Gnome packages so most of them
-# are inhibited until they are needed.
-
-# used for Gnome::At
-sub atk-lib is export {
-  state $lib = $*VM.platform-library-name(
-    ('atk-1.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
-
-  $lib
-}
-
-sub cairo-gobject-lib {
-  state $lib = $*VM.platform-library-name('cairo-gobject-2'.IO).Str;
-  $lib
-}
-
-sub cairo-lib is export {
-  state $lib = $*VM.platform-library-name('cairo-2'.IO).Str;
-  $lib
-}
-
-#`{{
-sub ffi-lib {
-  state $lib = $*VM.platform-library-name('ffi-7'.IO).Str;
-  $lib
-}
-
-sub fontconfig-lib {
-  state $lib = $*VM.platform-library-name('fontconfig-1'.IO).Str;
-  $lib
-}
-
-sub freetype-lib {
-  state $lib = $*VM.platform-library-name('freetype-6'.IO).Str;
-  $lib
-}
-}}
-
-sub gdk-lib is export {
-  state $lib = $*VM.platform-library-name(
-    ('gdk-3' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
-
-  $lib
-}
-
-sub gdk-pixbuf-lib is export {
-  state $lib = $*VM.platform-library-name(
-    ('gdk_pixbuf-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
-
-  $lib
-}
-
-sub gio-lib is export {
-  state $lib = $*VM.platform-library-name(
-    ('gio-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
-
-  $lib
-}
-
-sub glib-lib is export {
-  state $lib = $*VM.platform-library-name(
-    ('glib-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
-
-  $lib
-}
-
-#`{{
-sub gobject-lib is export {
-  state $lib = $*VM.platform-library-name(
-    ('gobject-2.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
-
-  $lib
-}
-}}
-
-#`{{
-sub gobject-lib is export {
-  state $lib;
-  unless $lib {
-    if $*VM.config<dll> ~~ /dll/ {
-#      try load-glib-lib;
-#      try load-ffi-lib;
-      $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str; #find-bundled('libgobject-2.0-0.dll');
-    } else {
-      $lib = $*VM.platform-library-name('gobject-2.0'.IO).Str;
-    }
-  }
-  $lib
-}
-}}
-#`{{
-sub gobject-lib is export {
-  state Str $lib;
-  return $lib if ?$lib;
-
-  given $*VM.osname {
-    when 'windows' { $lib = 'libgobject-2.0-0'; }
-    when 'linux' { $lib = 'gobject-2.0'; }
-    when 'macos' { $lib = 'gobject-2.0'; }
-  }
-
-  $lib
-}
-}}
-
-# In some situations libraries begin also with 'lib' on windows.
+#-------------------------------------------------------------------------------
+# Libraries begin also with 'lib' on windows.
 my Str $lib-prefix;
+my Bool $is-windows;
+my Bool $has-mingw;
+#-------------------------------------------------------------------------------
 unless $lib-prefix {
-  $lib-prefix =
-    ( $*VM.osname ~~ 'mswin32' and (
-        'C:/msys64/mingw64/bin'.IO.e or 'C:/mingw64/bin'.IO.e
-      )
-    ) ?? 'lib' !! '';
+  $is-windows = $*DISTRO.is-win;
+  $has-mingw = ('C:/msys64/mingw64/bin'.IO.e or 'C:/mingw64/bin'.IO.e);
+  $lib-prefix = ( $is-windows and $has-mingw ) ?? 'lib' !! '';
 }
 
-sub gobject-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'gobject', '2.0', '-0').Str;
-
-#note 'libname: ', $lib;
-  $lib
-}
-
-sub lib-name ( Str $name, Str $version, Str $lib-postfix = '' --> Str ) {
+#-------------------------------------------------------------------------------
+sub lib-name ( Str $name, $version, $lib-postfix = '' --> Str ) {
   $lib-prefix ~ $*VM.platform-library-name((
-      [~] 'gobject-', $version, ($*VM.osname ~~ 'mswin32' ?? $lib-postfix !! '')
+      [~] $name, '-', $version, ($is-windows ?? "-$lib-postfix" !! '')
     ).IO
   ).Str
 }
 
+#-------------------------------------------------------------------------------
+# There are more libname subs defined than is needed for the Gnome packages
+# so most of them are inhibited until they are needed.
+
 #`{{
-sub gmodule-lib {
-  state $lib = $*VM.platform-library-name('gmodule-2.0'.IO).Str;
+# used for Gnome::Atk
+sub atk-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'atk', '1.0', 0);
   $lib
 }
 }}
 
-sub gtk-lib is export {
-  state $lib = $*VM.platform-library-name(
-    ('gtk-3' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
+sub cairo-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'cairo', 2);
+  $lib
+}
 
+#`{{
+sub cairo-gobject-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'cairo-gobject', 2);
+  $lib
+}
+
+sub ffi-lib ( --> Str ) is expor {
+  state Str $lib = lib-name( 'ffi', 7);
+  $lib
+}
+
+sub fontconfig-lib ( --> Str ) is expor {
+  state Str $lib = lib-name( 'fontconfig', 1);
+  $lib
+}
+
+sub freetype-lib ( --> Str ) is expor {
+  state Str $lib = lib-name( 'freetype', 6);
+  $lib
+}
+}}
+
+sub gdk-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'gdk', 3, 0);
+  $lib
+}
+
+sub gdk-pixbuf-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'gdk_pixbuf', 2, 0);
+  $lib
+}
+
+sub gio-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'gio', '2.0', 0);
+  $lib
+}
+
+sub glib-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'glib', '2.0', 0);
+  $lib
+}
+
+sub gobject-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'gobject', '2.0', 0);
+  $lib
+}
+
+#`{{
+sub gmodule-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'gmodule', '2.0', 0);
+  $lib
+}
+}}
+
+sub gtk-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'gtk', 3, 0);
   $lib
 }
 
 #`{{
 sub iconv-lib {
-  state $lib = $*VM.platform-library-name('iconv-2'.IO).Str;
+  state Str $lib = lib-name( 'iconv', 2);
   $lib
 }
 
 sub intl-lib {
-  state $lib = $*VM.platform-library-name('intl-8'.IO).Str;
+  state Str $lib = lib-name( 'intl', 8);
+  $lib
+}
+
+sub jpeg-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'jpeg', 8);
   $lib
 }
 
 sub lzma-lib {
-  state $lib = $*VM.platform-library-name('lzma-5'.IO).Str;
+  state Str $lib = lib-name( 'lzma', 5);
   $lib
 }
 }}
 
-sub pango-lib is export {
-  state $lib = $*VM.platform-library-name(
-    ('pango-1.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
-
-  $lib
-}
-
-sub pangocairo-lib {
-  state $lib = $*VM.platform-library-name(
-    ('pangocairo-1.0' ~ ($*VM.config<dll> ~~ /dll/ ?? '-0' !! '')).IO
-  ).Str;
-
+sub pango-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'pango', '1.0', 0);
   $lib
 }
 
 #`{{
-sub pangoft2-lib {
-  state $lib = $*VM.platform-library-name('pangoft2-1.0'.IO).Str;
+sub pangocairo-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'pangocairo', '1.0', 0);
   $lib
 }
 
-sub pangowin32-lib {
-  state $lib = $*VM.platform-library-name('pangowin32-1.0'.IO).Str;
+sub pangoft2-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'pangoft2', '1.0', 0);
   $lib
 }
 
-sub pixman-lib {
-  state $lib = $*VM.platform-library-name('pixman-1'.IO).Str;
+sub pangowin32-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'pangowin32', '1.0', 0);
   $lib
 }
 
-sub png-lib {
-  state $lib = $*VM.platform-library-name('libpng16-16'.IO).Str;
+sub pixman-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'pixman', 1, 0);
   $lib
 }
 
-sub xml-lib {
-  state $lib = $*VM.platform-library-name('xml2-2'.IO).Str;
+sub png-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'png16', 16);
   $lib
 }
 
-sub zlib-lib {
-  state $lib = $*VM.platform-library-name('zlib1'.IO).Str;
+sub xml-lib ( --> Str ) is export {
+  state Str $lib = lib-name( 'xml2', 2);
   $lib
 }
 }}
-
 
 
 =finish
