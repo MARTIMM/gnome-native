@@ -55,6 +55,8 @@ subtest "lib 'gobject-lib' ~~ gobject-lib() access tests", {
   diag [~] "OS: ", $*VM.osname;
   diag [~] "config: ", $*VM.config<dll>;
   diag [~] "is-win: ", $*DISTRO.is-win;
+  diag [~] "arch: ", $*KERNEL.arch;
+  diag [~] "archname: ", $*KERNEL.archname;
 
   my N-GValue $no = g_value_init( N-GValue.new, G_TYPE_STRING);
   g_value_set_string( $no, 'new value');

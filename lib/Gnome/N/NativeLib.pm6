@@ -234,7 +234,7 @@ sub gobject-lib ( --> Str ) is export {
 
 sub lib-name ( Str $name, Str $version, Str $lib-postfix = '' --> Str ) {
   $lib-prefix ~ $*VM.platform-library-name((
-      [~] 'gobject-', $version, ($*VM.osname ~~ 'windows' ?? $lib-postfix !! '')
+      [~] 'gobject-', $version, ($*VM.osname ~~ 'mswin32' ?? $lib-postfix !! '')
     ).IO
   ).Str
 }
