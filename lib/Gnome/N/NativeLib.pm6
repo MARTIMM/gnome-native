@@ -219,7 +219,7 @@ sub gobject-lib is export {
 my Str $lib-prefix;
 unless $lib-prefix {
   $lib-prefix =
-    ( $*VM.osname ~~ 'windows' and (
+    ( $*VM.osname ~~ 'mswin32' and (
         'C:/msys64/mingw64/bin'.IO.e or 'C:/mingw64/bin'.IO.e
       )
     ) ?? 'lib' !! '';
