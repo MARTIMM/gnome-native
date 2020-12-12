@@ -13,8 +13,7 @@ subtest 'lib name tests', {
   like gobject-lib(), /:s gobject /, [~] 'gobject    ', gobject-lib();
   like glib-lib(),    /:s glib /,    [~] 'glib       ', glib-lib();
   like gdk-lib(),     /:s gdk /,     [~] 'gdk        ', gdk-lib();
-  like gdk-pixbuf-lib(),
-                      /:s 'gdk_pixbuf' /,
+  like gdk-pixbuf-lib(), /:s 'gdk_pixbuf' /,
                                      [~] 'gdk-pixbuf ', gdk-pixbuf-lib();
   like gtk-lib(),     /:s gtk /,     [~] 'gtk        ', gtk-lib();
   like gio-lib(),     /:s gio /,     [~] 'gio        ', gio-lib();
@@ -39,20 +38,23 @@ class N-GValue is repr('CStruct') is export {
 }
 
 sub g_value_init ( N-GValue $value, GType $g_type --> N-GValue )
-  is native(&gobject-lib)
+  is native(gobject-lib)
   { * }
 
 sub g_value_set_string ( N-GValue $value, gchar-ptr $v_string )
-  is native(&gobject-lib)
+  is native(gobject-lib)
   { * }
 
 sub g_value_get_string ( N-GValue $value --> gchar-ptr )
-  is native(&gobject-lib)
+  is native(gobject-lib)
   { * }
 
 
 
 subtest "lib 'gobject-lib' ~~ gobject-lib() access tests", {
+  diag [~] "OS: ", $*VM.osname;
+  diag [~] "config: ", $*VM.config<dll>;
+
   my N-GValue $no = g_value_init( N-GValue.new, G_TYPE_STRING);
   g_value_set_string( $no, 'new value');
   is g_value_get_string($no), 'new value',
