@@ -1,5 +1,8 @@
 ## Release notes
 
+* 2020-12-13 0.18.4
+  * Add test file to see how types are mapped.
+
 * 2020-12-12 0.18.3
   * Module NativeLib is completely rewritten after some tests on Appveyor. Library names are matching now for windows using MSYS2 and Mingw. Other window environments asume the naming conventions used by Raku. No tests are done yet for MacOS.
 
