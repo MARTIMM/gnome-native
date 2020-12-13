@@ -4,7 +4,7 @@
 #  https://www.archlinux.org/pacman/pacman.8.html
 
 os: Visual Studio 2019
-#version: 0.18.3.2
+version: 0.18.3.3
 image:
   - Visual Studio 2019
 
@@ -44,6 +44,10 @@ test_script:
   # set path to use Raku and GTK libraries
   - set PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\share\perl6\site\bin;C:\msys64\mingw64\bin;%PATH%
   - zef --verbose install .
+  - cmd: dir C:\
+  - cmd: dir C:\zef
+  - cmd: dir C:\users\zef
+
 #  - cd %APPVEYOR_BUILD_FOLDER%\..
 
 # fetch repository as zip archive
