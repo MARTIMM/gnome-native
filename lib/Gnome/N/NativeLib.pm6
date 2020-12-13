@@ -120,7 +120,7 @@ sub lib-name ( Str $name, $version, $lib-postfix = '', :$after-so --> Str ) {
   my Str $lname;
   if $is-windows {
     $lname = $lib-prefix ~ $*VM.platform-library-name((
-        [~] $name, '-', $version, "-$lib-postfix"
+        [~] $name, '-', $version, ($lib-postfix ?? "-$lib-postfix" !! '')
       ).IO
     ).Str
   }
