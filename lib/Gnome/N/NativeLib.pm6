@@ -116,24 +116,28 @@ unless $lib-prefix {
 }
 
 #-------------------------------------------------------------------------------
-sub lib-name ( Str $name, $version, $lib-postfix = '', :$after-so --> Str ) {
+sub lib-name (
+  Str $name, Str :$linux-version, Str :$windows-version, Str :$after-so = ''
+  --> Str
+) {
   my Str $lname;
   if $is-windows {
     $lname = $lib-prefix ~ $*VM.platform-library-name((
-        [~] $name, '-', $version, ($lib-postfix ?? "-$lib-postfix" !! '')
+        [~] $name, ($windows-version.defined ?? "-$windows-version" !! '')
       ).IO
     ).Str
   }
 
   else {
-    if $after-so.defined {
-      $lname = $*VM.platform-library-name($name.IO).Str ~ ".$after-so";
-    }
+    $lname = $*VM.platform-library-name((
+        [~] $name, ($linux-version.defined ?? "-$linux-version" !! '')
+      ).IO
+    ).Str;
 
-    else {
-      $lname = $*VM.platform-library-name("$name\-$version".IO).Str;
-    }
+    $lname ~= '.' ~ $after-so.Str if ?($after-so.Str);
   }
+
+  $lname
 }
 
 #-------------------------------------------------------------------------------
@@ -149,7 +153,8 @@ sub atk-lib ( --> Str ) is export {
 }}
 
 sub cairo-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'cairo', 2, :after-so(2));
+  state Str $lib = lib-name(
+    'cairo', :windows-version<2>, :after-so<2>);
   $lib
 }
 
@@ -176,27 +181,35 @@ sub freetype-lib ( --> Str ) is expor {
 }}
 
 sub gdk-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'gdk', 3, 0);
+  state Str $lib = lib-name( 'gdk', :windows-version<3-0>, :linux-version<3>);
   $lib
 }
 
 sub gdk-pixbuf-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'gdk_pixbuf', '2.0', 0);
+  state Str $lib = lib-name(
+    'gdk_pixbuf', :windows-version<2.0-0>, :linux-version<2.0>
+  );
   $lib
 }
 
 sub gio-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'gio', '2.0', 0);
+  state Str $lib = lib-name(
+    'gio', :windows-version<2.0-0>, :linux-version<2.0>
+  );
   $lib
 }
 
 sub glib-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'glib', '2.0', 0);
+  state Str $lib = lib-name(
+    'glib', :windows-version<2.0-0>, :linux-version<2.0>
+  );
   $lib
 }
 
 sub gobject-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'gobject', '2.0', 0);
+  state Str $lib = lib-name(
+    'gobject', :windows-version<2.0-0>, :linux-version<2.0>
+  );
   $lib
 }
 
@@ -208,7 +221,7 @@ sub gmodule-lib ( --> Str ) is export {
 }}
 
 sub gtk-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'gtk', 3, 0);
+  state Str $lib = lib-name( 'gtk', :windows-version<3-0>, :linux-version<3>);
   $lib
 }
 
@@ -235,7 +248,9 @@ sub lzma-lib {
 }}
 
 sub pango-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'pango', '1.0', 0);
+  state Str $lib = lib-name(
+    'pango', :windows-version<1.0-0>, :linux-version<1.0>
+  );
   $lib
 }
 
