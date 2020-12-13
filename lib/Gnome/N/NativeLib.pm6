@@ -108,7 +108,7 @@ unit module Gnome::N::NativeLib;
 my Str $lib-prefix;
 my Bool $is-windows;
 my Bool $has-mingw;
-#-------------------------------------------------------------------------------
+
 unless $lib-prefix {
   $is-windows = $*DISTRO.is-win;
   $has-mingw = ('C:/msys64/mingw64/bin'.IO.e or 'C:/mingw64/bin'.IO.e);
@@ -116,11 +116,24 @@ unless $lib-prefix {
 }
 
 #-------------------------------------------------------------------------------
-sub lib-name ( Str $name, $version, $lib-postfix = '' --> Str ) {
-  $lib-prefix ~ $*VM.platform-library-name((
-      [~] $name, '-', $version, ($is-windows ?? "-$lib-postfix" !! '')
-    ).IO
-  ).Str
+sub lib-name ( Str $name, $version, $lib-postfix = '', :$after-so --> Str ) {
+  my Str $lname;
+  if $is-windows {
+    $lname = $lib-prefix ~ $*VM.platform-library-name((
+        [~] $name, '-', $version, "-$lib-postfix"
+      ).IO
+    ).Str
+  }
+
+  else {
+    if $after-so.defined {
+      $lname = $*VM.platform-library-name($name.IO).Str ~ ".$after-so";
+    }
+
+    else {
+      $lname = $*VM.platform-library-name("$name\-$version".IO).Str;
+    }
+  }
 }
 
 #-------------------------------------------------------------------------------
@@ -136,7 +149,7 @@ sub atk-lib ( --> Str ) is export {
 }}
 
 sub cairo-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'cairo', 2);
+  state Str $lib = lib-name( 'cairo', 2, :after-so(2));
   $lib
 }
 
@@ -168,7 +181,7 @@ sub gdk-lib ( --> Str ) is export {
 }
 
 sub gdk-pixbuf-lib ( --> Str ) is export {
-  state Str $lib = lib-name( 'gdk_pixbuf', 2, 0);
+  state Str $lib = lib-name( 'gdk_pixbuf', '2.0', 0);
   $lib
 }
 
