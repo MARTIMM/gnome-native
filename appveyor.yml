@@ -45,7 +45,7 @@ test_script:
   - zef --verbose install .
 
 # fetch repository as zip archive
-shallow_clone: true
+#shallow_clone: true
 
 # set clone depth
 #clone_depth: 4
