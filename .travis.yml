@@ -9,5 +9,5 @@ perl6:
   - latest
 
 install:
-  - rakubrew build zef
+  - rakudobrew build zef
   - zef --depsonly install .
