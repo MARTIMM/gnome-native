@@ -20,11 +20,11 @@
 This package holds the native object description as well as the interface description to connect to the Gnome libraries. This set of modules will never act on their own. They will be used by other packages such as `Gnome::Gtk3` and the like.
 
 ## Documentation
-[ 🔗 Website](https://martimm.github.io/gnome-gtk3/content-docs/reference-native.html)
-[ 🔗 Travis-ci run on master branch][travis-run]
-[ 🔗 Appveyor run on master branch][appveyor-run]
-[ 🔗 License document][licence-lnk]
-[ 🔗 Release notes][changes]
+* [ 🔗 Website](https://martimm.github.io/gnome-gtk3/content-docs/reference-native.html)
+* [ 🔗 Travis-ci run on master branch][travis-run]
+* [ 🔗 Appveyor run on master branch][appveyor-run]
+* [ 🔗 License document][licence-lnk]
+* [ 🔗 Release notes][changes]
 
 # Installation
 Do not install this package on its own. Instead install `Gnome::Gtk3`.
