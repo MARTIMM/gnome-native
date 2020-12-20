@@ -272,22 +272,20 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 #-------------------------------------------------------------------------------
 # no pod. user does not have to know about it.
 #
-# Fallback method to find the native subs which then can be called as if they
-# were methods. Each class must provide their own '_fallback()' method which,
-# when nothing found, must call the parents _fallback with 'callsame()'.
-# The subs in some class all start with some prefix which can be left out too
-# provided that the _fallback functions must also test with an added prefix.
-# So e.g. a sub 'gtk_label_get_text' defined in class GtlLabel can be called
-# like '$label.gtk_label_get_text()' or '$label.get_text()'. As an extra
-# feature dashes can be used instead of underscores, so '$label.get-text()'
-# works too.
+# This method is like the Fallback method. However, it does not search for the
+# native subroutine. The routine must be provided to this method. Its purpose
+# is to call the method directly from the classes which will skip the search
+# process and saves a lot of time. For example, the AboutDialog now has methods
+# for almost all native subs. The benchmark run over all the subroutines shows
+# about 8 times speed increase.
+# See also '... gnome-gtk3/xt/Benchmarking/Modules/AboutDialog.raku'.
 #
 # Do not cast when the class is a leaf. Do not convert when no parameters or
 # easy to coerse by Raku like Int, Enum and Str. When both False, make call
-# directly
+# directly.
 method _f (
   Callable $s, **@params is copy, *%named-params, Bool :$convert = True,
-  Bool :$cast = True
+  Bool :$cast = True, Str :$sub-class
 ) {
 
   # user convenience substitutions to get a native object instead of
@@ -301,7 +299,7 @@ method _f (
   #
   # Call the method only from classes where all variables are defined!
   my Any $g-object-cast;
-  if $cast and $!class-name ne $!class-name-of-sub {
+  if $cast and ?$sub-class and $!class-name ne $sub-class {
     $g-object-cast = tlcs_type_check_instance_cast(
       $!n-native-object, $!class-gtype
     );
