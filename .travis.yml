@@ -1,8 +1,8 @@
 branches:
   only:
-#    - master
+    - master
 #    - module
-    - develop
+#    - develop
 
 language: perl6
 
