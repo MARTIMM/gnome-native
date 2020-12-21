@@ -1,7 +1,7 @@
 ## Release notes
 
 * 2020-12-20 0.18.5
-  * Add option to helper function _f() in TopLevelClassSupport
+  * Add :sub-class option and remove :cast of helper function _f() in TopLevelClassSupport
 
 * 2020-12-13 0.18.4
   * Add test file to see how types are mapped.
