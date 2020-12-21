@@ -285,7 +285,7 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 # directly.
 method _f (
   Callable $s, **@params is copy, *%named-params, Bool :$convert = True,
-  Bool :$cast = True, Str :$sub-class
+  Str :$sub-class
 ) {
 
   # user convenience substitutions to get a native object instead of
@@ -299,7 +299,7 @@ method _f (
   #
   # Call the method only from classes where all variables are defined!
   my Any $g-object-cast;
-  if $cast and ?$sub-class and $!class-name ne $sub-class {
+  if ?$sub-class and $!class-name ne $sub-class {
     $g-object-cast = tlcs_type_check_instance_cast(
       $!n-native-object, $!class-gtype
     );
