@@ -283,14 +283,7 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 # Do not cast when the class is a leaf. Do not convert when no parameters or
 # easy to coerse by Raku like Int, Enum and Str. When both False, make call
 # directly.
-method _f (
-  Callable $s, **@params is copy, *%named-params, Bool :$convert = True,
-  Str :$sub-class
-) {
-
-  # user convenience substitutions to get a native object instead of
-  # a Gtk3::SomeThing or other *::SomeThing object.
-  self.convert-to-natives( $s, @params) if $convert;
+method _f ( Str :$sub-class --> Any ) {
 
   # cast to other gtk object type if the found subroutine is from another
   # gtk object type than the native object stored at $!n-native-object.
@@ -310,7 +303,7 @@ method _f (
   }
 
 #note "test-call: $s.gist(), $g-object-cast.gist()";
-  test-call( $s, $g-object-cast, |@params, |%named-params)
+  $g-object-cast
 }
 
 #-------------------------------------------------------------------------------
