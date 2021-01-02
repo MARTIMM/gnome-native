@@ -11,3 +11,4 @@ Old/*
 t/Travis-ci/*.tgz
 tests/Pencil*
 markdown-refs.md
+xbin/c-type-size
