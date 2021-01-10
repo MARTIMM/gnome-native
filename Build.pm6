@@ -8,7 +8,7 @@ has Str $!dist-path;
 #-------------------------------------------------------------------------------
 method build ( Str $!dist-path --> Int ) {
 
-  self!download-install-software;
+  self!map-installed-libraries;
   self!build-types-conversion-module;
 
   # return success
@@ -16,8 +16,78 @@ method build ( Str $!dist-path --> Int ) {
 }
 
 #-------------------------------------------------------------------------------
-method !download-install-software ( ) {
+method !map-installed-libraries ( ) {
 
+  # Native lib calls are like 'is native(&gtk-lib)'. Library names on linux
+  # and windows, all start with 'lib' (see also https://www.tecmint.com/understanding-shared-libraries-in-linux/ and https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html).
+  #
+  my %libs-to-map = %(
+    :gtk(3), :gdk(3), :glib(2), :gobject(2), :cairo(2), :gdk_pixbuf(2),
+    :gio(2), :pango(1), :atk(1), :cairo-gobject(2), :pangocairo(1),
+  );
+#note %libs-to-map.perl;
+
+  # generate head
+  my Str $map = Q:q:to/EOMAP/;
+    use v6;
+    #use NativeCall;
+
+    #-------------------------------------------------------------------------------
+    unit module Gnome::N::NativeLib:auth<github:MARTIMM>:ver<0.2.1>;
+
+    #-------------------------------------------------------------------------------
+    EOMAP
+
+
+  if $*DISTRO.is-win {
+    # pick names found for mingw installation on AppVeyor
+    $map ~= Q:q:to/EOMAP/;
+      sub atk-lib ( --> Str )           is export { 'libatk-1.0-0.dll'; }
+      sub cairo-gobject-lib ( --> Str ) is export { 'libcairo-gobject-2.dll'; }
+      sub cairo-lib ( --> Str )         is export { 'libcairo-2.dll'; }
+      sub gdk-lib ( --> Str )           is export { 'libgdk-3-0.dll'; }
+      sub gdk-pixbuf-lib ( --> Str )    is export { 'libgdk_pixbuf-2.0-0.dll'; }
+      sub gio-lib ( --> Str )           is export { 'libgio-2.0-0.dll'; }
+      sub glib-lib ( --> Str )          is export { 'libglib-2.0-0.dll'; }
+      sub gobject-lib ( --> Str )       is export { 'libgobject-2.0-0.dll'; }
+      sub gtk-lib ( --> Str )           is export { 'libgtk-3-0.dll'; }
+      sub pango-lib ( --> Str )         is export { 'libpango-1.0-0.dll'; }
+      sub pangocairo-lib ( --> Str )    is export { 'libpangocairo-1.0-0.dll'; }
+      EOMAP
+  }
+
+  else {
+    my Proc $p = run 'ldconfig', '-vN', :out, :err;
+
+    for $p.out.lines.sort.unique -> $l {
+#note "$l";
+      if $l ~~ / '->' / {
+#        $l ~~ /^ \s+ (<-[\s]>+) \s+ '->' \s+ (<-[\s]>+) /;
+        $l ~~ /^ \s+ (<-[\s]>+) \s+ '->' /;
+        my Str $libname = $/[0].Str;
+#my Str $libname2 = ($/[1] // '-').Str;
+        for %libs-to-map.kv -> $libtag is copy, $minver {
+          if $libname ~~ m/^ lib $libtag <|w> (<[-\.\d]>+) so (<[-\.\d]>+)? / {
+            my Str $mv1 = $/[0].Str;
+            my Str $mv2 = ($/[1] // '').Str;
+            if $mv1 ~~ m/ '-' $minver/ or $mv2 ~~ m/ '.' $minver/ {
+#note "$libtag";
+              $libtag ~~ s/gdk_pixbuf/gdk-pixbuf/;
+              $map ~= "sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
+              next;
+            }
+          }
+        }
+#exit(1);
+      }
+    }
+
+    $p.err.close;
+    $p.out.close;
+  }
+
+  # write to module
+  'lib/Gnome/N/NativeLib.pm6'.IO.spurt($map);
 }
 
 #-------------------------------------------------------------------------------
@@ -121,7 +191,7 @@ method !build-types-conversion-module ( ) {
     use v6;
     use NativeCall;
 
-    unit package Gnome::N::GlibToRakuTypes;
+    unit package Gnome::N::GlibToRakuTypes:auth<github:MARTIMM>:ver<0.2.1>;
 
     #-------------------------------------------------------------------------------
     EOMOD_START
