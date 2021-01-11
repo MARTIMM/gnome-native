@@ -6,19 +6,30 @@ use Gnome::N::NativeLib;
 use Gnome::N::N-GObject;
 use Gnome::N::GlibToRakuTypes;
 
-#diag (map -> $k, $v { "  $k: $v" }, $*VM.config.kv).join("\n");
+#-------------------------------------------------------------------------------
+subtest 'lib names', {
+  diag 'atk-lib:            ' ~ atk-lib();
+  diag 'cairo-gobject-lib:  ' ~ cairo-gobject-lib();
+  diag 'cairo-lib:          ' ~ cairo-lib();
+  diag 'gdk-lib:            ' ~ gdk-lib();
+  diag 'gdk-pixbuf-lib:     ' ~ gdk-pixbuf-lib();
+  diag 'gio-lib:            ' ~ gio-lib();
+  diag 'glib-lib:           ' ~ glib-lib();
+  diag 'gobject-lib:        ' ~ gobject-lib();
+  diag 'pango-lib:          ' ~ pango-lib();
+  diag 'pangocairo-lib:     ' ~ pangocairo-lib();
+}
 
 #-------------------------------------------------------------------------------
 subtest 'lib name tests', {
-  like cairo-lib(),   /:s cairo /,   [~] 'cairo      ', cairo-lib();
-  like gdk-lib(),     /:s gdk /,     [~] 'gdk        ', gdk-lib();
-  like gdk-pixbuf-lib(), /:s 'gdk_pixbuf' /,
-                                     [~] 'gdk-pixbuf ', gdk-pixbuf-lib();
-  like gio-lib(),     /:s gio /,     [~] 'gio        ', gio-lib();
-  like glib-lib(),    /:s glib /,    [~] 'glib       ', glib-lib();
-  like gobject-lib(), /:s gobject /, [~] 'gobject    ', gobject-lib();
-  like gtk-lib(),     /:s gtk /,     [~] 'gtk        ', gtk-lib();
-  like pango-lib(),   /:s pango /,   [~] 'pango      ', pango-lib();
+  like cairo-lib(), /:s cairo /, 'cairo';
+  like gdk-lib(), /:s gdk /, 'gdk';
+  like gdk-pixbuf-lib(), /:s 'gdk_pixbuf' /, 'gdk-pixbuf';
+  like gio-lib(), /:s gio /, 'gio';
+  like glib-lib(), /:s glib /, 'glib';
+  like gobject-lib(), /:s gobject /, 'gobject';
+  like gtk-lib(), /:s gtk /, 'gtk';
+  like pango-lib(), /:s pango /, 'pango';
 }
 
 #-------------------------------------------------------------------------------
