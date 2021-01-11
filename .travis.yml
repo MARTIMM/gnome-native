@@ -1,7 +1,7 @@
 branches:
   only:
     - master
-    - module
+#    - module
 #    - develop
 
 language: perl6
@@ -10,7 +10,5 @@ perl6:
   - latest
 
 install:
-#  - rakudobrew build zef
-#  - zef --depsonly --/test install .
-  - ls -l /usr/lib
-  - ls -l /usr/lib64
+  - rakudobrew build zef
+  - zef --depsonly --/test install .
