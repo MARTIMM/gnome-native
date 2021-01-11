@@ -7,7 +7,7 @@
 use v6;
 use NativeCall;
 
-unit package Gnome::N::GlibToRakuTypes;
+unit package Gnome::N::GlibToRakuTypes:auth<github:MARTIMM>:ver<0.2.1>;
 
 #-------------------------------------------------------------------------------
 constant \GEnum           is export = int32;
