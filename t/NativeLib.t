@@ -16,6 +16,7 @@ subtest 'lib names', {
   diag 'gio-lib:            ' ~ gio-lib();
   diag 'glib-lib:           ' ~ glib-lib();
   diag 'gobject-lib:        ' ~ gobject-lib();
+  diag 'gtk-lib:            ' ~ gtk-lib();
   diag 'pango-lib:          ' ~ pango-lib();
   diag 'pangocairo-lib:     ' ~ pangocairo-lib();
 }
