@@ -40,6 +40,7 @@ subtest 'type tests', {
   diag 'gulong:       ' ~ gulong.gist;
   diag 'gushort:      ' ~ gushort.gist;
   diag 'int-ptr:      ' ~ int-ptr.gist;
+  diag 'time_t:       ' ~ time_t.gist;
   diag 'void-ptr:     ' ~ void-ptr.gist;
 }
 

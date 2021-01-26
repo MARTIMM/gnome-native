@@ -124,6 +124,12 @@ method !build-types-conversion-module ( ) {
           $limit-name ~~ s/ '_max' //;
           $c-types{$limit-name} = 'int' ~ $limit.base(16).chars * 4;
         }
+
+        when /^ 'gtime_t' / {
+          # limit is in bytes
+          $limit-name = 'time_t';
+          $c-types{$limit-name} = 'int' ~ $limit * 8;
+        }
       }
     }
 
@@ -142,6 +148,9 @@ method !build-types-conversion-module ( ) {
     $c-types<guint> = 'uint32';
     $c-types<gulong> = $*KERNEL.bits() == 64 ?? 'uint64' !! 'int32';
     $c-types<gushort> = 'uint16';
+
+    # time can be negative, see https://c-for-dummies.com/blog/?p=3435
+    $c-types<time_t> = $*KERNEL.bits() == 64 ?? 'int64' !! 'int32';
   }
 
   # add other types which are fixed
@@ -191,7 +200,7 @@ method !build-types-conversion-module ( ) {
     use v6;
     use NativeCall;
 
-    unit package Gnome::N::GlibToRakuTypes:auth<github:MARTIMM>:ver<0.2.1>;
+    unit package Gnome::N::GlibToRakuTypes:auth<github:MARTIMM>:ver<0.3.0>;
 
     #-------------------------------------------------------------------------------
     EOMOD_START

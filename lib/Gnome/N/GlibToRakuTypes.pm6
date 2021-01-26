@@ -7,7 +7,7 @@
 use v6;
 use NativeCall;
 
-unit package Gnome::N::GlibToRakuTypes:auth<github:MARTIMM>:ver<0.2.1>;
+unit package Gnome::N::GlibToRakuTypes:auth<github:MARTIMM>:ver<0.3.0>;
 
 #-------------------------------------------------------------------------------
 constant \GEnum           is export = int32;
@@ -43,4 +43,5 @@ constant \guint8          is export = uint8;
 constant \gulong          is export = uint64;
 constant \gushort         is export = uint16;
 constant \int-ptr         is export = CArray[int32];
+constant \time_t          is export = int64;
 constant \void-ptr        is export = Pointer[void];
