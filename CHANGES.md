@@ -1,5 +1,8 @@
 ## Release notes
 
+* 2020-12-20 0.18.6
+  * Add time_t to list of types in **Gnome::N::GlibToRakuTypes** module.
+
 * 2020-12-20 0.18.5
   * Add :sub-class option and remove :cast of helper function _f() in TopLevelClassSupport
 
