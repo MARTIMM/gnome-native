@@ -1,3 +1,9 @@
+
+
+#-------------------------------------------------------------------------------
+# this program is just to test things. The real McCoy is in Build.pm6
+#-------------------------------------------------------------------------------
+
 use v6;
 
 my Bool $run-ok;
@@ -14,60 +20,34 @@ try {
 
   for $proc.out.lines -> $line {
     my ( $limit-name, $limit) = $$line.split(/ \s* ':' \s* /);
-  #  note "$limit-name, $limit";
     next if $limit-name ~~ m/ MIN | SCHAR /;
 
     $limit-name ~~ s/SHRT/SHORT/;
     $limit-name .= lc;
-    $limit-name = 'g' ~ $limit-name;
+    $limit-name = 'g' ~ $limit-name;# unless $limit-name ~~ / 'time_t' | timesize /;
 
     $limit .= Int;
 
-    given $limit-name {
-  #    when 'CHAR_BIT' {
-  #      note "$limit-name, $limit, int$limit.base(16)";
-  #    }
+#note "$limit-name, $limit";
 
-      when / 'u' .*? '_max' $/ {
+    given $limit-name {
+      when /^ 'u' .*? '_max' $/ {
+        # limit is maximum unsigned integer
         $limit-name ~~ s/ '_max' //;
         $c-types{$limit-name} = 'uint' ~ $limit.base(16).chars * 4;
-  #      note sprintf( "%11s uint%d",
-  #        $limit-name, $limit.base(16).chars * 4
-  #      );
       }
 
       when / '_max' $/ {
+        # limit is maximum signed integer
         $limit-name ~~ s/ '_max' //;
         $c-types{$limit-name} = 'int' ~ $limit.base(16).chars * 4;
-  #      note sprintf( "%11s int%d",
-  #        $limit-name, $limit.base(16).chars * 4
-  #      );
-      }
-  #`{{
-      when 'INT_MAX' {
-        note "0x$limit.base(16)", 'int' ~ ($limit.base(16).chars * 4).Str;
       }
 
-      when 'INT_MIN' {
-        note "0x$limit.base(16)", 'int' ~ ($limit.base(16).chars * 4).Str;
+      when /^ 'gtime_t' / {
+        # limit is in bytes
+        $limit-name = 'time_t';
+        $c-types{$limit-name} = 'uint' ~ $limit * 8;
       }
-
-      when 'UINT_MAX' {
-        note "0x$limit.base(16), ", 'int' ~ ($limit.base(16).chars * 4).Str;
-      }
-
-      when 'LONG_MAX' {
-        note "0x$limit.base(16)", 'int' ~ ($limit.base(16).chars * 4).Str;
-      }
-
-      when 'LONG_MIN' {
-        note "0x$limit.base(16)", 'int' ~ ($limit.base(16).chars * 4).Str;
-      }
-
-      when 'ULONG_MAX' {
-        note "0x$limit.base(16), ", 'int' ~ ($limit.base(16).chars * 4).Str;
-      }
-  }}
     }
   }
 
@@ -96,6 +76,7 @@ unless $run-ok {
   $c-types<guint> = 'uint32';
   $c-types<gulong> = $*KERNEL.bits() == 64 ?? 'uint64' !! 'int32';
   $c-types<gushort> = 'uint16';
+  $c-types<time_t> = $*KERNEL.bits() == 64 ?? 'uint64' !! 'int32';
 }
 
 # add other types which are fixed
