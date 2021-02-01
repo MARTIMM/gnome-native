@@ -1,5 +1,8 @@
 ## Release notes
 
+* 2021-02-01 0.18.7
+  * Removed native variant classes
+
 * 2020-12-20 0.18.6
   * Add time_t to list of types in **Gnome::N::GlibToRakuTypes** module.
 
