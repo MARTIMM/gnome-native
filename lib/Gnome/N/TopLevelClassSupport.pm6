@@ -9,18 +9,6 @@ use Gnome::N::NativeLib;
 use Gnome::N::N-GObject;
 use Gnome::N::GlibToRakuTypes;
 
-#`{{
-use Gnome::N::N-GError;
-use Gnome::N::N-GList;
-use Gnome::N::N-GObject;
-use Gnome::N::N-GOptionContext;
-use Gnome::N::N-GSList;
-use Gnome::N::N-GVariant;
-use Gnome::N::N-GVariantBuilder;
-use Gnome::N::N-GVariantIter;
-use Gnome::N::N-GVariantType;
-}}
-
 #-------------------------------------------------------------------------------
 unit class Gnome::N::TopLevelClassSupport;
 #`{{
