@@ -57,7 +57,16 @@ method !map-installed-libraries ( ) {
   }
 
   else {
-    my Proc $p = run 'ldconfig', '-vN', :out, :err;
+    my Str $ldconfig-path;
+    my @bin-dirs = </bin /sbin /usr/sbin /usr/bin /opt/bin /usr/local/bin>;
+    for @bin-dirs -> $bd {
+      if "$bd/ldconfig".IO.e and "$bd/ldconfig".IO.x {
+        $ldconfig-path = "$bd/ldconfig";
+        last;
+      }
+    }
+
+    my Proc $p = run $ldconfig-path, '-vN', :out, :err;
 
     for $p.out.lines.sort.unique -> $l {
 #note "$l";

@@ -1,4 +1,6 @@
 ## Release notes
+* 2021-02-13 0.18.8
+  * Change Build.pm6 to search for ldconfig in other directories outide PATH.
 
 * 2021-02-01 0.18.7
   * Removed native variant classes
