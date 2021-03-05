@@ -100,7 +100,6 @@ class Label is Gnome::N::TopLevelClassSupport {
     try { $s = &::("gtk_label_$native-sub"); };
     try { $s = &::("gtk_$native-sub"); } unless ?$s;
     try { $s = &::($native-sub); } if !$s and $native-sub ~~ m/^ 'gtk_' /;
-    $s = self._buildable_interface($native-sub) unless ?$s;
 
     self.set-class-name-of-sub('GtkLabel') if ?$s;
     $s = callsame unless ?$s;
