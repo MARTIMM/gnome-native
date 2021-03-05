@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
   printf("UCHAR_MAX: %d\n", UCHAR_MAX);
   printf("USHRT_MAX: %d\n", (unsigned short) USHRT_MAX);
 
-  printf("TIMESIZE bits: %d\n", __TIMESIZE);
+/*  printf("TIMESIZE bits: %d\n", __TIMESIZE); */
   printf("time_t size bytes: %lu\n", sizeof(time_t));
   return 0;
 }
