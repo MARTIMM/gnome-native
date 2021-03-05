@@ -1,4 +1,8 @@
 ## Release notes
+
+* 2021-03-05 0.18.9
+  * Remove reading of __TIMESIZE in C. It doesn't exist on Windows.
+
 * 2021-02-13 0.18.8
   * Change Build.pm6 to search for ldconfig in other directories outide PATH.
 
