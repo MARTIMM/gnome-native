@@ -11,16 +11,6 @@ use Gnome::N::GlibToRakuTypes;
 
 #-------------------------------------------------------------------------------
 unit class Gnome::N::TopLevelClassSupport;
-#`{{
-subset N-Type is export where
-  # Structures for Gnome::Glib
-  N-GError | N-GList | N-GOptionContext | N-GSList |
-  N-GVariant | N-GVariantBuilder | N-GVariantIter | N-GVariantType |
-
-  # Structures for Gnome::Gobject
-  N-GObject
-;
-}}
 
 #-------------------------------------------------------------------------------
 # this native object is used by the toplevel class and its descendent classes.
