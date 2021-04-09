@@ -412,6 +412,7 @@ Returns True if native error object is valid, otherwise C<False>.
 # for internal use!
 method _set_invalid ( ) {
   $!is-valid = False;
+  $!n-native-object = Nil;
 }
 
 #-------------------------------------------------------------------------------
