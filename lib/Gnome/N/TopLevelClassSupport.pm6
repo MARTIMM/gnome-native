@@ -33,7 +33,7 @@ has Str $!class-name-of-sub;
 # like '$c .= new(...);', the native object, if any must be cleared first.
 multi method new ( |c ) {
 
-  self.clear-object if self.defined;
+  self.clear-object if self.defined; !!!! DON'T !!!!
   self.bless(|c);
 }
 }}
@@ -88,7 +88,7 @@ submethod BUILD ( *%options ) {
   # 'my Xyz $xyz .= new(...);' is used, the original native object
   # must be cleaned up before we can continue.
   #$!is-valid //= False;
-  #self.clear-object;
+  #self.clear-object; !!!! DON'T !!!!
 
 #note "Opts: ", %options.keys, ', ', "is-valid: $!is-valid";
 
@@ -148,7 +148,7 @@ if $no-type != $type {
 
 }}
 
-#    self.clear-object if ? $!n-native-object;
+#    self.clear-object if ? $!n-native-object; !!!! DON'T !!!!
 
 
     # The list classes may have an undefined structure and still be valid
@@ -349,7 +349,7 @@ method set-native-object ( $native-object ) {
 
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
-    #self.clear-object;
+    #self.clear-object; !!!! DON'T !!!!
 
     # if higher level object then extract native object from it
     my Any $no = $native-object;
@@ -367,7 +367,7 @@ method set-native-object ( $native-object ) {
   ) {
     # if there was a valid native object, we must clear it first before
     # overwriting the local native object
-    #self.clear-object;
+    #self.clear-object; !!!! DON'T !!!!
 
     $!n-native-object = $native-object;
     $!is-valid = True;
@@ -383,7 +383,7 @@ method set-native-object ( $native-object ) {
 method set-native-object-no-reffing ( $native-object ) {
 
   if ? $native-object {
-    #self.clear-object;
+    #self.clear-object; !!!! DON'T !!!!
     $!n-native-object = $native-object;
     $!is-valid = True;
   }
@@ -406,6 +406,13 @@ Returns True if native error object is valid, otherwise C<False>.
   method is-valid ( --> Bool )
 
 =end pod
+
+#-------------------------------------------------------------------------------
+# Purpose to invalidate an object after some operation such as .destroy(). Only
+# for internal use!
+method _set_invalid ( ) {
+  $!is-valid = False;
+}
 
 #-------------------------------------------------------------------------------
 #TM:1:clear-object
