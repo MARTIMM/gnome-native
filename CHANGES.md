@@ -1,4 +1,6 @@
 ## Release notes
+* 2021-04-09 0.18.10
+  * Add a routine to TopLevelClassSupport for internal uses.
 
 * 2021-03-05 0.18.9
   * Remove reading of __TIMESIZE in C. It doesn't exist on Windows.
