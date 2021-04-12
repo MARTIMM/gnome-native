@@ -519,6 +519,10 @@ method _wrap-native-type (
 }
 
 #-------------------------------------------------------------------------------
+# Native to raku object wrap when type can be one of a few possible choices
+# e.g. the GtkTreeView may return a GtkTreeModel which can be e.g. a
+# GtkTreeStore or GtkListStore.
+# That call would be like; ._wrap-native-type-from-no( $no, 'Gtk', 'Gtk3::')
 method _wrap-native-type-from-no (
   N-GObject:D $no, Str:D $match, Str:D $replace
   --> Any
