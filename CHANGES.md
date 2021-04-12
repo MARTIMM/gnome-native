@@ -1,6 +1,6 @@
 ## Release notes
 * 2021-04-12 0.18.11
-  * Add another routine `_wrap-native` to TopLevelClassSupport for internal use.
+  * Add routines `_wrap-native-type` and `_wrap-native-type-from-no` to TopLevelClassSupport for internal use. Also an info method is added `_get_no_type_info` to investigate a native object's type.
 
 * 2021-04-09 0.18.10
   * Add a routine `_set_invalid` to TopLevelClassSupport for internal use.

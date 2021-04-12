@@ -508,12 +508,40 @@ method convert-to-natives ( Callable $s, @params ) {
 
 #-------------------------------------------------------------------------------
 # Native to raku object wrap
-method _wrap-native (
-  Str:D $type where ?$type,  N-GObject:D $no
+# Useful to prevent circular dependencies and for late binding
+method _wrap-native-type (
+  Str:D $type where ?$type, N-GObject:D $no
   --> Any
 ) {
+  # get class and wrap the native object in it
   require ::($type);
   ::($type).new(:native-object($no))
+}
+
+#-------------------------------------------------------------------------------
+method _wrap-native-type-from-no (
+  N-GObject:D $no, Str:D $match, Str:D $replace
+  --> Any
+) {
+  my Str $native-name = tlcs_type_name_from_instance($no);
+  $native-name ~~ s/$match/$replace/;
+  my Str $type = [~] 'Gnome', '::', $native-name;
+
+  # get class and wrap the native object in it
+  require ::($type);
+  ::($type).new(:native-object($no))
+}
+
+#-------------------------------------------------------------------------------
+method _get_no_type_info (  N-GObject:D $no, Str :$check --> List ) {
+  ( my Str $no-type-name = tlcs_type_name_from_instance($no),
+    ? $check
+      ?? (? tlcs_type_check_instance_is_a( $no, tlcs_type_from_name($check))
+           ?? "$no-type-name is a $check"
+           !! "$no-type-name is not a $check"
+         )
+      !! 'no check of type',
+  )
 }
 
 #-------------------------------------------------------------------------------
@@ -535,4 +563,15 @@ sub tlcs_type_check_instance_cast (
   N-GObject $instance, GType $iface_type --> N-GObject
 ) is native(&gobject-lib)
   is symbol('g_type_check_instance_cast')
+  { * }
+
+sub tlcs_type_name_from_instance ( N-GObject $instance --> Str )
+  is native(&gobject-lib)
+  is symbol('g_type_name_from_instance')
+  { * }
+
+sub tlcs_type_check_instance_is_a (
+  N-GObject $instance, GType $iface_type --> gboolean
+) is native(&gobject-lib)
+  is symbol('g_type_check_instance_is_a')
   { * }
