@@ -1,6 +1,9 @@
 ## Release notes
+* 2021-04-12 0.18.11
+  * Add another routine `_wrap-native` to TopLevelClassSupport for internal use.
+
 * 2021-04-09 0.18.10
-  * Add a routine to TopLevelClassSupport for internal uses.
+  * Add a routine `_set_invalid` to TopLevelClassSupport for internal use.
 
 * 2021-03-05 0.18.9
   * Remove reading of __TIMESIZE in C. It doesn't exist on Windows.
@@ -15,7 +18,7 @@
   * Add time_t to list of types in **Gnome::N::GlibToRakuTypes** module.
 
 * 2020-12-20 0.18.5
-  * Add :sub-class option and remove :cast of helper function _f() in TopLevelClassSupport
+  * Add `:sub-class` option and remove `:cast` of helper function `_f()` in TopLevelClassSupport
 
 * 2020-12-13 0.18.4
   * Add test file to see how types are mapped.

@@ -507,6 +507,16 @@ method convert-to-natives ( Callable $s, @params ) {
 }
 
 #-------------------------------------------------------------------------------
+# Native to raku object wrap
+method _wrap-native (
+  Str:D $type where ?$type,  N-GObject:D $no
+  --> Any
+) {
+  require ::($type);
+  ::($type).new(:native-object($no))
+}
+
+#-------------------------------------------------------------------------------
 # some necessary native subroutines
 
 # These subs belong to Gnome::GObject::Type but is needed here. To avoid
