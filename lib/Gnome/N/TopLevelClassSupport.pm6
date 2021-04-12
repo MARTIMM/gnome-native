@@ -514,7 +514,15 @@ method _wrap-native-type (
   --> Any
 ) {
   # get class and wrap the native object in it
+#note "type: $type";
+  try require ::($type);
+  if $Gnome::N::x-debug and ::($type) ~~ Failure {
+    note "Failed to load $type!";
+    ::($type).note;
+  }
+
   require ::($type);
+#note "sym: ", ::($type);
   ::($type).new(:native-object($no))
 }
 
