@@ -1,4 +1,7 @@
 ## Release notes
+* 2021-04-30 0.18.12
+  * Changed API of _wrap-native-type-from-no a bit.
+
 * 2021-04-12 0.18.11
   * Add routines `_wrap-native-type` and `_wrap-native-type-from-no` to TopLevelClassSupport for internal use. Also an info method is added `_get_no_type_info` to investigate a native object's type.
 

@@ -246,45 +246,6 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 }
 
 #-------------------------------------------------------------------------------
-### test for substite FALLBACK without search
-#-------------------------------------------------------------------------------
-# no pod. user does not have to know about it.
-#
-# This method is like the Fallback method. However, it does not search for the
-# native subroutine. The routine must be provided to this method. Its purpose
-# is to call the method directly from the classes which will skip the search
-# process and saves a lot of time. For example, the AboutDialog now has methods
-# for almost all native subs. The benchmark run over all the subroutines shows
-# about 8 times speed increase.
-# See also '... gnome-gtk3/xt/Benchmarking/Modules/AboutDialog.raku'.
-#
-# Do not cast when the class is a leaf. Do not convert when no parameters or
-# easy to coerse by Raku like Int, Enum and Str. When both False, make call
-# directly.
-method _f ( Str $sub-class? --> Any ) {
-
-  # cast to other gtk object type if the found subroutine is from another
-  # gtk object type than the native object stored at $!n-native-object.
-  # This happens e.g. when a Gnome::Gtk::Button object uses gtk-widget-show()
-  # which belongs to Gnome::Gtk::Widget.
-  #
-  # Call the method only from classes where all variables are defined!
-  my Any $g-object-cast;
-  if ?$sub-class and $!class-name ne $sub-class {
-    $g-object-cast = tlcs_type_check_instance_cast(
-      $!n-native-object, $!class-gtype
-    );
-  }
-
-  else {
-    $g-object-cast = $!n-native-object;
-  }
-
-#note "test-call: $s.gist(), $g-object-cast.gist()";
-  $g-object-cast
-}
-
-#-------------------------------------------------------------------------------
 # no pod. user does not have to know about it.
 method set-class-info ( Str:D $!class-name ) {
   $!class-gtype = tlcs_type_from_name($!class-name)
@@ -304,10 +265,10 @@ method get-class-name-of-sub ( --> Str ) { $!class-name-of-sub }
 
 Return class's type code after registration. this is like calling Gnome::GObject::Type.new().g_type_from_name(GTK+ class type name).
 
-  method get-class-gtype ( --> UInt )
+  method get-class-gtype ( --> GType )
 =end pod
 
-method get-class-gtype ( --> UInt ) {
+method get-class-gtype ( --> GType ) {
   $!class-gtype
 }
 
@@ -408,14 +369,6 @@ Returns True if native error object is valid, otherwise C<False>.
 =end pod
 
 #-------------------------------------------------------------------------------
-# Purpose to invalidate an object after some operation such as .destroy(). Only
-# for internal use!
-method _set_invalid ( ) {
-  $!is-valid = False;
-  $!n-native-object = Nil;
-}
-
-#-------------------------------------------------------------------------------
 #TM:1:clear-object
 =begin pod
 =head2 clear-object
@@ -507,6 +460,8 @@ method convert-to-natives ( Callable $s, @params ) {
 }
 
 #-------------------------------------------------------------------------------
+#--[ Internal use only ]--------------------------------------------------------
+#-------------------------------------------------------------------------------
 # Native to raku object wrap
 # Useful to prevent circular dependencies and for late binding
 method _wrap-native-type (
@@ -532,16 +487,47 @@ method _wrap-native-type (
 # GtkTreeStore or GtkListStore.
 # That call would be like; ._wrap-native-type-from-no( $no, 'Gtk', 'Gtk3::')
 method _wrap-native-type-from-no (
-  N-GObject:D $no, Str:D $match, Str:D $replace
+  N-GObject:D $no, Str:D $match = '', Str:D $replace = ''
   --> Any
 ) {
   my Str $native-name = tlcs_type_name_from_instance($no);
-  $native-name ~~ s/$match/$replace/;
+
+  if ?$match {
+    $native-name ~~ s/$match/$replace/;
+  }
+
+  else {
+    given $native-name {
+      when /^ Gtk / { $native-name ~~ s/^ Gtk/Gtk3::/; }
+      when /^ GdkX11 / { $native-name ~~ s/^ GdkX11/Gdk3::/; }
+      when /^ GdkWayland / { $native-name ~~ s/^ GdkWayland/Gdk3::/; }
+      when /^ Gdk / { $native-name ~~ s/^ Gdk/Gdk3::/; }
+      when /^ Atk / { $native-name ~~ s/^ Atk/Atk::/; }
+
+      # Checking other objects from GObject, Glib and Gio all start with 'G'
+      # so it is difficult to map it to the proper raku object.
+      #
+      # However, wrapping like this is only used when there are multiple native
+      # object types to return to the caller. This is mostly restricted to Gtk3
+      # modules. The other reason to call this wrapper is to prevent circular
+      # dependencies which sometimes happen in Gdk3 modules.
+      #
+      # The rest must cope with the $match and $replace variables or solve it
+      # by using 'my Xyz $xyz .= new(:native-object($no))' or do the require
+      # trick used below.
+
+#      when /^ G / { $native-name ~~ s/^ /::/; }
+#      when /^  / { $native-name ~~ s/^ /::/; }
+    }
+  }
+
   my Str $type = [~] 'Gnome', '::', $native-name;
+  note "wrap $native-name in $type" if $Gnome::N::x-debug;
 
   # get class and wrap the native object in it
   require ::($type);
-  ::($type).new(:native-object($no))
+  my $class = ::($type);
+  $class.new(:native-object($no))
 }
 
 #-------------------------------------------------------------------------------
@@ -557,8 +543,55 @@ method _get_no_type_info (  N-GObject:D $no, Str :$check --> List ) {
 }
 
 #-------------------------------------------------------------------------------
-# some necessary native subroutines
+# Purpose to invalidate an object after some operation such as .destroy(). Only
+# for internal use!
+method _set_invalid ( ) {
+  $!is-valid = False;
+  $!n-native-object = Nil;
+}
 
+#-------------------------------------------------------------------------------
+### test for substite FALLBACK without search
+#-------------------------------------------------------------------------------
+# no pod. user does not have to know about it.
+#
+# This method is like the Fallback method. However, it does not search for the
+# native subroutine. The routine must be provided to this method. Its purpose
+# is to call the method directly from the classes which will skip the search
+# process and saves a lot of time. For example, the AboutDialog now has methods
+# for almost all native subs. The benchmark run over all the subroutines shows
+# about 8 times speed increase.
+# See also '... gnome-gtk3/xt/Benchmarking/Modules/AboutDialog.raku'.
+#
+# Do not cast when the class is a leaf. Do not convert when no parameters or
+# easy to coerse by Raku like Int, Enum and Str. When both False, make call
+# directly.
+method _f ( Str $sub-class? --> Any ) {
+
+  # cast to other gtk object type if the found subroutine is from another
+  # gtk object type than the native object stored at $!n-native-object.
+  # This happens e.g. when a Gnome::Gtk::Button object uses gtk-widget-show()
+  # which belongs to Gnome::Gtk::Widget.
+  #
+  # Call the method only from classes where all variables are defined!
+  my Any $g-object-cast;
+  if ?$sub-class and $!class-name ne $sub-class {
+    $g-object-cast = tlcs_type_check_instance_cast(
+      $!n-native-object, $!class-gtype
+    );
+  }
+
+  else {
+    $g-object-cast = $!n-native-object;
+  }
+
+#note "test-call: $s.gist(), $g-object-cast.gist()";
+  $g-object-cast
+}
+
+#-------------------------------------------------------------------------------
+#--[ some necessary native subroutines ]----------------------------------------
+#-------------------------------------------------------------------------------
 # These subs belong to Gnome::GObject::Type but is needed here. To avoid
 # circular dependencies, the subs are redeclared here for this purpose
 sub tlcs_type_from_name ( Str $name --> GType )
