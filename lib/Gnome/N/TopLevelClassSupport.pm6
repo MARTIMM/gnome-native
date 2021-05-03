@@ -113,40 +113,33 @@ This is not true anymore. Example: User inherits a class, must use a new() with 
     # check if Raku object was provided instead of native object
     my $no = %options<native-object> // %options<widget>;
     if $no.^can('get-native-object') {
-      # reference counting done automatically
+      # reference counting done automatically if needed
+      # by the same child class where import is requested.
       $no .= get-native-object;
       note "native object extracted from raku object" if $Gnome::N::x-debug;
     }
 
     # ?? still in use ??
-    elsif $no ~~ NativeCall::Types::Pointer {
-      $no = nativecast( N-GObject, $no);
-      note "native pointer cast to N-GObject" if $Gnome::N::x-debug;
+    #elsif $no ~~ NativeCall::Types::Pointer {
+    #  $no = nativecast( N-GObject, $no);
+    #  note "native pointer cast to N-GObject" if $Gnome::N::x-debug;
 
-      # reference counting done explicitly
-      $no = self.native-object-ref($no);
+    #  # reference counting done explicitly
+    #  $no = self.native-object-ref($no);
+    #}
+
+    elsif $no.^name ~~ any(
+      <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
+    ) {
+      note "native object is a list or slist" if $Gnome::N::x-debug;
     }
 
     else {
       # reference counting done explicitly
+      note "native object explicit referencing" if $Gnome::N::x-debug;
       $no = self.native-object-ref($no);
     }
 
-
-#`{{TODO check on proper type of native object
-
-... What about user class inheriting from gtk classes?
-my Str $name = $no.^name;
-$name ~~ s/ Gnome '::' //;
-$name ~~ s/ [ Glib || GObject || Gio ] '::' /G/;
-my Int $type = tlcs_type_from_name($name);
-
-my Int $no-type = ...
-if $no-type != $type {
-
-}
-
-}}
 
 #    self.clear-object if ? $!n-native-object; !!!! DON'T !!!!
 
@@ -159,8 +152,6 @@ if $no-type != $type {
       $!n-native-object = $no;
       $!is-valid = True;
     }
-#note "\ntl \$no = ", $no.perl;
-#note "tl :native-object = ", $!n-native-object.perl, ', ', self.^name;
   }
 }
 
