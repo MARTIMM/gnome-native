@@ -78,7 +78,12 @@ method !map-installed-libraries ( ) {
         my Str $libname = $/<libname>.Str;
 
         # check for each needed library
-        for %libs-to-map.kv -> $libtag is copy, $minver {
+        for %libs-to-map.kv -> $libtag is copy, $minver is rw {
+          # it is possible that 32 and 64 bit libs are installed. this
+          # will show this line twice and therefore generate the sub twice
+          # see issue #22.
+          # if $minver is set to -1000 then we have processed it before
+          next if $minver == -1000;
 
           # if the lib is in this line
           if $libname ~~ m/^ lib $libtag <|w>
@@ -91,13 +96,16 @@ method !map-installed-libraries ( ) {
             my Str $mv2 = ($/<mv2> // '').Str;
 
             if $mv1 ~~ m/ '-' $minver/ or $mv2 ~~ m/ '.' $minver/ {
-#note "$libtag";
+note "$libtag";
               $libtag ~~ s/gdk_pixbuf/gdk-pixbuf/;
               $map ~= "sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~
                       " is export \{ '$libname'; }\n";
 #note "  sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
+
+              $minver = -1000;
               next;
             }
+
           }
         }
       }
