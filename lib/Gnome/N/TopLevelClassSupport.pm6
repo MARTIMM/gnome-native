@@ -93,11 +93,7 @@ submethod BUILD ( *%options ) {
 #note "Opts: ", %options.keys, ', ', "is-valid: $!is-valid";
 
   # check if a native object must be imported
-  if ? %options<native-object> or ? %options<widget> {
-
-    Gnome::N::deprecate(
-      '.new(:widget)', '.new(:native-object)', '0.17.0', '0.18.0'
-    ) if %options<widget>:exists;
+  if ? %options<native-object> {
 
 #`{{
 This is not true anymore. Example: User inherits a class, must use a new() with a named argument to say that its parent can handle options to create a native object. This test goes bad when such a class wants to import a native object.
