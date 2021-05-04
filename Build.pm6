@@ -69,25 +69,37 @@ method !map-installed-libraries ( ) {
     my Proc $p = run $ldconfig-path, '-vN', :out, :err;
 
     for $p.out.lines.sort.unique -> $l {
-#note "$l";
+
+      # get the line where a lib name if bound to the lib file
       if $l ~~ / '->' / {
-#        $l ~~ /^ \s+ (<-[\s]>+) \s+ '->' \s+ (<-[\s]>+) /;
-        $l ~~ /^ \s+ (<-[\s]>+) \s+ '->' /;
-        my Str $libname = $/[0].Str;
-#my Str $libname2 = ($/[1] // '-').Str;
+
+        # get libname
+        $l ~~ /^ \s+ $<libname> = (<-[\s]>+) \s+ '->' /;
+        my Str $libname = $/<libname>.Str;
+
+        # check for each needed library
         for %libs-to-map.kv -> $libtag is copy, $minver {
-          if $libname ~~ m/^ lib $libtag <|w> (<[-\.\d]>+) so (<[-\.\d]>+)? / {
-            my Str $mv1 = $/[0].Str;
-            my Str $mv2 = ($/[1] // '').Str;
+
+          # if the lib is in this line
+          if $libname ~~ m/^ lib $libtag <|w>
+                             $<mv1> = (<[-\.\d]>+) so
+                             $<mv2> = (<[-\.\d]>+)?
+                          / {
+
+            # get versions but make 2nd empty in abscense of one
+            my Str $mv1 = $/<mv1>.Str;
+            my Str $mv2 = ($/<mv2> // '').Str;
+
             if $mv1 ~~ m/ '-' $minver/ or $mv2 ~~ m/ '.' $minver/ {
 #note "$libtag";
               $libtag ~~ s/gdk_pixbuf/gdk-pixbuf/;
-              $map ~= "sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
+              $map ~= "sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~
+                      " is export \{ '$libname'; }\n";
+#note "  sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
               next;
             }
           }
         }
-#exit(1);
       }
     }
 
