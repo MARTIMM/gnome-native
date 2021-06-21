@@ -273,13 +273,10 @@ method get-class-name ( --> Str ) {
 }
 
 #-------------------------------------------------------------------------------
-method get-native-object ( ) {    # --> N-Type
+multi method get-native-object ( Bool :$ref = True ) {    # --> N-Type
 
-  # increase reference count when object is copied
-#  my Any $no = self.native-object-ref($!n-native-object);
-#  $no # // $!n-native-object
-
-  self.native-object-ref($!n-native-object)
+  # increase reference count by default
+  $ref ?? self.native-object-ref($!n-native-object) !! $!n-native-object
 }
 
 #-------------------------------------------------------------------------------
@@ -415,10 +412,10 @@ method convert-to-natives ( Callable $s, @params ) {
 }}
 
     # check if this is a Gnome Rakue object. if so, get native object
-    if @params[$i].can('get-native-object-no-reffing') {
+    if @params[$i].can('get-native-object') {
       # no reference counting, object is used as an argument to the native
       # subs in this class tree
-      @params[$i] = @params[$i].get-native-object-no-reffing;
+      @params[$i] = @params[$i].get-native-object(:!ref);
       $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
     }
 
