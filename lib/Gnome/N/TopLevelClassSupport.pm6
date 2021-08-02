@@ -475,6 +475,7 @@ method _wrap-native-type-from-no (
   --> Any
 ) {
   my Str $native-name = tlcs_type_name_from_instance($no);
+  return N-GObject unless ( ?$native-name and $native-name ne '<NULL-class>');
 
   if ?$match {
     $native-name ~~ s/$match/$replace/;

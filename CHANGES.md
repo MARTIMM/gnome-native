@@ -1,4 +1,7 @@
 ## Release notes
+* 2021-08-02 0.18.14
+  * Bugfix in internal method `_wrap-native-type-from-no()`.
+
 * 2021-05-04 0.18.13
   * Removed deprecated code.
   * Issue #22; Modified installation script in `Build.pm6` to prevent doubly generated sub names in `NativeLib.pm6`.
