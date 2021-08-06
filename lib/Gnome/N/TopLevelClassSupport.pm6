@@ -83,28 +83,8 @@ Create a Raku object using a native object from elsewhere. $native-object can be
 #TM:2:new(:native-object):*
 submethod BUILD ( *%options ) {
 
-
-  # this class is always the first to initialize, therefore when
-  # 'my Xyz $xyz .= new(...);' is used, the original native object
-  # must be cleaned up before we can continue.
-  #$!is-valid //= False;
-  #self.clear-object; !!!! DON'T !!!!
-
-#note "Opts: ", %options.keys, ', ', "is-valid: $!is-valid";
-
   # check if a native object must be imported
   if ? %options<native-object> {
-
-#`{{
-This is not true anymore. Example: User inherits a class, must use a new() with a named argument to say that its parent can handle options to create a native object. This test goes bad when such a class wants to import a native object.
-
-    # check if there are other options, they cannot be combined
-    if %options.elems > 1 {
-      die X::Gnome.new(
-        :message('with :native-object, no other named arguments allowed')
-      );
-    }
-}}
 
     # check if Raku object was provided instead of native object
     my $no = %options<native-object> // %options<widget>;
@@ -127,10 +107,6 @@ This is not true anymore. Example: User inherits a class, must use a new() with 
       note "native object explicit referencing" if $Gnome::N::x-debug;
       $no = self.native-object-ref($no);
     }
-
-
-#    self.clear-object if ? $!n-native-object; !!!! DON'T !!!!
-
 
     # The list classes may have an undefined structure and still be valid
     if ? $no or $no.^name ~~ any(
