@@ -27,13 +27,13 @@ has Str $!class-name;
 has Str $!class-name-of-sub;
 
 
-#`{{
+#`{{ !!!! DON'T DO THIS !!!!
 #-------------------------------------------------------------------------------
 # this new() method is defined to cleanup first in case of an assignement
 # like '$c .= new(...);', the native object, if any must be cleared first.
 multi method new ( |c ) {
 
-  self.clear-object if self.defined; !!!! DON'T !!!!
+  self.clear-object if self.defined;
   self.bless(|c);
 }
 }}
@@ -115,19 +115,11 @@ This is not true anymore. Example: User inherits a class, must use a new() with 
       note "native object extracted from raku object" if $Gnome::N::x-debug;
     }
 
-    # ?? still in use ??
-    #elsif $no ~~ NativeCall::Types::Pointer {
-    #  $no = nativecast( N-GObject, $no);
-    #  note "native pointer cast to N-GObject" if $Gnome::N::x-debug;
-
-    #  # reference counting done explicitly
-    #  $no = self.native-object-ref($no);
-    #}
-
     elsif $no.^name ~~ any(
       <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
     ) {
       note "native object is a list or slist" if $Gnome::N::x-debug;
+      # no need to set '$no = N-GObject' because $!n-native-object is undefined
     }
 
     else {
