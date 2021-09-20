@@ -438,15 +438,33 @@ method _wrap-native-type (
 # e.g. the GtkTreeView may return a GtkTreeModel which can be e.g. a
 # GtkTreeStore or GtkListStore.
 # That call would be like; ._wrap-native-type-from-no( $no, 'Gtk', 'Gtk3::')
+#
+# :child-type is used when a class inherits from a gtk widget. This routine can
+# not guess what type as a child can be so it must be given. The value can be a
+# string which is handled like the rest. Otherwise it is a type and is called
+# directly with ,(new:native-object()).
+
 method _wrap-native-type-from-no (
-  N-GObject:D $no, Str:D $match = '', Str:D $replace = ''
+  N-GObject:D $no, Str:D $match = '', Str:D $replace = '', *%options
   --> Any
 ) {
   my Str $native-name = tlcs_type_name_from_instance($no);
   return N-GObject unless ( ?$native-name and $native-name ne '<NULL-class>');
 
+  my Str $type;
   if ?$match {
     $native-name ~~ s/$match/$replace/;
+    $type = [~] 'Gnome', '::', $native-name;
+  }
+
+  elsif %options<child-type>:exists {
+    if %options<child-type> ~~ Str {
+      $type = %options<child-type>;
+    }
+
+    else {
+      return %options<child-type>.new(:native-object($no))
+    }
   }
 
   else {
@@ -472,9 +490,11 @@ method _wrap-native-type-from-no (
 #      when /^ G / { $native-name ~~ s/^ /::/; }
 #      when /^  / { $native-name ~~ s/^ /::/; }
     }
+
+    $type = [~] 'Gnome', '::', $native-name;
   }
 
-  my Str $type = [~] 'Gnome', '::', $native-name;
+#  my Str $type = [~] 'Gnome', '::', $native-name;
   note "wrap $native-name in $type" if $Gnome::N::x-debug;
 
   # get class and wrap the native object in it
