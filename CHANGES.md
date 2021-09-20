@@ -1,4 +1,7 @@
 ## Release notes
+* 2021-09-20 0.18.15
+  * Need to extend method `_wrap-native-type-from-no()` to cope with user classes which inherit from widget classes. The type of the class can be given as a named argument `:child-type()`.
+
 * 2021-08-02 0.18.14
   * Bugfix in internal method `_wrap-native-type-from-no()`.
 
