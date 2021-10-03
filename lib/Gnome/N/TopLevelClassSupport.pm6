@@ -445,19 +445,12 @@ method _wrap-native-type (
 # directly with ,(new:native-object()).
 
 method _wrap-native-type-from-no (
-  N-GObject:D $no, Str:D $match = '', Str:D $replace = '', *%options
+  N-GObject $no, Str:D $match = '', Str:D $replace = '', *%options
   --> Any
 ) {
-  my Str $native-name = tlcs_type_name_from_instance($no);
-  return N-GObject unless ( ?$native-name and $native-name ne '<NULL-class>');
-
   my Str $type;
-  if ?$match {
-    $native-name ~~ s/$match/$replace/;
-    $type = [~] 'Gnome', '::', $native-name;
-  }
 
-  elsif %options<child-type>:exists {
+  if %options<child-type>:exists {
     if %options<child-type> ~~ Str {
       $type = %options<child-type>;
     }
@@ -468,39 +461,52 @@ method _wrap-native-type-from-no (
   }
 
   else {
-    given $native-name {
-      when /^ Gtk / { $native-name ~~ s/^ Gtk/Gtk3::/; }
-      when /^ GdkX11 / { $native-name ~~ s/^ GdkX11/Gdk3::/; }
-      when /^ GdkWayland / { $native-name ~~ s/^ GdkWayland/Gdk3::/; }
-      when /^ Gdk / { $native-name ~~ s/^ Gdk/Gdk3::/; }
-      when /^ Atk / { $native-name ~~ s/^ Atk/Atk::/; }
+    my Str $native-name = ?$no ?? tlcs_type_name_from_instance($no) !! '';
+    return N-GObject unless ( ?$native-name and $native-name ne '<NULL-class>');
 
-      # Checking other objects from GObject, Glib and Gio all start with 'G'
-      # so it is difficult to map it to the proper raku object.
-      #
-      # However, wrapping like this is only used when there are multiple native
-      # object types to return to the caller. This is mostly restricted to Gtk3
-      # modules. The other reason to call this wrapper is to prevent circular
-      # dependencies which sometimes happen in Gdk3 modules.
-      #
-      # The rest must cope with the $match and $replace variables or solve it
-      # by using 'my Xyz $xyz .= new(:native-object($no))' or do the require
-      # trick used below.
-
-#      when /^ G / { $native-name ~~ s/^ /::/; }
-#      when /^  / { $native-name ~~ s/^ /::/; }
+    if ?$match {
+      $native-name ~~ s/$match/$replace/;
+      $type = [~] 'Gnome', '::', $native-name;
     }
 
-    $type = [~] 'Gnome', '::', $native-name;
+    else {
+      given $native-name {
+        when /^ Gtk / { $native-name ~~ s/^ Gtk/Gtk3::/; }
+        when /^ GdkX11 / { $native-name ~~ s/^ GdkX11/Gdk3::/; }
+        when /^ GdkWayland / { $native-name ~~ s/^ GdkWayland/Gdk3::/; }
+        when /^ Gdk / { $native-name ~~ s/^ Gdk/Gdk3::/; }
+        when /^ Atk / { $native-name ~~ s/^ Atk/Atk::/; }
+
+        # Checking other objects from GObject, Glib and Gio all start with 'G'
+        # so it is difficult to map it to the proper raku object.
+        #
+        # However, wrapping like this is only used when there are multiple
+        # native object types to return to the caller. This is mostly
+        # restricted to Gtk3 modules. The other reason to call this wrapper is
+        # to prevent circular dependencies which sometimes happen in Gdk3
+        # modules.
+        #
+        # The rest must cope with the $match and $replace variables or solve it
+        # by using 'my Xyz $xyz .= new(:native-object($no))' or do the require
+        # trick used below.
+
+  #      when /^ G / { $native-name ~~ s/^ /::/; }
+  #      when /^  / { $native-name ~~ s/^ /::/; }
+      }
+
+      $type = [~] 'Gnome', '::', $native-name;
+    }
+    
+    #  my Str $type = [~] 'Gnome', '::', $native-name;
+    note "wrap $native-name in $type" if $Gnome::N::x-debug;
   }
 
-#  my Str $type = [~] 'Gnome', '::', $native-name;
-  note "wrap $native-name in $type" if $Gnome::N::x-debug;
 
   # get class and wrap the native object in it
   require ::($type);
-  my $class = ::($type);
-  $class.new(:native-object($no))
+  #my $class = ::($type);
+  #$class.new(:native-object($no))
+  ::($type).new(:native-object($no))
 }
 
 #-------------------------------------------------------------------------------
