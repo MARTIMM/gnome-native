@@ -87,7 +87,7 @@ submethod BUILD ( *%options ) {
   if ? %options<native-object> {
 
     # check if Raku object was provided instead of native object
-    my $no = %options<native-object> // %options<widget>;
+    my $no = %options<native-object>;
     if $no.^can('get-native-object') {
       # reference counting done automatically if needed
       # by the same child class where import is requested.
@@ -296,7 +296,10 @@ method set-native-object ( $native-object ) {
 method set-native-object-no-reffing ( $native-object ) {
 
   if ? $native-object {
-    #self.clear-object; !!!! DON'T !!!!
+#TODO Args to subs are given using .get-native-object-no-reffing(). Perhaps
+# it should increment reference count, then it is possible here to clean it
+# before setting a new object.
+#self.clear-object; !!!! DON'T !!!!
     $!n-native-object = $native-object;
     $!is-valid = True;
   }
@@ -496,7 +499,7 @@ method _wrap-native-type-from-no (
 
       $type = [~] 'Gnome', '::', $native-name;
     }
-    
+
     #  my Str $type = [~] 'Gnome', '::', $native-name;
     note "wrap $native-name in $type" if $Gnome::N::x-debug;
   }
