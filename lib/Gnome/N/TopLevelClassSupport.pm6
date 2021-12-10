@@ -26,6 +26,13 @@ has UInt $!class-gtype;
 has Str $!class-name;
 has Str $!class-name-of-sub;
 
+# type is Gnome::Gtk3::Builder. Cannot load module because of circular dep.
+# value is set by GtkBuilder via _set-builder(). There might be more than one.
+my Array $builders = [];
+
+# When a builder is set with a name set to ___Test_Builder__ it means that
+# the Gnome::T module is used and the builder is created there.
+my Bool $test-mode = False;
 
 #`{{ !!!! DON'T DO THIS !!!!
 #-------------------------------------------------------------------------------
@@ -291,6 +298,7 @@ method set-native-object ( $native-object ) {
   }
 }
 
+#`{{
 #-------------------------------------------------------------------------------
 # no example case yet to use this method
 method set-native-object-no-reffing ( $native-object ) {
@@ -304,6 +312,7 @@ method set-native-object-no-reffing ( $native-object ) {
     $!is-valid = True;
   }
 }
+}}
 
 #-------------------------------------------------------------------------------
 method native-object-ref ( $n-native-object ) { !!! }
@@ -416,6 +425,36 @@ method convert-to-natives ( Callable $s, @params ) {
 
 #-------------------------------------------------------------------------------
 #--[ Internal use only ]--------------------------------------------------------
+#-------------------------------------------------------------------------------
+# no pod. user does not have to know about it.
+method _set-builder ( $builder ) {
+  $builders.push($builder);
+
+  # When a builder is set with a key _SET_TEST_BUILDER_ set to
+  # ___Test_Builder__ it means that the Gnome::T module is used
+  # and the builder is created there.
+  $test-mode = True
+    if $builder.get-data( '_SET_TEST_BUILDER_', Str) ~~ '___Test_Builder__';
+}
+
+#-------------------------------------------------------------------------------
+# no pod. user does not have to know about it.
+method _get-builders ( --> Array ) {
+  $builders
+}
+
+#-------------------------------------------------------------------------------
+# no pod. user does not have to know about it.
+method _set-test-mode ( Bool $mode --> Bool ) {
+  $test-mode = $mode;
+}
+
+#-------------------------------------------------------------------------------
+# no pod. user does not have to know about it.
+method _get-test-mode ( --> Bool ) {
+  $test-mode
+}
+
 #-------------------------------------------------------------------------------
 # Native to raku object wrap
 # Useful to prevent circular dependencies and for late binding
