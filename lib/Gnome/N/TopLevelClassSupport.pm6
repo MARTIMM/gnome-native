@@ -279,6 +279,38 @@ method set-native-object ( $native-object ) {
 
     $!n-native-object = $no;
     $!is-valid = True;
+
+    # If test mode is triggered by Gnome::T
+note "Test mode: $test-mode";
+    if $test-mode {
+#      my $no = self.get-native-object-no-reffing;
+note "native object: ", $no.raku;
+#      my Gnome::GObject::Type $t .= new;
+
+      # only when buildable then based on Widget -> widget path and gui-able
+      my Bool $is-a-GtkBuildable = tlcs_type_check_instance_is_a(
+        $!n-native-object,
+        tlcs_type_from_name('GtkBuildable')
+      );
+note "instance is GtkBuildable: $is-a-GtkBuildable";
+
+      if $is-a-GtkBuildable {
+
+        # just pick first builder. this should be correct if Gnome::T
+        # is started as early as possible
+        my $builder = $builders[0];
+
+        # create an id for use in builder to find the object
+        my Str $widget-path = tlcs_type_name_from_instance($!n-native-object);
+        $widget-path ~= _path_to_string(_get_path($!n-native-object));
+note "widget path: $widget-path";
+
+        # add object to builder
+        $builder.expose-object( $widget-path, $!n-native-object);
+
+        note "set gobject build-id to: $widget-path" if $Gnome::N::x-debug;
+      }
+    }
   }
 
   # The list classes may have an undefined structure and still be valid
@@ -640,4 +672,15 @@ sub tlcs_type_check_instance_is_a (
   N-GObject $instance, GType $iface_type --> gboolean
 ) is native(&gobject-lib)
   is symbol('g_type_check_instance_is_a')
+  { * }
+
+sub _path_to_string ( N-GObject $path --> Str )
+  is native(&gtk-lib)
+  is symbol('gtk_widget_path_to_string')
+  { * }
+
+sub _get_path (
+  N-GObject $widget --> N-GObject
+) is native(&gtk-lib)
+  is symbol('gtk_widget_get_path')
   { * }
