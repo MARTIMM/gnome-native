@@ -194,7 +194,7 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 
     note "Cast $!class-name to $!class-name-of-sub" if $Gnome::N::x-debug;
 
-    $g-object-cast = tlcs_type_check_instance_cast(
+    $g-object-cast = _check_instance_cast(
       $!n-native-object, $!class-gtype
     );
   }
@@ -210,7 +210,7 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 #-------------------------------------------------------------------------------
 # no pod. user does not have to know about it.
 method set-class-info ( Str:D $!class-name ) {
-  $!class-gtype = tlcs_type_from_name($!class-name)
+  $!class-gtype = _from_name($!class-name)
 }
 
 #-------------------------------------------------------------------------------
@@ -288,9 +288,9 @@ note "native object: ", $no.raku;
 #      my Gnome::GObject::Type $t .= new;
 
       # only when buildable then based on Widget -> widget path and gui-able
-      my Bool $is-a-GtkBuildable = tlcs_type_check_instance_is_a(
+      my Bool $is-a-GtkBuildable = _check_instance_is_a(
         $!n-native-object,
-        tlcs_type_from_name('GtkBuildable')
+        _from_name('GtkBuildable')
       );
 note "instance is GtkBuildable: $is-a-GtkBuildable";
 
@@ -301,7 +301,7 @@ note "instance is GtkBuildable: $is-a-GtkBuildable";
         my $builder = $builders[0];
 
         # create an id for use in builder to find the object
-        my Str $widget-path = tlcs_type_name_from_instance($!n-native-object);
+        my Str $widget-path = _name_from_instance($!n-native-object);
         $widget-path ~= _path_to_string(_get_path($!n-native-object));
 note "widget path: $widget-path";
 
@@ -535,7 +535,7 @@ method _wrap-native-type-from-no (
   }
 
   else {
-    my Str $native-name = ?$no ?? tlcs_type_name_from_instance($no) !! '';
+    my Str $native-name = ?$no ?? _name_from_instance($no) !! '';
     return N-GObject unless ( ?$native-name and $native-name ne '<NULL-class>');
 
     if ?$match {
@@ -585,9 +585,9 @@ method _wrap-native-type-from-no (
 
 #-------------------------------------------------------------------------------
 method _get_no_type_info (  N-GObject:D $no, Str :$check --> List ) {
-  ( my Str $no-type-name = tlcs_type_name_from_instance($no),
+  ( my Str $no-type-name = _name_from_instance($no),
     ? $check
-      ?? (? tlcs_type_check_instance_is_a( $no, tlcs_type_from_name($check))
+      ?? (? _check_instance_is_a( $no, _from_name($check))
            ?? "$no-type-name is a $check"
            !! "$no-type-name is not a $check"
          )
@@ -629,7 +629,7 @@ method _f ( Str $sub-class? --> Any ) {
   # Call the method only from classes where all variables are defined!
   my Any $g-object-cast;
   if ?$sub-class and $!class-name ne $sub-class {
-    $g-object-cast = tlcs_type_check_instance_cast(
+    $g-object-cast = _check_instance_cast(
       $!n-native-object, $!class-gtype
     );
   }
@@ -647,28 +647,28 @@ method _f ( Str $sub-class? --> Any ) {
 #-------------------------------------------------------------------------------
 # These subs belong to Gnome::GObject::Type but is needed here. To avoid
 # circular dependencies, the subs are redeclared here for this purpose
-sub tlcs_type_from_name ( Str $name --> GType )
+sub _from_name ( Str $name --> GType )
   is native(&gobject-lib)
   is symbol('g_type_from_name')
   { * }
 
-sub tlcs_type_name ( GType $type --> Str )
+sub _name ( GType $type --> Str )
   is native(&gobject-lib)
   is symbol('g_type_name')
   { * }
 
-sub tlcs_type_check_instance_cast (
+sub _check_instance_cast (
   N-GObject $instance, GType $iface_type --> N-GObject
 ) is native(&gobject-lib)
   is symbol('g_type_check_instance_cast')
   { * }
 
-sub tlcs_type_name_from_instance ( N-GObject $instance --> Str )
+sub _name_from_instance ( N-GObject $instance --> Str )
   is native(&gobject-lib)
   is symbol('g_type_name_from_instance')
   { * }
 
-sub tlcs_type_check_instance_is_a (
+sub _check_instance_is_a (
   N-GObject $instance, GType $iface_type --> gboolean
 ) is native(&gobject-lib)
   is symbol('g_type_check_instance_is_a')
