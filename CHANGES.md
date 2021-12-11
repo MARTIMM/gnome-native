@@ -1,7 +1,7 @@
 ## Release notes
 * 2021-12-10 0.19.0
-  * Moved code from Object to TopLevelClassSupport
-  * Added code for testing purposes
+  * Moved code from Object to TopLevelClassSupport.
+  * Added code for testing purposes.
 
 * 2021-09-20 0.18.16
   * `_wrap-native-type-from-no()` can have undefined native objects.
