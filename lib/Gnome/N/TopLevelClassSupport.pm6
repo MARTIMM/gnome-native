@@ -32,7 +32,8 @@ my Array $builders = [];
 
 # When a builder is set with a name set to ___Test_Builder__ it means that
 # the Gnome::T module is used and the builder is created there.
-my Bool $test-mode = False;
+my Bool $test-mode;
+my Int $widget-count = 0;
 
 #`{{ !!!! DON'T DO THIS !!!!
 #-------------------------------------------------------------------------------
@@ -281,18 +282,17 @@ method set-native-object ( $native-object ) {
     $!is-valid = True;
 
     # If test mode is triggered by Gnome::T
-note "Test mode: $test-mode";
-    if $test-mode {
+#note "Test mode: $test-mode.raku(), builders $builders.raku()";
+    if ?$test-mode {
 #      my $no = self.get-native-object-no-reffing;
-note "native object: ", $no.raku;
+#note "native object: ", $no.raku;
 #      my Gnome::GObject::Type $t .= new;
 
-      # only when buildable then based on Widget -> widget path and gui-able
+      # only when buildable then the instance is based on Widget -> gui-able
       my Bool $is-a-GtkBuildable = _check_instance_is_a(
-        $!n-native-object,
-        _from_name('GtkBuildable')
-      );
-note "instance is GtkBuildable: $is-a-GtkBuildable";
+        $!n-native-object, _from_name('GtkBuildable')
+      ).Bool;
+#note "instance is GtkBuildable: $is-a-GtkBuildable";
 
       if $is-a-GtkBuildable {
 
@@ -301,10 +301,19 @@ note "instance is GtkBuildable: $is-a-GtkBuildable";
         my $builder = $builders[0];
 
         # create an id for use in builder to find the object
-        my Str $widget-path = _name_from_instance($!n-native-object);
-        $widget-path ~= _path_to_string(_get_path($!n-native-object));
-note "widget path: $widget-path";
+        my Str $widget-path = [~] _name_from_instance($!n-native-object),
+          '-', (++$widget-count).fmt('%04d');
 
+#`{{
+# Next idea is wrong because all new widgets are not yet inserted into a
+# parent object
+
+        my N-GObject $no-widget-path = _get_path($!n-native-object);
+        while my Str $oname = _iter_get_name( $no-widget-path, $count++) {
+          $widget-path ~= "-$oname";
+        }
+note "widget path: $widget-path";
+}}
         # add object to builder
         $builder.expose-object( $widget-path, $!n-native-object);
 
@@ -358,7 +367,7 @@ method native-object-unref ( $n-native-object ) { !!! }
 =begin pod
 =head2 is-valid
 
-Returns True if native error object is valid, otherwise C<False>.
+Returns True if native object is valid. When C<False>, the native object is undefined and errors will occur when this instance is used.
 
   method is-valid ( --> Bool )
 
@@ -458,38 +467,84 @@ method convert-to-natives ( Callable $s, @params ) {
 #-------------------------------------------------------------------------------
 #--[ Internal use only ]--------------------------------------------------------
 #-------------------------------------------------------------------------------
-# no pod. user does not have to know about it.
+=begin pod
+=head1 Internally used methods
+
+=head2 _set-builder
+
+Used by B<Gnome::Gtk3::Builder> to register itself. Its purpose is twofold
+
+=item Used by B<Gnome::GObject::Object> to process option C<.new(:build-id)>.
+=item Used to insert objects into a builder when test mode is turned on.
+
+  method _set-builder ( Gnome::Gtk3::Builder$builder )
+
+=end pod
+
+#tm:4:_set-builder:
 method _set-builder ( $builder ) {
   $builders.push($builder);
-
-  # When a builder is set with a key _SET_TEST_BUILDER_ set to
-  # ___Test_Builder__ it means that the Gnome::T module is used
-  # and the builder is created there.
-  $test-mode = True
-    if $builder.get-data( '_SET_TEST_BUILDER_', Str) ~~ '___Test_Builder__';
 }
 
 #-------------------------------------------------------------------------------
-# no pod. user does not have to know about it.
+=begin pod
+=head2 _get-builders
+
+Used by B<Gnome::GObject::Object> to search for an object id.
+
+  method _get-builders ( --> Array )
+
+=end pod
+
+#tm:4:_get-builders:
 method _get-builders ( --> Array ) {
   $builders
 }
 
 #-------------------------------------------------------------------------------
-# no pod. user does not have to know about it.
-method _set-test-mode ( Bool $mode --> Bool ) {
+=begin pod
+=head2 _set-test-mode
+
+Used to turn test mode on or off. This is done by B<Gnome::T>. When turned on, an event loop can not be started by calling C<Gnome::Gtk3::Main.new.main()> and can only be started by B<Gnome::T>.
+
+  method _set-test-mode ( Bool $mode )
+
+=end pod
+
+#tm:4:_set-test-mode:
+method _set-test-mode ( Bool $mode ) {
   $test-mode = $mode;
 }
 
 #-------------------------------------------------------------------------------
-# no pod. user does not have to know about it.
+=begin pod
+=head2 _get-test-mode
+
+Get current state.
+
+  method _get-test-mode ( --> Bool )
+
+=end pod
+
+#tm:4:_set-test-mode:
 method _get-test-mode ( --> Bool ) {
   $test-mode
 }
 
 #-------------------------------------------------------------------------------
-# Native to raku object wrap
-# Useful to prevent circular dependencies and for late binding
+=begin pod
+=head2 _wrap-native-type
+
+Used by many classes to create a Raku instance with the native object wrapped in
+
+  method _wrap-native-type (
+    Str:D $type where ?$type, N-GObject:D $no
+    --> Any
+  )
+
+=end pod
+
+#tm:4:_wrap-native-type:
 method _wrap-native-type (
   Str:D $type where ?$type, N-GObject:D $no
   --> Any
@@ -508,6 +563,18 @@ method _wrap-native-type (
 }
 
 #-------------------------------------------------------------------------------
+=begin pod
+=head2 _wrap-native-type-from-no
+
+As with C<_wrap-native-type()> this method is used by many classes to create a Raku instance with the native object wrapped in.
+
+  method _wrap-native-type-from-no (
+    N-GObject $no, Str:D $match = '', Str:D $replace = '', :child-type?
+    --> Any
+  ) {
+
+=end pod
+
 # Native to raku object wrap when type can be one of a few possible choices
 # e.g. the GtkTreeView may return a GtkTreeModel which can be e.g. a
 # GtkTreeStore or GtkListStore.
@@ -518,12 +585,14 @@ method _wrap-native-type (
 # string which is handled like the rest. Otherwise it is a type and is called
 # directly with ,(new:native-object()).
 
+#tm:4:_wrap-native-type-from-no:
 method _wrap-native-type-from-no (
   N-GObject $no, Str:D $match = '', Str:D $replace = '', *%options
   --> Any
 ) {
   my Str $type;
 
+  # process :child-type first
   if %options<child-type>:exists {
     if %options<child-type> ~~ Str {
       $type = %options<child-type>;
@@ -575,12 +644,16 @@ method _wrap-native-type-from-no (
     note "wrap $native-name in $type" if $Gnome::N::x-debug;
   }
 
+  self._wrap-native-type( $type, $no);
 
+#`{{
   # get class and wrap the native object in it
   require ::($type);
   #my $class = ::($type);
   #$class.new(:native-object($no))
   ::($type).new(:native-object($no))
+}}
+
 }
 
 #-------------------------------------------------------------------------------
@@ -683,4 +756,9 @@ sub _get_path (
   N-GObject $widget --> N-GObject
 ) is native(&gtk-lib)
   is symbol('gtk_widget_get_path')
+  { * }
+
+sub _iter_get_name ( N-GObject $path, int32 $pos --> Str )
+  is native(&gtk-lib)
+  is symbol('gtk_widget_path_iter_get_name')
   { * }
