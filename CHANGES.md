@@ -1,6 +1,6 @@
 ## Release notes
 * 2021-12-12 0.19.1
-  * Renamed a few methods to show they are inernal.
+  * Renamed a few methods to show they are internal.
   * Added pod doc
 
 * 2021-12-10 0.19.0
