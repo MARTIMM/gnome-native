@@ -2,6 +2,26 @@
 use v6.d;
 
 #-------------------------------------------------------------------------------
+=begin pod
+
+=head1 Gnome::N::TopLevelClassSupport
+
+Top most class providing internally used methods and subroutines.
+
+
+=head1 Description
+
+The B<Gnome::N::TopLevelClassSupport> is the class at the top of the food chain. Most, if not all, are inheriting from this class. Its purpose is to provide convenience methods, processing and storing native objects, etcetera.
+
+=head1 Synopsis
+=head2 Declaration
+
+  unit class Gnome::N::TopLevelClassSupport;
+
+
+=end pod
+
+#-------------------------------------------------------------------------------
 use NativeCall;
 
 use Gnome::N::X;
@@ -54,15 +74,19 @@ multi method new ( |c ) {
 Please note that this class is mostly not instantiated directly but is used indirectly when child classes are instantiated.
 
 =begin comment
-=head3 multi method new ( )
+=head3 default, no options
 
 Create an empty object
 
 =end comment
 
-=head3 multi method new ( :$native-object! )
+=head3 :native-object
 
 Create a Raku object using a native object from elsewhere. $native-object can be a N-GObject or a Raku object like C< Gnome::Gtk3::Button>.
+
+  method new ( :$native-object! )
+
+=head3 Example
 
   # Some set of radio buttons grouped together
   my Gnome::Gtk3::RadioButton $rb1 .= new(:label('Download everything'));
@@ -75,11 +99,11 @@ Create a Raku object using a native object from elsewhere. $native-object can be
   loop ( Int $i = 0; $i < $rb-list.g_slist_length; $i++ ) {
     # Get button from the list
     my Gnome::Gtk3::RadioButton $rb .= new(
-      :native-object($rb-list.nth-data-gobject($i))
+      :native-object(native-cast( N-GObject, $rb-list.nth($i)))
     );
 
     # If radio button is selected (=active) ...
-    if $rb.get-active == 1 {
+    if $rb.get-active {
       ...
 
       last;
@@ -209,28 +233,6 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 }
 
 #-------------------------------------------------------------------------------
-# no pod. user does not have to know about it.
-method set-class-info ( Str:D $!class-name ) {
-  $!class-gtype = _from_name($!class-name)
-}
-
-#-------------------------------------------------------------------------------
-# no pod. user does not have to know about it.
-method set-class-name-of-sub ( Str:D $!class-name-of-sub ) { }
-
-#-------------------------------------------------------------------------------
-# no pod. user does not have to know about it.
-method get-class-name-of-sub ( --> Str ) { $!class-name-of-sub }
-
-#-------------------------------------------------------------------------------
-=begin pod
-=head2 get-class-gtype
-
-Return class's type code after registration. this is like calling Gnome::GObject::Type.new().g_type_from_name(GTK+ class type name).
-
-  method get-class-gtype ( --> GType )
-=end pod
-
 method get-class-gtype ( --> GType ) {
   $!class-gtype
 }
@@ -669,8 +671,73 @@ method _get_no_type_info (  N-GObject:D $no, Str :$check --> List ) {
 }
 
 #-------------------------------------------------------------------------------
-# Purpose to invalidate an object after some operation such as .destroy(). Only
-# for internal use!
+#TODO this sub will dissappear after a few releases now 0.19.0
+method set-class-info ( Str:D $!class-name ) {
+  $!class-gtype = _from_name($!class-name)
+}
+
+#-------------------------------------------------------------------------------
+#TM:1:_set-class-info:
+=begin pod
+=head3 _set-class-info
+
+Get and store the GType of the provided class name
+
+  method _set-class-info ( Str:D $!class-name )
+
+  _set-class-info ( Str:D $!class-name )
+
+=end pod
+
+method _set-class-info ( Str:D $!class-name ) {
+  $!class-gtype = _from_name($!class-name)
+}
+
+#-------------------------------------------------------------------------------
+#TODO this sub will dissappear after a few releases now 0.19.0
+method set-class-name-of-sub ( Str:D $!class-name-of-sub ) { }
+
+#-------------------------------------------------------------------------------
+#TM:1:_set-class-name-of-sub:
+=begin pod
+=head3 _set-class-name-of-sub
+
+Set the name of the class of a subroutine. This method will disappear if all native subs have there method counterpart and that the FALLBACK system is not needed anymore.
+
+  _set-class-name-of-sub ( Str:D $!class-name-of-sub )
+
+=end pod
+
+method _set-class-name-of-sub ( Str:D $!class-name-of-sub ) { }
+
+#-------------------------------------------------------------------------------
+#TODO this sub will dissappear after a few releases now 0.19.0
+method get-class-name-of-sub ( --> Str ) { $!class-name-of-sub }
+
+#-------------------------------------------------------------------------------
+#TM:1:_get-class-name-of-sub:
+=begin pod
+=head3 _get-class-name-of-sub
+
+Return the classname of the subroutine. As C<_set-class-name-of-sub()>, this method will disappear too.
+
+  _get-class-name-of-sub ( --> Str )
+
+=end pod
+
+method _get-class-name-of-sub ( --> Str ) { $!class-name-of-sub }
+
+#-------------------------------------------------------------------------------
+#TM:1:_set_invalid:
+=begin pod
+=head3 _set_invalid
+
+Purpose to invalidate an object after some operation such as .destroy().
+
+  _set_invalid ( )
+
+=end pod
+
 method _set_invalid ( ) {
   $!is-valid = False;
   $!n-native-object = Nil;
@@ -692,6 +759,15 @@ method _set_invalid ( ) {
 # Do not cast when the class is a leaf. Do not convert when no parameters or
 # easy to coerse by Raku like Int, Enum and Str. When both False, make call
 # directly.
+
+#TM:1::
+=begin pod
+=head3 _f
+
+This method is called from classes which are not leaf classes and may need to cast the native type into another before calling the method at hand.
+
+=end pod
+
 method _f ( Str $sub-class? --> Any ) {
 
   # cast to other gtk object type if the found subroutine is from another

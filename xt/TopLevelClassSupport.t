@@ -89,7 +89,7 @@ class Label is Gnome::N::TopLevelClassSupport {
 }}
 
     # only after creating the native-object, the gtype is known
-    self.set-class-info('GtkLabel');
+    self._set-class-info('GtkLabel');
   }
 
   #-----------------------------------------------------------------------------
@@ -101,7 +101,7 @@ class Label is Gnome::N::TopLevelClassSupport {
     try { $s = &::("gtk_$native-sub"); } unless ?$s;
     try { $s = &::($native-sub); } if !$s and $native-sub ~~ m/^ 'gtk_' /;
 
-    self.set-class-name-of-sub('GtkLabel') if ?$s;
+    self._set-class-name-of-sub('GtkLabel') if ?$s;
     $s = callsame unless ?$s;
 
     $s
