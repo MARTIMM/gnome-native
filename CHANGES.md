@@ -1,4 +1,8 @@
 ## Release notes
+* 2021-12-12 0.19.1
+  * Renamed a few methods to show they are inernal.
+  * Added pod doc
+
 * 2021-12-10 0.19.0
   * Moved code from Object to TopLevelClassSupport.
   * Added code for testing purposes.
