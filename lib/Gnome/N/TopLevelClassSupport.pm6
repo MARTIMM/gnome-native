@@ -548,7 +548,7 @@ Used by many classes to create a Raku instance with the native object wrapped in
 
 #tm:4:_wrap-native-type:
 method _wrap-native-type (
-  Str:D $type where ?$type, N-GObject:D $no
+  Str:D $type where ?$type, N-GObject $no
   --> Any
 ) {
   # get class and wrap the native object in it
@@ -760,11 +760,13 @@ method _set_invalid ( ) {
 # easy to coerse by Raku like Int, Enum and Str. When both False, make call
 # directly.
 
-#TM:1::
+#TM:1:_f:
 =begin pod
 =head3 _f
 
-This method is called from classes which are not leaf classes and may need to cast the native type into another before calling the method at hand.
+This method is called from classes which are not leaf classes and may need to cast the native object into another type before calling the method at hand.
+
+  method _f ( Str $sub-class? --> Any )
 
 =end pod
 
@@ -828,12 +830,16 @@ sub _path_to_string ( N-GObject $path --> Str )
   is symbol('gtk_widget_path_to_string')
   { * }
 
+# These subs belong to Gnome::Gtk3::Widget but is needed here. To avoid
+# circular dependencies, the subs are redeclared here for this purpose
 sub _get_path (
   N-GObject $widget --> N-GObject
 ) is native(&gtk-lib)
   is symbol('gtk_widget_get_path')
   { * }
 
+# These subs belong to Gnome::Gtk3::WidgetPath but is needed here. To avoid
+# circular dependencies, the subs are redeclared here for this purpose
 sub _iter_get_name ( N-GObject $path, int32 $pos --> Str )
   is native(&gtk-lib)
   is symbol('gtk_widget_path_iter_get_name')
