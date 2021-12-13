@@ -559,9 +559,12 @@ method _wrap-native-type (
     ::($type).note;
   }
 
-  require ::($type);
+  else {
+
+#  require ::($type);
 #note "sym: ", ::($type);
-  ::($type).new(:native-object($no))
+    ::($type).new(:native-object($no))
+  }
 }
 
 #-------------------------------------------------------------------------------
@@ -587,6 +590,8 @@ As with C<_wrap-native-type()> this method is used by many classes to create a R
 # string which is handled like the rest. Otherwise it is a type and is called
 # directly with ,(new:native-object()).
 
+# <NULL-class> ...
+
 #tm:4:_wrap-native-type-from-no:
 method _wrap-native-type-from-no (
   N-GObject $no, Str:D $match = '', Str:D $replace = '', *%options
@@ -606,21 +611,20 @@ method _wrap-native-type-from-no (
   }
 
   else {
-    my Str $native-name = ?$no ?? _name_from_instance($no) !! '';
-    return N-GObject unless ( ?$native-name and $native-name ne '<NULL-class>');
+    $type = ?$no ?? _name_from_instance($no) !! '';
+    return N-GObject unless ( ?$type and $type ne '<NULL-class>');
 
     if ?$match {
-      $native-name ~~ s/$match/$replace/;
-      $type = [~] 'Gnome', '::', $native-name;
+      $type ~~ s/$match/$replace/;
     }
 
     else {
-      given $native-name {
-        when /^ Gtk / { $native-name ~~ s/^ Gtk/Gtk3::/; }
-        when /^ GdkX11 / { $native-name ~~ s/^ GdkX11/Gdk3::/; }
-        when /^ GdkWayland / { $native-name ~~ s/^ GdkWayland/Gdk3::/; }
-        when /^ Gdk / { $native-name ~~ s/^ Gdk/Gdk3::/; }
-        when /^ Atk / { $native-name ~~ s/^ Atk/Atk::/; }
+      given $type {
+        when /^ Gtk / { $type ~~ s/^ Gtk/Gtk3::/; }
+        when /^ GdkX11 / { $type ~~ s/^ GdkX11/Gdk3::/; }
+        when /^ GdkWayland / { $type ~~ s/^ GdkWayland/Gdk3::/; }
+        when /^ Gdk / { $type ~~ s/^ Gdk/Gdk3::/; }
+        when /^ Atk / { $type ~~ s/^ Atk/Atk::/; }
 
         # Checking other objects from GObject, Glib and Gio all start with 'G'
         # so it is difficult to map it to the proper raku object.
@@ -638,23 +642,23 @@ method _wrap-native-type-from-no (
   #      when /^ G / { $native-name ~~ s/^ /::/; }
   #      when /^  / { $native-name ~~ s/^ /::/; }
       }
-
-      $type = [~] 'Gnome', '::', $native-name;
     }
 
+    $type = [~] 'Gnome', '::', $type;
+
     #  my Str $type = [~] 'Gnome', '::', $native-name;
-    note "wrap $native-name in $type" if $Gnome::N::x-debug;
+    note "wrap $type" if $Gnome::N::x-debug;
   }
 
-  self._wrap-native-type( $type, $no);
+#  self._wrap-native-type( $type, $no);
 
-#`{{
+##`{{
   # get class and wrap the native object in it
   require ::($type);
   #my $class = ::($type);
   #$class.new(:native-object($no))
   ::($type).new(:native-object($no))
-}}
+#}}
 
 }
 
