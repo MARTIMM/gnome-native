@@ -414,6 +414,11 @@ multi method _get-native-object ( Bool :$ref = True ) {    # --> N-Type
   $ref ?? self.native-object-ref($!n-native-object) !! $!n-native-object
 }
 
+#TODO this sub will dissappear after a few releases now 0.19.0
+multi method get-native-object ( Bool :$ref = True ) {    # --> N-Type
+  $ref ?? self.native-object-ref($!n-native-object) !! $!n-native-object
+}
+
 #-------------------------------------------------------------------------------
 #TM:1:_get-native-object-no-reffing:
 =begin pod
@@ -426,6 +431,11 @@ Get the native object without reference counting.
 =end pod
 
 method _get-native-object-no-reffing ( ) {
+  $!n-native-object
+}
+
+#TODO this sub will dissappear after a few releases now 0.19.0
+method get-native-object-no-reffing ( ) {
   $!n-native-object
 }
 
@@ -504,6 +514,11 @@ method _set-native-object ( $native-object ) {
   else {
     $!is-valid = False;
   }
+}
+
+#TODO this sub will dissappear after a few releases now 0.19.0
+method set-native-object ( $native-object ) {
+  self._set-native-object($native-object)
 }
 
 #-------------------------------------------------------------------------------
