@@ -120,10 +120,10 @@ submethod BUILD ( *%options ) {
 
     # check if Raku object was provided instead of native object
     my $no = %options<native-object>;
-    if $no.^can('get-native-object') {
+    if $no.^can('_get-native-object') {
       # reference counting done automatically if needed
       # by the same child class where import is requested.
-      $no .= get-native-object;
+      $no .= _get-native-object;
       note "native object extracted from raku object" if $Gnome::N::x-debug;
     }
 
@@ -233,11 +233,22 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 }
 
 #-------------------------------------------------------------------------------
+#TM:1:get-class-gtype:
+=begin pod
+=head2 get-class-gtype
+
+Get type code of this native object which is set when object was created.
+
+  method get-class-gtype ( --> GType )
+
+=end pod
+
 method get-class-gtype ( --> GType ) {
   $!class-gtype
 }
 
 #-------------------------------------------------------------------------------
+#TM:1:get-class-name:
 =begin pod
 =head2 get-class-name
 
@@ -250,104 +261,13 @@ method get-class-name ( --> Str ) {
   $!class-name
 }
 
-#-------------------------------------------------------------------------------
-multi method get-native-object ( Bool :$ref = True ) {    # --> N-Type
-
-  # increase reference count by default
-  $ref ?? self.native-object-ref($!n-native-object) !! $!n-native-object
-}
-
-#-------------------------------------------------------------------------------
-# no reference counting, e.g. when object is used for subs in this class tree
-method get-native-object-no-reffing ( ) {
-
-  $!n-native-object
-}
-
-#-------------------------------------------------------------------------------
-method set-native-object ( $native-object ) {
-
-  # only change when native object is defined
-  if ? $native-object {
-
-    # if there was a valid native object, we must clear it first before
-    # overwriting the local native object
-    #self.clear-object; !!!! DON'T !!!!
-
-    # if higher level object then extract native object from it
-    my Any $no = $native-object;
-    #$no = nativecast( Pointer, $native-object.get-native-object)
-    $no = $native-object.get-native-object
-      if $native-object.^can('get-native-object');
-
-    $!n-native-object = $no;
-    $!is-valid = True;
-
-    # If test mode is triggered by Gnome::T
-#note "Test mode: $test-mode.raku(), builders $builders.raku()";
-    if ?$test-mode {
-#      my $no = self.get-native-object-no-reffing;
-#note "native object: ", $no.raku;
-#      my Gnome::GObject::Type $t .= new;
-
-      # only when buildable then the instance is based on Widget -> gui-able
-      my Bool $is-a-GtkBuildable = _check_instance_is_a(
-        $!n-native-object, _from_name('GtkBuildable')
-      ).Bool;
-#note "instance is GtkBuildable: $is-a-GtkBuildable";
-
-      if $is-a-GtkBuildable {
-
-        # just pick first builder. this should be correct if Gnome::T
-        # is started as early as possible
-        my $builder = $builders[0];
-
-        # create an id for use in builder to find the object
-        my Str $widget-path = [~] _name_from_instance($!n-native-object),
-          '-', (++$widget-count).fmt('%04d');
-
-#`{{
-# Next idea is wrong because all new widgets are not yet inserted into a
-# parent object
-
-        my N-GObject $no-widget-path = _get_path($!n-native-object);
-        while my Str $oname = _iter_get_name( $no-widget-path, $count++) {
-          $widget-path ~= "-$oname";
-        }
-note "widget path: $widget-path";
-}}
-        # add object to builder
-        $builder.expose-object( $widget-path, $!n-native-object);
-
-        note "set gobject build-id to: $widget-path" if $Gnome::N::x-debug;
-      }
-    }
-  }
-
-  # The list classes may have an undefined structure and still be valid
-  elsif $native-object.^name ~~ any(
-    <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
-  ) {
-    # if there was a valid native object, we must clear it first before
-    # overwriting the local native object
-    #self.clear-object; !!!! DON'T !!!!
-
-    $!n-native-object = $native-object;
-    $!is-valid = True;
-  }
-
-  else {
-    $!is-valid = False;
-  }
-}
-
 #`{{
 #-------------------------------------------------------------------------------
 # no example case yet to use this method
-method set-native-object-no-reffing ( $native-object ) {
+method _set-native-object-no-reffing ( $native-object ) {
 
   if ? $native-object {
-#TODO Args to subs are given using .get-native-object-no-reffing(). Perhaps
+#TODO Args to subs are given using ._get-native-object-no-reffing(). Perhaps
 # it should increment reference count, then it is possible here to clean it
 # before setting a new object.
 #self.clear-object; !!!! DON'T !!!!
@@ -358,9 +278,29 @@ method set-native-object-no-reffing ( $native-object ) {
 }}
 
 #-------------------------------------------------------------------------------
+#TM:1:native-object-ref:
+=begin pod
+=head2 native-object-ref
+
+Absolute method needed to be defined in all child classes to do reference count administration.
+
+  method native-object-ref ( $n-native-object ) { !!! }
+
+=end pod
+
 method native-object-ref ( $n-native-object ) { !!! }
 
 #-------------------------------------------------------------------------------
+#TM:1:native-object-unref:
+=begin pod
+=head2 native-object-unref
+
+Absolute method needed to be defined in all child classes to do reference count administration.
+
+  method native-object-unref ( $n-native-object ) { !!! }
+
+=end pod
+
 method native-object-unref ( $n-native-object ) { !!! }
 
 #-------------------------------------------------------------------------------
@@ -394,16 +334,6 @@ method clear-object ( ) {
   }
 }
 
-#`{{
-#-------------------------------------------------------------------------------
-method clear-object-no-reffing ( ) {
-  if $!is-valid {
-    $!is-valid = False;
-    $!n-native-object = Nil;
-  }
-}
-}}
-
 #-------------------------------------------------------------------------------
 # The array @params is modified in place when a higher class object must be
 # converted to a native object held in that object.
@@ -435,10 +365,10 @@ method convert-to-natives ( Callable $s, @params ) {
 }}
 
     # check if this is a Gnome Rakue object. if so, get native object
-    if @params[$i].can('get-native-object') {
+    if @params[$i].can('_get-native-object') {
       # no reference counting, object is used as an argument to the native
       # subs in this class tree
-      @params[$i] = @params[$i].get-native-object(:!ref);
+      @params[$i] = @params[$i]._get-native-object(:!ref);
       $*ERR.printf( " --> %s\n", @params[$i].^name) if $Gnome::N::x-debug;
     }
 
@@ -469,9 +399,115 @@ method convert-to-natives ( Callable $s, @params ) {
 #-------------------------------------------------------------------------------
 #--[ Internal use only ]--------------------------------------------------------
 #-------------------------------------------------------------------------------
+#TM:1:_get-native-object:
 =begin pod
 =head1 Internally used methods
+=head2 _get-native-object
 
+Get the native object with reference counting by default. When $ref is C<False>, reference counting is not done. When False, it is the same as calling C<_get-native-object-no-reffing()>.
+
+  method _get-native-object ( Bool :$ref = True )
+
+=end pod
+
+multi method _get-native-object ( Bool :$ref = True ) {    # --> N-Type
+  $ref ?? self.native-object-ref($!n-native-object) !! $!n-native-object
+}
+
+#-------------------------------------------------------------------------------
+#TM:1:_get-native-object-no-reffing:
+=begin pod
+=head2 _get-native-object-no-reffing
+
+Get the native object without reference counting.
+
+  method _get-native-object-no-reffing ( )
+
+=end pod
+
+method _get-native-object-no-reffing ( ) {
+  $!n-native-object
+}
+
+#-------------------------------------------------------------------------------
+#TM:1:_set-native-object:
+=begin pod
+=head2 _set-native-object
+
+Set the native object. This happens mostly when a native object is created.
+
+  method _set-native-object ( $native-object )
+
+=end pod
+method _set-native-object ( $native-object ) {
+
+  # only change when native object is defined
+  if ? $native-object {
+
+    # if there was a valid native object, we must clear it first before
+    # overwriting the local native object
+    #self.clear-object; !!!! DON'T !!!!
+
+    # if higher level object then extract native object from it
+    my Any $no = $native-object;
+
+# assume that all arrives native so no conversion!
+#    $no = $native-object._get-native-object
+#      if $native-object.^can('_get-native-object');
+
+    $!n-native-object = $no;
+    $!is-valid = True;
+
+    # If test mode is triggered by Gnome::T
+#note "Test mode: $test-mode.raku(), builders $builders.raku()";
+    if ?$test-mode {
+#      my $no = self._get-native-object-no-reffing;
+#note "native object: ", $no.raku;
+#      my Gnome::GObject::Type $t .= new;
+
+      # only when buildable then the instance is based on Widget -> gui-able
+      my Bool $is-a-GtkBuildable = _check_instance_is_a(
+        $!n-native-object, _from_name('GtkBuildable')
+      ).Bool;
+#note "instance is GtkBuildable: $is-a-GtkBuildable";
+
+      if $is-a-GtkBuildable {
+
+        # just pick first builder. this should be correct if Gnome::T
+        # is started as early as possible
+        my $builder = $builders[0];
+
+        # create an id for use in builder to find the object
+        my Str $widget-path = [~] _name_from_instance($!n-native-object),
+          '-', (++$widget-count).fmt('%04d');
+
+        # add object to builder
+        $builder.expose-object( $widget-path, $!n-native-object);
+
+        note "set gobject build-id to: $widget-path" if $Gnome::N::x-debug;
+      }
+    }
+  }
+
+  # The list classes may have an undefined structure and still be valid
+  elsif $native-object.^name ~~ any(
+    <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
+  ) {
+    # if there was a valid native object, we must clear it first before
+    # overwriting the local native object
+    #self.clear-object; !!!! DON'T !!!!
+
+    $!n-native-object = $native-object;
+    $!is-valid = True;
+  }
+
+  else {
+    $!is-valid = False;
+  }
+}
+
+#-------------------------------------------------------------------------------
+=begin pod
 =head2 _set-builder
 
 Used by B<Gnome::Gtk3::Builder> to register itself. Its purpose is twofold

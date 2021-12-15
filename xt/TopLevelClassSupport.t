@@ -208,8 +208,8 @@ my Int $label-gtype;
 subtest 'Label tests', {
 
   my Label $l1 .= new(:text<test-text>);
-  my N-GObject $no = $l1.get-native-object;
-  ok $no.defined, 'Label .get-native-object()';
+  my N-GObject $no = $l1._get-native-object;
+  ok $no.defined, 'Label ._get-native-object()';
   my Label $l1a .= new(:native-object($no));
   is $l1.get-text, 'test-text', 'Label .new(:native-object) .get-text()';
 
@@ -218,7 +218,7 @@ subtest 'Label tests', {
   $label-gtype = $l1.get-class-gtype;
 #note "ic l1: $label-gtype, ref count: ",
 #    g_type_get_instance_count($label-gtype), ', floating: ',
-#    g_object_is_floating($l1.get-native-object);
+#    g_object_is_floating($l1._get-native-object);
 
 #note "l1: ", $l1.perl;
   is $l1.get-text, 'test-text', 'Label .new(:text) .get-text()';
@@ -233,12 +233,12 @@ subtest 'Label tests', {
   $l2 .= new(:native-object($l1));
 #note 'ic l2: ', $l2.get-class-gtype, ', ref count: ',
 #    g_type_get_instance_count($l2.get-class-gtype), ', floating: ',
-#    g_object_is_floating($l2.get-native-object);
+#    g_object_is_floating($l2._get-native-object);
 #note "l2: ", $l2.perl;
   is $l2.get-text, 'test-text', 'Label .new(:native-object) .get-text()';
 
-  $no = $l1.get-native-object;
-  isa-ok $no, N-GObject, '.get-native-object()';
+  $no = $l1._get-native-object;
+  isa-ok $no, N-GObject, '._get-native-object()';
   $l2 .= new( :native-object($no));
   is $l2.get-text, 'test-text', 'Label .new(:native-object) .get-text()';
   $l2.clear-object;
@@ -282,10 +282,10 @@ subtest 'Reference tests', {
   is $l1.get-class-name, 'GtkLabel', 'Label .get-class-name()';
   $label-gtype = $l1.get-class-gtype;
   is g_type_get_instance_count($label-gtype), 0, 'refcount 0';
-  ok g_object_is_floating($l1.get-native-object), 'object floats';
+  ok g_object_is_floating($l1._get-native-object), 'object floats';
 
   my N-GObject $w = gtk_window_new(0);
-  my $no = $l1.get-native-object;
+  my $no = $l1._get-native-object;
   gtk_container_add( $w, $no);
 #TODO is still 0, why?
 #  is g_type_get_instance_count($label-gtype), 1, 'refcount 1';
