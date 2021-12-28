@@ -469,32 +469,30 @@ method _set-native-object ( $native-object ) {
     $!is-valid = True;
 
     # If test mode is triggered by Gnome::T
-#note "Test mode: $test-mode.raku(), builders $builders.raku()";
     if ?$test-mode {
-#      my $no = self._get-native-object-no-reffing;
-#note "native object: ", $no.raku;
-#      my Gnome::GObject::Type $t .= new;
+      # test if object is from Cairo. Skip if True.
+      unless $no.raku.Str ~~ m:i/ cairo / {
 
-      # only when buildable then the instance is based on Widget -> gui-able
-      my Bool $is-a-GtkBuildable = _check_instance_is_a(
-        $!n-native-object, _from_name('GtkBuildable')
-      ).Bool;
-#note "instance is GtkBuildable: $is-a-GtkBuildable";
+        # only when buildable then the instance is based on Widget -> gui-able
+        my Bool $is-a-GtkBuildable = _check_instance_is_a(
+          $!n-native-object, _from_name('GtkBuildable')
+        ).Bool;
 
-      if $is-a-GtkBuildable {
+        if $is-a-GtkBuildable {
 
-        # just pick first builder. this should be correct if Gnome::T
-        # is started as early as possible
-        my $builder = $builders[0];
+          # just pick first builder. this should be correct if Gnome::T
+          # is started as early as possible
+          my $builder = $builders[0];
 
-        # create an id for use in builder to find the object
-        my Str $widget-path = [~] _name_from_instance($!n-native-object),
-          '-', (++$widget-count).fmt('%04d');
+          # create an id for use in builder to find the object
+          my Str $widget-path = [~] _name_from_instance($!n-native-object),
+            '-', (++$widget-count).fmt('%04d');
 
-        # add object to builder
-        $builder.expose-object( $widget-path, $!n-native-object);
+          # add object to builder
+          $builder.expose-object( $widget-path, $!n-native-object);
 
-        note "set gobject build-id to: $widget-path" if $Gnome::N::x-debug;
+          note "set gobject build-id to: $widget-path" if $Gnome::N::x-debug;
+        }
       }
     }
   }

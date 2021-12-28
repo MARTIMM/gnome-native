@@ -1,4 +1,7 @@
 ## Release notes
+* 2021-12-12 0.19.2
+  * Need to test for cairo objects when in test mode. Cairo does not inherit from GObject and does not know about glib type system.
+
 * 2021-12-12 0.19.1
   * Renamed a few methods to show they are internal.
   * Added pod doc
