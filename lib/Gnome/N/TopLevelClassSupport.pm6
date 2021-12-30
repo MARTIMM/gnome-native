@@ -167,8 +167,12 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 
   state Hash $cache = %();
 
-  note "\nSearch for .$native-sub\() in $!class-name following ", self.^mro
-    if $Gnome::N::x-debug;
+  # cairo does not use the type system
+  $!class-name //= '-';
+  $!class-name-of-sub //= '-';
+
+  note "\nSearch for .$native-sub\() in $!class-name following ",
+    self.^mro if $Gnome::N::x-debug;
 
 #  CATCH { test-catch-exception( $_, $native-sub); }
   CATCH { .note; die; }

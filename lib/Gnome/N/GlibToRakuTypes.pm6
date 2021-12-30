@@ -45,3 +45,7 @@ constant \gushort         is export = uint16;
 constant \int-ptr         is export = CArray[int32];
 constant \time_t          is export = int64;
 constant \void-ptr        is export = Pointer[void];
+
+#-------------------------------------------------------------------------------
+enum gboolean-values is export <false true>;
+

@@ -240,6 +240,14 @@ method !build-types-conversion-module ( ) {
           $gtype-name, $rtype-name;
   }
 
+  # add integer true/false
+  $module-text ~= Q:to/EOMOD_ENUM/;
+
+    #-------------------------------------------------------------------------------
+    enum gboolean-values is export <false true>;
+
+    EOMOD_ENUM
+
   # write to module
   'lib/Gnome/N/GlibToRakuTypes.pm6'.IO.spurt($module-text);
 }

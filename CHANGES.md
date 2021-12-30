@@ -1,4 +1,7 @@
 ## Release notes
+* 2021-12-30 0.19.3
+  * Add an enum for values of gboolean which are `true` and `false` (lowercase) mapping to 1 and 0 resp.
+
 * 2021-12-12 0.19.2
   * Need to test for cairo objects when in test mode. Cairo does not inherit from GObject and does not know about glib type system.
 
