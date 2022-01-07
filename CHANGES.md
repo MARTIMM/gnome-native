@@ -1,4 +1,7 @@
 ## Release notes
+* 2022-01-07 0.19.4
+  * **TopLevelClassSupport** routine `_wrap-native-type()` argument type for `$no` is changed from `N-GObject` to `Any:D` because it can be other than `N-GObect`.
+
 * 2021-12-30 0.19.3
   * Add an enum for values of gboolean which are `true` and `false` (lowercase) mapping to 1 and 0 resp.
 

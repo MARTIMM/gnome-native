@@ -572,6 +572,7 @@ method _set-test-mode ( Bool $mode ) {
 }
 
 #-------------------------------------------------------------------------------
+#tm:4:_set-test-mode:
 =begin pod
 =head2 _get-test-mode
 
@@ -581,12 +582,12 @@ Get current state.
 
 =end pod
 
-#tm:4:_set-test-mode:
 method _get-test-mode ( --> Bool ) {
   $test-mode
 }
 
 #-------------------------------------------------------------------------------
+#tm:4:_wrap-native-type:
 =begin pod
 =head2 _wrap-native-type
 
@@ -599,11 +600,7 @@ Used by many classes to create a Raku instance with the native object wrapped in
 
 =end pod
 
-#tm:4:_wrap-native-type:
-method _wrap-native-type (
-  Str:D $type where ?$type, N-GObject $no
-  --> Any
-) {
+method _wrap-native-type ( Str:D $type where ?$type, Any:D $no --> Any ) {
   # get class and wrap the native object in it
 #note "type: $type";
   try require ::($type);
