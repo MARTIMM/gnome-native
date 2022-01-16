@@ -594,7 +594,7 @@ method _get-test-mode ( --> Bool ) {
 Used by many classes to create a Raku instance with the native object wrapped in
 
   method _wrap-native-type (
-    Str:D $type where ?$type, N-GObject:D $no
+    Str:D $type where ?$type, Any:D $no
     --> Any
   )
 
