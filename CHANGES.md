@@ -1,4 +1,7 @@
 ## Release notes
+* 2022-01-16 0.19.5
+  * Add type cairo_bool_type because it is based on int which can be 32- or 64 bits.
+
 * 2022-01-07 0.19.4
   * **TopLevelClassSupport** routine `_wrap-native-type()` argument type for `$no` is changed from `N-GObject` to `Any:D` because it can be other than `N-GObect`.
 

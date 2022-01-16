@@ -217,6 +217,9 @@ method !build-types-conversion-module ( ) {
   $c-types<char-ppptr> = "CArray[CArray[$c-types<gchar-ptr>]]";
   $c-types<gchar-ppptr> = "CArray[CArray[$c-types<gchar-ptr>]]";
 
+  # A Cairo boolean type. Same as gboolean but separated
+  # to be prepared for eventual changes in one of the libs.
+  $c-types<cairo_bool_t> = $c-types<gint>;
 
   # generate the module text
   my Str $module-text = Q:to/EOMOD_START/;

@@ -14,6 +14,7 @@ constant \GEnum           is export = int32;
 constant \GFlag           is export = uint32;
 constant \GQuark          is export = uint32;
 constant \GType           is export = uint64;
+constant \cairo_bool_t    is export = int32;
 constant \char-ppptr      is export = CArray[CArray[Str]];
 constant \char-pptr       is export = CArray[Str];
 constant \gboolean        is export = int32;
