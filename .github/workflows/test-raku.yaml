@@ -1,0 +1,22 @@
+# Github action to test Raku modules
+# Runs in a container created by Juan J Merelo
+# See also:
+#   https://dev.to/jj/testing-your-raku-module-using-github-actions-109k
+#   https://dev.to/jj/designing-containers-for-github-actions-5h84
+
+name: 'Gnome::N texting action'
+#on: [ push ]
+on:
+  push:
+    branches:
+      - main
+      - module
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Test via install
+        uses: JJ/raku-test-action@main

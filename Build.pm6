@@ -111,6 +111,10 @@ note "$libtag";
       }
     }
 
+    for $p.err.lines -> $l {
+      note $l;
+    }
+
     $p.err.close;
     $p.out.close;
   }
