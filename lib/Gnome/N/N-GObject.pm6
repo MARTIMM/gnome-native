@@ -15,9 +15,4 @@ Previously I thought this would be an object from everything GObject in glib and
 =end pod
 
 #TT:1:N-GObject:
-class N-GObject is repr('CPointer') is export {
-#  method COERCE( Gnome::GObject::Object $o --> N-GObject ) {
-#    say $o.gist;
-#    $o.get-native-object;
-#  }
-}
+class N-GObject is repr('CPointer') is export { }
