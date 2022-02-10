@@ -237,6 +237,53 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
 }
 
 #-------------------------------------------------------------------------------
+#TM:1:N-GObject:
+=begin pod
+=head2 N-GObject
+
+Method to get the native object wrapped in the Raku objects.
+
+Example where the native object is retrieved from a B<Gnome::Gtk3::Window> object.
+=begin code
+  my Gnome::Gtk3::Window $w;
+  my N-GObject() $no = $w;
+=end code
+
+=begin code
+  method N-GObject ( --> N-GObject )
+=end code
+
+=end pod
+
+method N-GObject ( --> N-GObject ) {
+  note "Coercing to N-GObject from ", self.^name if $Gnome::N::x-debug;
+  self.get-native-object()
+}
+
+#-------------------------------------------------------------------------------
+#TM:1:COERCE:
+=begin pod
+=head2 COERCE
+
+Method to wrap a native object into a Raku object
+
+Example;
+=begin code
+  my N-GObject $no = …;
+  my Gnome::Gtk3::Window() $w = $no;
+=end code
+
+=begin code
+  method COERCE( $o --> Any )
+=end code
+
+=end pod
+method COERCE( $o --> Any ) {
+  note "Coercing from N-GObject to ", self.^name if $Gnome::N::x-debug;
+  self._wrap-native-type( self.^name, $o)
+}
+
+#-------------------------------------------------------------------------------
 #TM:1:get-class-gtype:
 =begin pod
 =head2 get-class-gtype
@@ -455,6 +502,8 @@ Set the native object. This happens mostly when a native object is created.
 =end pod
 method _set-native-object ( $native-object ) {
 
+#TODO if previous no is defined, should it be unreffed?
+
   # only change when native object is defined
   if ? $native-object {
 
@@ -591,18 +640,18 @@ method _get-test-mode ( --> Bool ) {
 =begin pod
 =head2 _wrap-native-type
 
-Used by many classes to create a Raku instance with the native object wrapped in
+Used by many classes to create a Raku instance with the native object wrapped in. Sometimes the native object C<$no> is returned from other methods as an undefined object. In that case, the Raku class is created as an invalid object in most cases. Exceptions are the two list classes from C<Gnome::Glib>.
 
   method _wrap-native-type (
-    Str:D $type where ?$type, Any:D $no
+    Str:D $type where ?$type, Any $no
     --> Any
   )
 
 =end pod
 
-method _wrap-native-type ( Str:D $type where ?$type, Any:D $no --> Any ) {
+method _wrap-native-type ( Str:D $type where ?$type, Any $no --> Any ) {
+
   # get class and wrap the native object in it
-#note "type: $type";
   try require ::($type);
   if $Gnome::N::x-debug and ::($type) ~~ Failure {
     note "Failed to load $type!";
@@ -610,10 +659,13 @@ method _wrap-native-type ( Str:D $type where ?$type, Any:D $no --> Any ) {
   }
 
   else {
+    if ?$no {
+      ::($type).new(:native-object($no));
+    }
 
-#  require ::($type);
-#note "sym: ", ::($type);
-    ::($type).new(:native-object($no))
+    else {
+      ::($type).new(:native-object(N-GObject));
+    }
   }
 }
 
