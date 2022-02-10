@@ -255,7 +255,7 @@ Example where the native object is retrieved from a B<Gnome::Gtk3::Window> objec
 
 =end pod
 
-method N-GObject ( --> N-GObject ) {
+method N-GObject ( --> Any ) {
   note "Coercing to N-GObject from ", self.^name if $Gnome::N::x-debug;
   self.get-native-object()
 }
@@ -274,13 +274,13 @@ Example;
 =end code
 
 =begin code
-  method COERCE( $o --> Any )
+  method COERCE( $no --> Any )
 =end code
 
 =end pod
-method COERCE( $o --> Any ) {
+method COERCE( $no --> Any ) {
   note "Coercing from N-GObject to ", self.^name if $Gnome::N::x-debug;
-  self._wrap-native-type( self.^name, $o)
+  self._wrap-native-type( self.^name, $no)
 }
 
 #-------------------------------------------------------------------------------
