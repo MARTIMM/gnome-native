@@ -1,4 +1,18 @@
 ## Release notes
+* 2022-02-10 0.19.7
+  * Add coercion routines. It is possible to coerce to and from the native object to the Raku object like so;
+  ```
+  my Gnome::Gdk3::Event $event = …;
+  my Gnome::Gdk3::Device() $device = $event.get-device;
+  ```
+  ```
+  my Gnome::Gtk3::Window $w .= new;
+  my N-GObject() $no = $w;
+  ```
+
+* 2022-01-26 0.19.6
+  * Modified the `_wrap-native-type()` in TopLevelClassSupport a bit more
+
 * 2022-01-16 0.19.5
   * Add type cairo_bool_type because it is based on int which can be 32- or 64 bits.
 
