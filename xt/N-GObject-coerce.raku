@@ -2,6 +2,7 @@ use v6;
 
 use Gnome::N::N-GObject;
 use Gnome::Gtk3::Window;
+use Gnome::Gdk3::Visual;
 use Gnome::N::X;
 
 
@@ -12,7 +13,7 @@ with $w .= new {
   .show-all;
 }
 
-Gnome::N::debug(:on);
+#Gnome::N::debug(:on);
 
 my N-GObject() $no = $w.get-visual-rk;
 note "Raku Window: $w.get-visual-rk.gist()";
@@ -32,5 +33,8 @@ note "Native Window: $no.gist()";
 
 
 
-my Gnome::Gtk3::Window() $w2 = $no;
+my Gnome::Gtk3::Window(N-GObject) $w2 = $no;
 note "Raku Window: $w2.^name(), $w2.gist(), $w2.get-title()";
+
+my Gnome::Gdk3::Visual() $visual = $w.get-visual;
+note "Raku visual: $visual.^name(), $visual.gist()";
