@@ -15,4 +15,56 @@ Previously I thought this would be an object from everything GObject in glib and
 =end pod
 
 #TT:1:N-GObject:
-class N-GObject is repr('CPointer') is export { }
+class N-GObject is repr('CPointer') is export {
+
+  #-----------------------------------------------------------------------------
+  #tm:4:CALL-ME:
+  =begin pod
+  =head2 CALL-ME
+
+  Wrap this native object in a Raku object given by the C<$rk-type> or C<$rk-type-name> from the argument.
+  =end pod
+
+  multi method CALL-ME( $rk-type ) {
+    self._wrap-native-type( $rk-type.^name, self)
+  }
+
+  multi method CALL-ME( Str:D $rk-type-name ) {
+    self._wrap-native-type( $rk-type-name, self)
+  }
+
+  #-----------------------------------------------------------------------------
+#`{{
+  #tm:4:_wrap-native-type:
+  =begin pod
+  =head2 _wrap-native-type
+
+  Used by many classes to create a Raku instance with the native object wrapped in. Sometimes the native object C<$no> is returned from other methods as an undefined object. In that case, the Raku class is created as an invalid object in most cases. Exceptions are the two list classes from C<Gnome::Glib>.
+
+    method _wrap-native-type (
+      Str:D $type where ?$type, Any $no
+      --> Any
+    )
+
+  =end pod
+}}
+  method _wrap-native-type ( Str:D $type where ?$type, Any $no --> Any ) {
+
+    # get class and wrap the native object in it
+    try require ::($type);
+    if $Gnome::N::x-debug and ::($type) ~~ Failure {
+      note "Failed to load $type!";
+      ::($type).note;
+    }
+
+    else {
+      if ?$no {
+        ::($type).new(:native-object($no));
+      }
+
+      else {
+        ::($type).new(:native-object(N-GObject));
+      }
+    }
+  }
+}

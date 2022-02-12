@@ -1,4 +1,5 @@
 use v6;
+use Test;
 
 use Gnome::N::N-GObject;
 use Gnome::Gtk3::Window;
@@ -9,32 +10,27 @@ use Gnome::N::X;
 #-------------------------------------------------------------------------------
 my Gnome::Gtk3::Window $w;
 with $w .= new {
-  .set-title('test window - N-GObject coercion');
+  .set-title('N-GObject coercion');
   .show-all;
 }
 
 #Gnome::N::debug(:on);
 
 my N-GObject() $no = $w.get-visual-rk;
-note "Raku Window: $w.get-visual-rk.gist()";
-note "Native Window: $no.gist()";
-
-
+is $no.^name, 'N-GObject', 'TopLevelClassSupport N-GObject()';
 
 $no = $w.get-visual-rk.N-GObject;
-note "Raku Window: $w.get-visual-rk.gist()";
-note "Native Window: $no.gist()";
-
-
+is $no.^name, 'N-GObject', 'TopLevelClassSupport N-GObject()';
 
 $no = $w;
-note "Raku Window: $w.gist()";
-note "Native Window: $no.gist()";
-
-
-
 my Gnome::Gtk3::Window(N-GObject) $w2 = $no;
-note "Raku Window: $w2.^name(), $w2.gist(), $w2.get-title()";
+is $w2.get-title, 'N-GObject coercion', 'TopLevelClassSupport COERCE()';
+is $no(Gnome::Gtk3::Window).get-title, 'N-GObject coercion', 'N-GObject CALL-ME()';
 
 my Gnome::Gdk3::Visual() $visual = $w.get-visual;
-note "Raku visual: $visual.^name(), $visual.gist()";
+is $visual.^name, 'Gnome::Gdk3::Visual', 'assign from no';
+
+
+
+#-------------------------------------------------------------------------------
+done-testing;

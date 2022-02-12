@@ -283,6 +283,14 @@ method COERCE( $no --> Any ) {
   self._wrap-native-type( self.^name, $no)
 }
 
+#`{{
+#-------------------------------------------------------------------------------
+method CALL-ME( *@a, *%o ) {
+  note 'args: ', @a.gist;
+  note 'opts: ', %o.gist;
+}
+}}
+
 #-------------------------------------------------------------------------------
 #TM:1:get-class-gtype:
 =begin pod
