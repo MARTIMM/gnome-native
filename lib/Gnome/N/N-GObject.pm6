@@ -37,6 +37,23 @@ Example where the native object is a B<GtkWindow> type. The Raku type would then
   say $no('Gnome::Gtk3::Window').get-title;   # N-GObject coercion
   say $no().get-title;                        # N-GObject coercion
 
+In the last example, an exeption is thrown when the native object is not defined because there will be no way to know to which class to convert to. The other types will convert but the objects will be invalid.
+
+Note that when a native object must be coerced into a Raku object while in a chain of calls, you must add a few extra dots, because, the intended coercion will be seen as a call to a method.
+
+  my Gnome::Gdk3::Screen $s .= new;
+
+  # The wrong way: get-rgba-visual() is seen as a call to the
+  # get-rgba-visual method.
+  $s.get-rgba-visual().get-depth;
+
+  # The right way: Now there is a conversion at this point .(). and after
+  # that the call get-depth() works on the Gnome::Gdk3::Visual object
+  $s.get-rgba-visual.().get-depth;
+
+  # Nice to write this for the same result and documents your statement
+  $s.get-rgba-visual.('Gnome::Gdk3::Visual').get-depth;
+
 =end pod
 
 multi method CALL-ME( $rk-type ) {
@@ -48,7 +65,13 @@ multi method CALL-ME( Str:D $rk-type-name ) {
 }
 
 multi method CALL-ME( ) {
-  self._wrap-native-type-from-no(self)
+  if ?self {
+    self._wrap-native-type-from-no(self)
+  }
+
+  else {
+    die X::Gnome.new(:message('No defined native object to work on'));
+  }
 }
 
 #-----------------------------------------------------------------------------
