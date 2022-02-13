@@ -1,13 +1,37 @@
 ## Release notes
+* 2022-02-10 0.19.8
+  * Add a few `CALL-ME()` routines to **Gnome::N::N-GObject** too for conversions/coercions.
+  ```
+  my Gnome::Gtk3::Window $w .= new;
+  $w.set-title('N-GObject coercion');
+  my N-GObject() $no = $w;
+
+  # method CALL-ME() is used here. There are 3 ways to use it.
+  say $no(Gnome::Gtk3::Window).get-title;     # N-GObject coercion
+  say $no('Gnome::Gtk3::Window').get-title;   # N-GObject coercion
+  say $no().get-title;                        # N-GObject coercion
+  ```
+  In the last example, it is obvious that you must know what type the native object represents and that the method `.get-title()` can be found there.
+
 * 2022-02-10 0.19.7
-  * Add coercion routines. It is possible to coerce to and from the native object to the Raku object like so;
+  * Add coercion/conversion routines `COERCE()` and `N-GObject()` to **Gnome::N::TopLevelClassSupport**. It is possible to coerce to and from the native object to the Raku object like so;
   ```
   my Gnome::Gdk3::Event $event = …;
+
+  # method COERCE() is used here
   my Gnome::Gdk3::Device() $device = $event.get-device;
+
+  # or
+  my Gnome::Gdk3::Device(N-GObject) $device = $event.get-device;
   ```
   ```
   my Gnome::Gtk3::Window $w .= new;
+
+  # method N-GObject() is used here
   my N-GObject() $no = $w;
+
+  # or
+  my N-GObject $no = $w.N-GObject;
   ```
 
 * 2022-01-26 0.19.6
