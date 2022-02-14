@@ -1,4 +1,7 @@
 ## Release notes
+* 2022-02-10 0.19.9
+  * Simplifications and bugfixes
+
 * 2022-02-10 0.19.8
   * Add a few `CALL-ME()` routines to **Gnome::N::N-GObject** too for conversions/coercions.
   ```
