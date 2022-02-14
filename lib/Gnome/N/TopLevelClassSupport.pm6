@@ -116,30 +116,58 @@ Create a Raku object using a native object from elsewhere. $native-object can be
 submethod BUILD ( *%options ) {
 
   # check if a native object must be imported
-  if ? %options<native-object> {
+  if %options<native-object>:exists {
 
     # check if Raku object was provided instead of native object
     my $no = %options<native-object>;
-    if $no.^can('_get-native-object') {
-      # reference counting done automatically if needed
-      # by the same child class where import is requested.
-      $no .= _get-native-object;
-      note "native object extracted from raku object" if $Gnome::N::x-debug;
+
+    if !$no {
+      if $no.^name ~~ any(
+        <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
+      ) {
+        note "undefined native object is a list or slist" if $Gnome::N::x-debug;
+        $!is-valid = True;
+      }
+
+      else {
+        # reference counting done explicitly
+        note "undefined native object, set invalid" if $Gnome::N::x-debug;
+        $!is-valid = False;
+      }
     }
 
-    elsif $no.^name ~~ any(
+    elsif $no.^can('_get-native-object') {
+      # reference counting done automatically if available
+      # by the same child class where import is requested.
+      note "native object extracted from raku object" if $Gnome::N::x-debug;
+      $!n-native-object = $no._get-native-object;
+      $!is-valid = True;
+    }
+#`{{
+    elsif !$no and $no.^name ~~ any(
       <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
     ) {
-      note "native object is a list or slist" if $Gnome::N::x-debug;
+      note "native object is an undefined list or slist" if $Gnome::N::x-debug;
       # no need to set '$no = N-GObject' because $!n-native-object is undefined
+#      $!n-native-object = $no;
+      $!is-valid = True;
     }
+
+    elseif !$no {
+      # reference counting done explicitly
+      note "undefined object, object set invalid" if $Gnome::N::x-debug;
+      $!n-native-object = self.native-object-ref($no);
+    }
+}}
 
     else {
       # reference counting done explicitly
       note "native object explicit referencing" if $Gnome::N::x-debug;
-      $no = self.native-object-ref($no);
+      $!n-native-object = self.native-object-ref($no);
+      $!is-valid = True;
     }
 
+#`{{
     # The list classes may have an undefined structure and still be valid
     if ? $no or $no.^name ~~ any(
       <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
@@ -148,6 +176,7 @@ submethod BUILD ( *%options ) {
       $!n-native-object = $no;
       $!is-valid = True;
     }
+}}
   }
 }
 
