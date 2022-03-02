@@ -1,4 +1,7 @@
 ## Release notes
+* 2022-03-02 0.19.10
+  * Bugfix in `CALL-ME()`.
+
 * 2022-02-10 0.19.9
   * Simplifications and bugfixes
 

@@ -66,7 +66,7 @@ multi method CALL-ME( Str:D $rk-type-name ) {
 }
 
 multi method CALL-ME( ) {
-  if ?self {
+  if self.defined {
     self._wrap-native-type-from-no(self)
   }
 
