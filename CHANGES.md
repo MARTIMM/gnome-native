@@ -1,4 +1,8 @@
 ## Release notes
+* 2022-03-09 0.19.11
+  * add some more debug messages in **N-GObject**.
+  * More precise conversion in `N-GObject()` method.
+
 * 2022-03-02 0.19.10
   * Bugfix in `CALL-ME()`.
 
