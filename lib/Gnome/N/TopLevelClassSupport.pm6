@@ -256,9 +256,10 @@ Example where the native object is retrieved from a B<Gnome::Gtk3::Window> objec
 
 =end pod
 
-method N-GObject ( --> Any ) {
+method N-GObject ( --> N-GObject ) {
   note "Coercing to N-GObject from ", self.^name if $Gnome::N::x-debug;
-  self.get-native-object()
+  my $o = self.get-native-object();
+  ?$o ?? $o !! N-GObject
 }
 
 #-------------------------------------------------------------------------------
