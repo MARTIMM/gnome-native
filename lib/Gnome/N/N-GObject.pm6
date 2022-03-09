@@ -89,10 +89,23 @@ method _wrap-native-type ( Str:D $type where ?$type, Any $no --> Any ) {
 
   else {
     if ?$no {
+      note "Coercing N-GObject to a valid $type type" if $Gnome::N::x-debug;
       ::($type).new(:native-object($no));
     }
 
     else {
+      if $Gnome::N::x-debug && $type ~~ any(
+        <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
+      ) {
+        note "Coercing N-GObject to a valid $type type"
+          if $Gnome::N::x-debug;
+      }
+
+      else {
+        note "Coercing N-GObject to an invalid $type type"
+          if $Gnome::N::x-debug;
+      }
+
       ::($type).new(:native-object(N-GObject));
     }
   }
