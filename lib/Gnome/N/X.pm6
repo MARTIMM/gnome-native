@@ -141,14 +141,14 @@ sub test-call-without-natobj ( Callable:D $found-routine, |c ) is export {
 }
 
 #-------------------------------------------------------------------------------
-sub test-call ( Callable:D $found-routine, $gobject, |c ) is export {
+sub test-call ( Callable:D $found-routine, $gobject is rw, |c ) is export {
 
 #TODO would like to simplify but e.g. gtk_builder_new_from_string() in
 # Gnome::Gtk3::Builder does not need a N-GObject inserted on 1st argument
 # so need another test
 
   my List $sig-params = $found-routine.signature.params;
-#  note "\nSignature parameters: ", $sig-params[*] if $Gnome::N::x-debug;
+  note "\nSignature parameters of $found-routine: ", $sig-params.gist if $Gnome::N::x-debug;
 
   my $result;
   if +$sig-params and
