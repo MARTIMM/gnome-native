@@ -165,7 +165,6 @@ submethod BUILD ( *%options ) {
 # feature dashes can be used instead of underscores, so '$label.get-text()'
 # works too.
 method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
-
   state Hash $cache = %();
 
   # cairo does not use the type system
@@ -223,17 +222,16 @@ method FALLBACK ( $native-sub is copy, **@params is copy, *%named-params ) {
      $!class-name ne $!class-name-of-sub {
 
     note "Cast $!class-name to $!class-name-of-sub" if $Gnome::N::x-debug;
-
-    $g-object-cast = _check_instance_cast(
-      $!n-native-object, $!class-gtype
-    );
+    $g-object-cast = _check_instance_cast( $!n-native-object, $!class-gtype);
   }
 
   else {
+    note "Use $!class-name for call" if $Gnome::N::x-debug;
     $g-object-cast = $!n-native-object; #type-cast($!n-native-object);
   }
 
-#note "test-call: $s, $g-object-cast";
+  note "test-call: $s.gist(), $g-object-cast.gist(), @params.gist(), %named-params.gist()" if $Gnome::N::x-debug;
+
   test-call( $s, $g-object-cast, |@params, |%named-params)
 }
 
