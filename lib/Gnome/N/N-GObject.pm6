@@ -20,7 +20,7 @@ Previously I thought this would be an object from everything GObject in glib and
 #TT:1:N-GObject:
 unit class N-GObject is repr('CPointer') is export;
 
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #tm:4:CALL-ME:
 =begin pod
 =head2 CALL-ME
@@ -75,7 +75,7 @@ multi method CALL-ME( ) {
   }
 }
 
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #tm:4:_wrap-native-type:
 # no doc, same routine as in TopLevelClassSupport
 method _wrap-native-type ( Str:D $type where ?$type, Any $no --> Any ) {
@@ -111,7 +111,7 @@ method _wrap-native-type ( Str:D $type where ?$type, Any $no --> Any ) {
   }
 }
 
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #tm:4:_wrap-native-type-from-no:
 # no doc, same routine as in TopLevelClassSupport
 method _wrap-native-type-from-no ( N-GObject $no --> Any ) {
@@ -163,7 +163,7 @@ sub _name_from_instance ( N-GObject $instance --> Str )
 
 =finish
 # TODO - needed?
-#-----------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 method FALLBACK( $routine, *@a, *%o ) {
   note 'a & o: ', self.^name, ', ', $routine, ', ', @a.gist, ', ', %o.gist;
   self._wrap-native-type-from-no(self)."$routine"( |@a, |%o);
