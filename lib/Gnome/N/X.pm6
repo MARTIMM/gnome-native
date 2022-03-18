@@ -148,7 +148,7 @@ sub test-call ( Callable:D $found-routine, $gobject is rw, |c ) is export {
 # so need another test
 
   my List $sig-params = $found-routine.signature.params;
-  note "\nSignature parameters of $found-routine: ", $sig-params.gist if $Gnome::N::x-debug;
+  note "\nSignature parameters of $found-routine: ", |$sig-params if $Gnome::N::x-debug;
 
   my $result;
   if +$sig-params and
