@@ -9,7 +9,7 @@ has Str $!dist-path;
 method build ( Str $!dist-path --> Int ) {
 
   self!map-installed-libraries;
-  self!build-types-conversion-module;
+#  self!build-types-conversion-module;
 
   # return success
   1
@@ -24,6 +24,9 @@ method !map-installed-libraries ( ) {
   my %libs-to-map = %(
     :gtk(3), :gdk(3), :glib(2), :gobject(2), :cairo(2), :gdk_pixbuf(2),
     :gio(2), :pango(1), :atk(1), :cairo-gobject(2), :pangocairo(1),
+
+    # There is no gdk lib in version 4. It is included in the gtk lib.
+    :gtk4(4),
   );
 #note %libs-to-map.perl;
 
@@ -40,7 +43,7 @@ method !map-installed-libraries ( ) {
 
 
   if $*DISTRO.is-win {
-    # pick names found for mingw installation on AppVeyor
+    # Pick names found for mingw installation on AppVeyor
     $map ~= Q:q:to/EOMAP/;
       sub atk-lib ( --> Str )           is export { 'libatk-1.0-0.dll'; }
       sub cairo-gobject-lib ( --> Str ) is export { 'libcairo-gobject-2.dll'; }
@@ -53,6 +56,9 @@ method !map-installed-libraries ( ) {
       sub gtk-lib ( --> Str )           is export { 'libgtk-3-0.dll'; }
       sub pango-lib ( --> Str )         is export { 'libpango-1.0-0.dll'; }
       sub pangocairo-lib ( --> Str )    is export { 'libpangocairo-1.0-0.dll'; }
+
+      # There is no gdk lib in version 4. It is included in the gtk lib.
+      sub gtk4-lib ( --> Str )          is export { 'libgtk-4-0.dll'; }
       EOMAP
   }
 
@@ -79,41 +85,62 @@ method !map-installed-libraries ( ) {
 
         # check for each needed library
         for %libs-to-map.kv -> $libtag is copy, $minver is rw {
+#note "$libname, $libtag, $minver";
           # it is possible that 32 and 64 bit libs are installed. this
           # will show this line twice and therefore generate the sub twice
           # see issue #22.
           # if $minver is set to -1000 then we have processed it before
           next if $minver == -1000;
 
-          # if the lib is in this line
-          if $libname ~~ m/^ lib $libtag <|w>
-                             $<mv1> = (<[-\.\d]>+) so
-                             $<mv2> = (<[-\.\d]>+)?
-                          / {
 
+note "$libname, $libtag, $minver";
+
+          # if the lib is in this line
+          my Bool $m;
+          if $libtag eq 'gtk4' {
+            $m = ($libname ~~ m/^ libgtk <|w>
+                                 $<mv1> = (<[-\.\d]>+) so
+                                 $<mv2> = (<[-\.\d]>+)?
+                              /).Bool;
+          }
+
+          elsif $libtag eq 'gdk4' {
+            $m = ($libname ~~ m/^ libgdk <|w>
+                                 $<mv1> = (<[-\.\d]>+) so
+                                 $<mv2> = (<[-\.\d]>+)?
+                              /).Bool;
+          }
+
+          else {
+            $m = ($libname ~~ m/^ lib $libtag <|w>
+                                 $<mv1> = (<[-\.\d]>+) so
+                                 $<mv2> = (<[-\.\d]>+)?
+                              /).Bool;
+          }
+
+          if $m {
             # get versions but make 2nd empty in abscense of one
             my Str $mv1 = $/<mv1>.Str;
             my Str $mv2 = ($/<mv2> // '').Str;
 
             if $mv1 ~~ m/ '-' $minver/ or $mv2 ~~ m/ '.' $minver/ {
-note "$libtag";
+#note "$libtag, $minver";
               $libtag ~~ s/gdk_pixbuf/gdk-pixbuf/;
               $map ~= "sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~
                       " is export \{ '$libname'; }\n";
-#note "  sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
+note "  sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
 
               $minver = -1000;
               next;
             }
-
           }
         }
       }
     }
 
-    for $p.err.lines -> $l {
-      note $l;
-    }
+#    for $p.err.lines -> $l {
+#      note $l;
+#    }
 
     $p.err.close;
     $p.out.close;

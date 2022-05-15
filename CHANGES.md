@@ -1,9 +1,12 @@
 ## Release notes
+* 2022-03-18 0.19.13
+  * Add library search for version 4 gtk/gdk.
+
 * 2022-03-18 0.19.12
-  * call nativecast on return value
+  * Call nativecast on return value.
 
 * 2022-03-09 0.19.11
-  * add some more debug messages in **N-GObject**.
+  * Add some more debug messages in **N-GObject**.
   * More precise conversion in `N-GObject()` method.
 
 * 2022-03-02 0.19.10
