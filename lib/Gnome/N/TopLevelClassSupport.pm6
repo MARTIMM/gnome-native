@@ -53,7 +53,7 @@ my Array $builders = [];
 # When a builder is set with a name set to ___Test_Builder__ it means that
 # the Gnome::T module is used and the builder is created there.
 my Bool $test-mode;
-my Int $widget-count = 0;
+my Hash $widget-type-counters = %();
 
 #`{{ !!!! DON'T DO THIS !!!!
 #-------------------------------------------------------------------------------
@@ -548,13 +548,25 @@ method _set-native-object ( $native-object ) {
           my $builder = $builders[0];
 
           # create an id for use in builder to find the object
-          my Str $widget-path = [~] _name_from_instance($!n-native-object),
-            '-', (++$widget-count).fmt('%04d');
+          my Int $count;
+          my Str $gnome-widget-name = _name_from_instance($!n-native-object);
+          if $widget-type-counters{$gnome-widget-name}:exists {
+            $count = ++$widget-type-counters{$gnome-widget-name};
+          }
+          else {
+            $count = $widget-type-counters{$gnome-widget-name} = 1;
+          }
+
+          my Str $widget-path = [~] $gnome-widget-name, '-', $count.fmt('%04d');
 
           # add object to builder
           $builder.expose-object( $widget-path, $!n-native-object);
 
           note "set gobject build-id to: $widget-path" if $Gnome::N::x-debug;
+        }
+
+        else {
+          note "Widget ", _name_from_instance($!n-native-object), " skipped for testing user interface" if $Gnome::N::x-debug;
         }
       }
     }
