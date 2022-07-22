@@ -280,7 +280,7 @@ Example;
 =end code
 
 =end pod
-method COERCE( $no --> Any ) {
+method COERCE ( $no --> Any ) {
   note "Coercing from N-GObject to ", self.^name if $Gnome::N::x-debug;
   self._wrap-native-type( self.^name, $no)
 }
