@@ -390,8 +390,12 @@ Clear the error and return data to memory pool. The error object is not valid af
 method clear-object ( ) {
   if $!is-valid {
     self.native-object-unref($!n-native-object) if $!n-native-object.defined;
-    $!is-valid = False;
-    $!n-native-object = Nil;
+
+    # Always True for Lists
+    $!is-valid = $!n-native-object.^name ~~ any(
+        <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
+      ) ?? True !! False;
+    $!n-native-object = N-GObject;
   }
 }
 
@@ -867,8 +871,12 @@ Purpose to invalidate an object after some operation such as .destroy().
 =end pod
 
 method _set_invalid ( ) {
-  $!is-valid = False;
-  $!n-native-object = Nil;
+  self.clear-object;
+#  $!is-valid =  $native-object.^name ~~ any(
+#      <Gnome::Glib::List::N-GList Gnome::Glib::SList::N-GSList>
+#    ) ?? True !! False;
+#
+#  $!n-native-object = N-GObject;
 }
 
 #-------------------------------------------------------------------------------

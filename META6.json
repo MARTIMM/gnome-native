@@ -1,7 +1,7 @@
 {
   "description": "Raku - Gnome native interface support",
   "name": "Gnome::N",
-  "version": "0.19.14",
+  "version": "0.19.15",
   "authors": [ "Marcel Timmerman"],
   "tags": [ "gnome"],
 

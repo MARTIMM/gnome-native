@@ -1,7 +1,10 @@
 ## Release notes
+* 2022-08-03 0.19.15
+  * Bugfixes in setting $!is-valid
+
 * 2022-06-23 0.19.14
   * Subtle change in widget object counting
-  
+
 * 2022-03-18 0.19.13
   * Add library search for version 4 gtk/gdk.
 
