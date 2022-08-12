@@ -1,4 +1,7 @@
 ## Release notes
+* 2022-08-03 0.19.16
+  * Add more checks when clearing an object
+
 * 2022-08-03 0.19.15
   * Bugfixes in setting $!is-valid
 

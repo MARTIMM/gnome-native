@@ -388,8 +388,11 @@ Clear the error and return data to memory pool. The error object is not valid af
 =end pod
 
 method clear-object ( ) {
+  note "Try to clear object ", $!n-native-object.^name if $Gnome::N::x-debug;
+
   if $!is-valid {
-    self.native-object-unref($!n-native-object) if $!n-native-object.defined;
+    self.native-object-unref($!n-native-object)
+      if $!n-native-object.defined and $!n-native-object.^name eq 'Gnome::N::N-GObject';
 
     # Always True for Lists
     $!is-valid = $!n-native-object.^name ~~ any(
@@ -397,6 +400,8 @@ method clear-object ( ) {
       ) ?? True !! False;
     $!n-native-object = N-GObject;
   }
+
+  note 'Object cleared' if $Gnome::N::x-debug;
 }
 
 #-------------------------------------------------------------------------------
