@@ -9,7 +9,7 @@ has Str $!dist-path;
 method build ( Str $!dist-path --> Int ) {
 
   self!map-installed-libraries;
-#  self!build-types-conversion-module;
+  self!build-types-conversion-module;
 
   # return success
   1
@@ -93,7 +93,7 @@ method !map-installed-libraries ( ) {
           next if $minver == -1000;
 
 
-note "$libname, $libtag, $minver";
+#note "$libname, $libtag, $minver";
 
           # if the lib is in this line
           my Bool $m;
@@ -128,7 +128,7 @@ note "$libname, $libtag, $minver";
               $libtag ~~ s/gdk_pixbuf/gdk-pixbuf/;
               $map ~= "sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~
                       " is export \{ '$libname'; }\n";
-note "  sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
+#note "  sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
 
               $minver = -1000;
               next;
@@ -238,6 +238,7 @@ method !build-types-conversion-module ( ) {
   $c-types<GQuark> = $c-types<guint32>;
   $c-types<GEnum> = $c-types<gint>;
   $c-types<GFlag> = $c-types<guint>;
+  $c-types<gunichar> = $c-types<guint32>;
 #  $c-types<gtype> = $c-types<gulong>;
 #  $c-types<gquark> = $c-types<guint32>;
 
@@ -270,6 +271,7 @@ method !build-types-conversion-module ( ) {
 
   for $c-types.keys.sort -> $gtype-name {
     my Str $rtype-name = $c-types{$gtype-name};
+note "c-type: $gtype-name, raku type: $rtype-name";
     $module-text ~= sprintf "constant \\%-15s is export = %s;\n",
           $gtype-name, $rtype-name;
   }

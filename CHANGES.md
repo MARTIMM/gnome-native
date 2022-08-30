@@ -1,4 +1,8 @@
 ## Release notes
+* 2022-08-30 0.19.17
+  * Add gunichar type
+  * Bug; Building types were inhibited
+
 * 2022-08-03 0.19.16
   * Add more checks when clearing an object
 

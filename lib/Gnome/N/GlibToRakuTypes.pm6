@@ -42,6 +42,7 @@ constant \guint32         is export = uint32;
 constant \guint64         is export = uint64;
 constant \guint8          is export = uint8;
 constant \gulong          is export = uint64;
+constant \gunichar        is export = uint32;
 constant \gushort         is export = uint16;
 constant \int-ptr         is export = CArray[int32];
 constant \time_t          is export = int64;
