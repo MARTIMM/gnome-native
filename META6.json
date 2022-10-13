@@ -9,11 +9,11 @@
   "license": "Artistic-2.0",
 
   "provides": {
-    "Gnome::N::GlibToRakuTypes": "lib/Gnome/N/GlibToRakuTypes.pm6",
-    "Gnome::N::N-GObject": "lib/Gnome/N/N-GObject.pm6",
-    "Gnome::N::NativeLib": "lib/Gnome/N/NativeLib.pm6",
-    "Gnome::N::TopLevelClassSupport": "lib/Gnome/N/TopLevelClassSupport.pm6",
-    "Gnome::N::X": "lib/Gnome/N/X.pm6"
+    "Gnome::N::GlibToRakuTypes": "lib/Gnome/N/GlibToRakuTypes.rakumod",
+    "Gnome::N::N-GObject": "lib/Gnome/N/N-GObject.rakumod",
+    "Gnome::N::NativeLib": "lib/Gnome/N/NativeLib.rakumod",
+    "Gnome::N::TopLevelClassSupport": "lib/Gnome/N/TopLevelClassSupport.rakumod",
+    "Gnome::N::X": "lib/Gnome/N/X.rakumod"
   },
 
   "source-url": "git://github.com/MARTIMM/gnome-native.git",

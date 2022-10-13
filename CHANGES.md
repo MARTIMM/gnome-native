@@ -1,4 +1,7 @@
 ## Release notes
+* 2022-10-13 0.19.18
+  * File extensions renamed
+
 * 2022-08-30 0.19.17
   * Add gunichar type
   * Bug; Building types were inhibited
