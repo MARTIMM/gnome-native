@@ -147,7 +147,7 @@ method !map-installed-libraries ( ) {
   }
 
   # write to module
-  'lib/Gnome/N/NativeLib.pm6'.IO.spurt($map);
+  'lib/Gnome/N/NativeLib.rakumod'.IO.spurt($map);
 }
 
 #-------------------------------------------------------------------------------
@@ -285,5 +285,5 @@ note "c-type: $gtype-name, raku type: $rtype-name";
     EOMOD_ENUM
 
   # write to module
-  'lib/Gnome/N/GlibToRakuTypes.pm6'.IO.spurt($module-text);
+  'lib/Gnome/N/GlibToRakuTypes.rakumod'.IO.spurt($module-text);
 }
