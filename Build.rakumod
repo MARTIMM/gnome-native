@@ -21,12 +21,11 @@ method !map-installed-libraries ( ) {
   # Native lib calls are like 'is native(&gtk-lib)'. Library names on linux
   # and windows, all start with 'lib' (see also https://www.tecmint.com/understanding-shared-libraries-in-linux/ and https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html).
   #
+  # There is no gdk lib in version 4. It is included in the gtk lib.
   my %libs-to-map = %(
-    :gtk(3), :gdk(3), :glib(2), :gobject(2), :cairo(2), :gdk_pixbuf(2),
-    :gio(2), :pango(1), :atk(1), :cairo-gobject(2), :pangocairo(1),
-
-    # There is no gdk lib in version 4. It is included in the gtk lib.
-    :gtk4(4),
+    :atk(1), :cairo-gobject(2), :cairo(2), :gdk(3), :gdk3(3),  :gdk_pixbuf(2),
+    :gio(2), :glib(2), :gobject(2), :gtk(3), :gtk3(3),
+    :gtk4(4), :gsk4(4), :gdk4(4), :pango(1), :pangocairo(1),
   );
 #note %libs-to-map.perl;
 
@@ -35,10 +34,13 @@ method !map-installed-libraries ( ) {
     use v6;
     #use NativeCall;
 
-    #-------------------------------------------------------------------------------
-    unit module Gnome::N::NativeLib:auth<github:MARTIMM>:ver<0.2.1>;
 
     #-------------------------------------------------------------------------------
+    unit module Gnome::N::NativeLib:auth<github:MARTIMM>;
+
+    #-------------------------------------------------------------------------------
+    #Note; Libraries for Gsk4 and Gdk4 are in that of Gtk4.
+    #      Also Gtk3 and Gdk3 are added.
     EOMAP
 
 
@@ -49,11 +51,16 @@ method !map-installed-libraries ( ) {
       sub cairo-gobject-lib ( --> Str ) is export { 'libcairo-gobject-2.dll'; }
       sub cairo-lib ( --> Str )         is export { 'libcairo-2.dll'; }
       sub gdk-lib ( --> Str )           is export { 'libgdk-3-0.dll'; }
+      sub gdk3-lib ( --> Str )          is export { 'libgdk-3-0.dll'; }
       sub gdk-pixbuf-lib ( --> Str )    is export { 'libgdk_pixbuf-2.0-0.dll'; }
       sub gio-lib ( --> Str )           is export { 'libgio-2.0-0.dll'; }
       sub glib-lib ( --> Str )          is export { 'libglib-2.0-0.dll'; }
       sub gobject-lib ( --> Str )       is export { 'libgobject-2.0-0.dll'; }
       sub gtk-lib ( --> Str )           is export { 'libgtk-3-0.dll'; }
+      sub gtk3-lib ( --> Str )          is export { 'libgtk-3-0.dll'; }
+      sub gtk4-lib ( --> Str )          is export { 'libgtk-4-0.dll'; }
+      sub gdk4-lib ( --> Str )          is export { 'libgtk-4-0.dll'; }
+      sub gsk4-lib ( --> Str )          is export { 'libgtk-4-0.dll'; }
       sub pango-lib ( --> Str )         is export { 'libpango-1.0-0.dll'; }
       sub pangocairo-lib ( --> Str )    is export { 'libpangocairo-1.0-0.dll'; }
 
@@ -97,14 +104,14 @@ method !map-installed-libraries ( ) {
 
           # if the lib is in this line
           my Bool $m;
-          if $libtag eq 'gtk4' {
+          if $libtag ~~ any(<gtk4 gdk4 gsk4>) {
             $m = ($libname ~~ m/^ libgtk <|w>
                                  $<mv1> = (<[-\.\d]>+) so
                                  $<mv2> = (<[-\.\d]>+)?
                               /).Bool;
           }
 
-          elsif $libtag eq 'gdk4' {
+          elsif $libtag ~~ any(<gdk3 gdk>) {
             $m = ($libname ~~ m/^ libgdk <|w>
                                  $<mv1> = (<[-\.\d]>+) so
                                  $<mv2> = (<[-\.\d]>+)?
@@ -126,8 +133,12 @@ method !map-installed-libraries ( ) {
             if $mv1 ~~ m/ '-' $minver/ or $mv2 ~~ m/ '.' $minver/ {
 #note "$libtag, $minver";
               $libtag ~~ s/gdk_pixbuf/gdk-pixbuf/;
-              $map ~= "sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~
+              $map ~= "sub " ~ "{$libtag}-lib ( --> Str )".fmt('%-30s') ~
                       " is export \{ '$libname'; }\n";
+              $map ~= "sub " ~ "{$libtag}3-lib ( --> Str )".fmt('%-30s') ~
+                      " is export \{ '$libname'; }\n"
+                      if $libtag eq 'gtk';
+
 #note "  sub " ~ "$libtag\-lib ( --> Str )".fmt('%-30s') ~ " is export \{ '$libname'; }\n";
 
               $minver = -1000;
@@ -141,6 +152,11 @@ method !map-installed-libraries ( ) {
 #    for $p.err.lines -> $l {
 #      note $l;
 #    }
+# lib for gdk4 is gtk4-lib
+# lib for gsk4 is gtk4-lib
+#TODO gtk-lib duplicated as gtk3-lib for later modules
+#TODO Make constant strings which will save a call to a sub
+#constant \Gtk3Lib is export = 'libgtk-3.so.0';
 
     $p.err.close;
     $p.out.close;
