@@ -1,4 +1,8 @@
 ## Release notes
+* 2023-06-09 0.20.0
+  * Generation of library entries modified
+  * Add a change in FALLBACK to cope with later modules from gnome-source-skim-tool. A check is made for existence of method `_fallback-v2()`.
+
 * 2022-10-13 0.19.18
   * File extensions renamed
 
