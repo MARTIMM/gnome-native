@@ -164,14 +164,27 @@ submethod BUILD ( *%options ) {
 # like '$label.gtk_label_get_text()' or '$label.get_text()'. As an extra
 # feature dashes can be used instead of underscores, so '$label.get-text()'
 # works too.
-multi method FALLBACK (
+method FALLBACK (
   $native-sub is copy, **@params is copy, *%named-params
 ) {
+#note "$?LINE $native-sub, can call v2: {self.^can('_fallback-v2').gist()}";
   if self.^can('_fallback-v2') {
-    return self."_fallback-v2"( $native-sub, |@params, |%named-params);
-    #die X::Gnome.new(:message("method $native-sub not found"));
+    my Bool $_fallback-v2-ok = False;
+    my $r = self."_fallback-v2"(
+      $native-sub, $_fallback-v2-ok, |@params, |%named-params
+    );
+
+#note "$?LINE $_fallback-v2-ok";
+    return $r if $_fallback-v2-ok;
   }
 
+#note "$?LINE continue old style";
+  self.FALLBACK-ORIGINAL( $native-sub, |@params, |%named-params);
+}
+
+method FALLBACK-ORIGINAL (
+  $native-sub is copy, **@params is copy, *%named-params
+) {
   state Hash $cache = %();
 
   # cairo does not use the type system
@@ -527,7 +540,7 @@ Set the native object. This happens mostly when a native object is created.
 
 =end pod
 method _set-native-object ( $native-object ) {
-
+#note "$?LINE set native: $native-object.gist()";
 #TODO if previous no is defined, should it be unreffed?
 
   # only change when native object is defined
@@ -919,6 +932,7 @@ This method is called from classes which are not leaf classes and may need to ca
 =end pod
 
 method _f ( Str $sub-class? --> Any ) {
+#note "$?LINE _f $!n-native-object, $sub-class, $!class-gtype, {_name($!class-gtype)}";
 
   # cast to other gtk object type if the found subroutine is from another
   # gtk object type than the native object stored at $!n-native-object.
@@ -926,8 +940,9 @@ method _f ( Str $sub-class? --> Any ) {
   # which belongs to Gnome::Gtk::Widget.
   #
   # Call the method only from classes where all variables are defined!
-  my Any $g-object-cast;
-  if ?$sub-class and $!class-name ne $sub-class {
+#  my Any $g-object-cast;
+#`{{
+    if ?$sub-class and $!class-name ne $sub-class {
     $g-object-cast = _check_instance_cast(
       $!n-native-object, $!class-gtype
     );
@@ -936,9 +951,13 @@ method _f ( Str $sub-class? --> Any ) {
   else {
     $g-object-cast = $!n-native-object;
   }
+}}
 
-#note "test-call: $s.gist(), $g-object-cast.gist()";
-  $g-object-cast
+#  $g-object-cast = $!n-native-object;
+#note "test-call: $g-object-cast.gist()";
+#  $g-object-cast
+
+$!n-native-object
 }
 
 #-------------------------------------------------------------------------------
