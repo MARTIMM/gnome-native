@@ -1,4 +1,10 @@
 ## Release notes
+* 2023-08-22 0.21.1
+  * Made a separate api<2>. Newer modules are moved there.
+
+* 2023-08-15 0.21.0
+  * Modules added to support api<2> `Gnome::*` releases.
+
 * 2023-06-09 0.20.0
   * Generation of library entries modified
   * Add a change in FALLBACK to cope with later modules from gnome-source-skim-tool. A check is made for existence of method `_fallback-v2()`.
