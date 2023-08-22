@@ -167,6 +167,7 @@ submethod BUILD ( *%options ) {
 method FALLBACK (
   $native-sub is copy, **@params is copy, *%named-params
 ) {
+#`{{
 #note "$?LINE $native-sub, can call v2: {self.^can('_fallback-v2').gist()}";
   if self.^can('_fallback-v2') {
     my Bool $_fallback-v2-ok = False;
@@ -182,9 +183,27 @@ method FALLBACK (
   self.FALLBACK-ORIGINAL( $native-sub, |@params, |%named-params);
 }
 
+#-------------------------------------------------------------------------------
+# When _fallback-v2() is called from the FALLBACK() method above, it starts to
+# run _fallback-v2() at the leaf class. When sub address is not resolved
+# it calls callsame() which enters the _fallback-v2() in the class below
+# the leaf class. When nothing is found, the call ends up here and the thing
+# only to do is die().
+method _fallback-v2 ( Str $n, Bool $_fallback-v2-ok is rw, *@arguments ) {
+  die X::Gnome.new(:message("Native sub '$n' not found"));
+}
+
+#-------------------------------------------------------------------------------
+# Old fashion with same purpose as above with _fallback-v2().
+method _fallback ( Str $n, *@arguments, *%named-params ) {
+  die X::Gnome.new(:message("Native sub '$n' not found"));
+}
+
+#-------------------------------------------------------------------------------
 method FALLBACK-ORIGINAL (
   $native-sub is copy, **@params is copy, *%named-params
 ) {
+}}
   state Hash $cache = %();
 
   # cairo does not use the type system
@@ -214,7 +233,7 @@ method FALLBACK-ORIGINAL (
 
   else {
     $s = self._fallback($native-sub);
-
+#`{{
     if $s.defined {
       note "Found $native-sub in $!class-name-of-sub for $!class-name"
         if $Gnome::N::x-debug;
@@ -224,6 +243,7 @@ method FALLBACK-ORIGINAL (
     else {
       die X::Gnome.new(:message("Native sub '$native-sub' not found"));
     }
+}}
   }
 
   # user convenience substitutions to get a native object instead of
