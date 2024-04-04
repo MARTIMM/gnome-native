@@ -1,4 +1,7 @@
 ## Release notes
+* 2024-04-04 0.22.0
+  * Add `:api<1>` to all class names. Use statements loading the gnome libs have also the api<1> added. Api 1 is also added the 'META6.json' as well as to the dependencies of other gnome modules.
+
 * 2023-08-22 0.21.1
   * Made a separate api<2>. Newer modules are moved there.
 
@@ -160,7 +163,7 @@
     Can then be defined like
 
     ```
-    use Gnome::N::GlibToRakuTypes;
+    use Gnome::N::GlibToRakuTypes:api<1>;
 
     sub g_type_depth ( GType $type --> guint )
       is native(&gobject-lib)

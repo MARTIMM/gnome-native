@@ -1,13 +1,15 @@
 {
   "description": "Raku - Gnome native interface support",
   "name": "Gnome::N",
-  "version": "0.21.1",
+  "version": "0.22.0",
   "authors": ["Marcel Timmerman"],
   "auth": "cpan:MARTIMM",
-  "tags": [ "gnome"],
+  "tags": [ "gnome", "native", "types"],
   "api": "1",
 
-  "perl": "6",
+  "meta-version": "2",
+  "perl": "6.d",
+  "raku": "6.d",
   "license": "Artistic-2.0",
 
   "provides": {
