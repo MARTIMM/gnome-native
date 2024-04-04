@@ -2,7 +2,7 @@ use v6;
 use NativeCall;
 use Test;
 
-use Gnome::N::GlibToRakuTypes;
+use Gnome::N::GlibToRakuTypes:api<1>;
 ok 1, 'Gnome::N::GlibToRakuTypes loads ok';
 
 #-------------------------------------------------------------------------------

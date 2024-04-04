@@ -3,7 +3,7 @@
 use v6;
 
 #-------------------------------------------------------------------------------
-class X::Gnome is Exception {
+class X::Gnome:auth<github:MARTIMM>:api<1> is Exception {
   has $.message;
 
   #TM:1:new():
@@ -11,7 +11,7 @@ class X::Gnome is Exception {
 }
 
 #-------------------------------------------------------------------------------
-class Gnome::N {
+class Gnome::N:auth<github:MARTIMM>:api<1> {
 
 #-------------------------------------------------------------------------------
 =begin pod

@@ -1,7 +1,7 @@
 use v6;
 use Test;
 
-use Gnome::N::X;
+use Gnome::N::X:api<1>;
 
 #-------------------------------------------------------------------------------
 subtest 'debugging', {

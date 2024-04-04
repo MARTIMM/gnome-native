@@ -1,10 +1,10 @@
 use v6;
 use Test;
 
-use Gnome::N::N-GObject;
-use Gnome::Gtk3::Window;
-use Gnome::Gdk3::Visual;
-use Gnome::N::X;
+use Gnome::N::N-GObject:api<1>;
+use Gnome::Gtk3::Window:api<1>;
+use Gnome::Gdk3::Visual:api<1>;
+use Gnome::N::X:api<1>;
 
 
 #-------------------------------------------------------------------------------

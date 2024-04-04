@@ -28,11 +28,11 @@ The user cannot use options from the classes in between because those will creat
 #-------------------------------------------------------------------------------
 use NativeCall;
 
-use Gnome::N::NativeLib;
-use Gnome::N::N-GObject;
-use Gnome::N::TopLevelClassSupport;
+use Gnome::N::NativeLib:api<1>;
+use Gnome::N::N-GObject:api<1>;
+use Gnome::N::TopLevelClassSupport:api<1>;
 
-#use Gnome::N::X;
+#use Gnome::N::X:api<1>;
 #Gnome::N::debug(:on);
 
 #-----------------------------------------------------------------------------

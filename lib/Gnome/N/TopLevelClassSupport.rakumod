@@ -24,13 +24,13 @@ The B<Gnome::N::TopLevelClassSupport> is the class at the top of the food chain.
 #-------------------------------------------------------------------------------
 use NativeCall;
 
-use Gnome::N::X;
-use Gnome::N::NativeLib;
-use Gnome::N::N-GObject;
-use Gnome::N::GlibToRakuTypes;
+use Gnome::N::X:api<1>;
+use Gnome::N::NativeLib:api<1>;
+use Gnome::N::N-GObject:api<1>;
+use Gnome::N::GlibToRakuTypes:api<1>;
 
 #-------------------------------------------------------------------------------
-unit class Gnome::N::TopLevelClassSupport;
+unit class Gnome::N::TopLevelClassSupport:auth<github:MARTIMM>:api<1>;
 
 #-------------------------------------------------------------------------------
 # this native object is used by the toplevel class and its descendent classes.

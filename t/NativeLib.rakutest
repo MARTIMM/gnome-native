@@ -2,9 +2,9 @@ use v6;
 use NativeCall;
 use Test;
 
-use Gnome::N::NativeLib;
-use Gnome::N::N-GObject;
-use Gnome::N::GlibToRakuTypes;
+use Gnome::N::NativeLib:api<1>;
+use Gnome::N::N-GObject:api<1>;
+use Gnome::N::GlibToRakuTypes:api<1>;
 
 #-------------------------------------------------------------------------------
 subtest 'lib names', {

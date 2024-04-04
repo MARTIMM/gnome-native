@@ -1,8 +1,8 @@
 use v6;
 use NativeCall;
 
-use Gnome::N::NativeLib;
-use Gnome::N::X;
+use Gnome::N::NativeLib:api<1>;
+use Gnome::N::X:api<1>;
 
 #-------------------------------------------------------------------------------
 # Native object placed here because it is used by several modules. When placed
@@ -18,7 +18,7 @@ Previously I thought this would be an object from everything GObject in glib and
 =end pod
 
 #TT:1:N-GObject:
-unit class N-GObject is repr('CPointer') is export;
+unit class N-GObject:auth<github:MARTIMM>:api<1> is repr('CPointer') is export;
 
 #-------------------------------------------------------------------------------
 #tm:4:CALL-ME:
