@@ -278,7 +278,7 @@ method !build-types-conversion-module ( ) {
     use v6;
     use NativeCall;
 
-    unit package Gnome::N::GlibToRakuTypes:auth<github:MARTIMM>:api<1>;
+    unit module Gnome::N::GlibToRakuTypes:auth<github:MARTIMM>:api<1>;
 
     #-------------------------------------------------------------------------------
     EOMOD_START
