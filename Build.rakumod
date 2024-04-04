@@ -32,8 +32,6 @@ method !map-installed-libraries ( ) {
   # generate head
   my Str $map = Q:q:to/EOMAP/;
     use v6;
-    #use NativeCall;
-
 
     #-------------------------------------------------------------------------------
     unit module Gnome::N::NativeLib:auth<github:MARTIMM>:api<1>;
