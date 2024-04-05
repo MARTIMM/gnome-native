@@ -34,7 +34,7 @@ my Gnome::Gtk3::Main $m .= new;
 # Installation
 Do not install this package on its own. Instead install `Gnome::Gtk3:api<1>`.
 
-`zef install Gnome::Gtk3:api<1>`
+`zef install 'Gnome::Gtk3:api<1>'`
 
 
 # Author
